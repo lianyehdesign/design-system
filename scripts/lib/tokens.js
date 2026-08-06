@@ -15,6 +15,37 @@ export const TOKEN_DIR = 'tokens';
 // Pinkoi 的 Foundation collection 叫 Generic，分類資訊在名稱裡:Color/Primary/060。
 export const ALLOWED_GROUPS = ['color'];
 
+/**
+ * ---- 採用語意命名這一套 ----
+ *
+ * Foundation 檔案裡有兩套完整並存的色彩命名，指向同樣的 45 個色值:
+ *
+ *   語意          色名        色值範例
+ *   Primary   ↔  Blue        #003354
+ *   Secondary ↔  Salmon      #f16c5d
+ *   Neutral   ↔  Gray        #66666a
+ *   Func-One  ↔  green       #2cac97   ← 色名那套裡只有這個是小寫
+ *   Func-Two  ↔  Red         #d7213e
+ *   Func-Three↔  Yellow      #efae09
+ *
+ * 兩套都放行的話，工程師會同時拿到 colorPrimary060 和 colorBlue300 ——
+ * 兩個名字、同一個顏色。這正是 token 系統最該避免的事。
+ *
+ * 選語意命名的理由:實際綁在元件上的是這一套（商品卡用的是
+ * Color/Primary/060、Color/Secondary/030），而且語意命名撐得過改版 ——
+ * 換品牌色時「primary」還是對的，「blue」就錯了。
+ *
+ * 要改成色名那套的話，換掉這個陣列就好，其餘程式碼不用動。
+ */
+export const ALLOWED_COLOR_FAMILIES = [
+  'primary',
+  'secondary',
+  'neutral',
+  'func-one',
+  'func-two',
+  'func-three',
+];
+
 const norm = (s) => String(s).trim().toLowerCase().replace(/\s+/g, '-');
 
 /** "Color/Primary/060" → "color" */
@@ -22,8 +53,25 @@ export function groupOf(figmaName) {
   return norm(String(figmaName).split('/')[0] ?? '');
 }
 
-export function isAllowedGroup(figmaName) {
-  return ALLOWED_GROUPS.includes(groupOf(figmaName));
+/** "Color/Primary/060" → "primary" */
+export function familyOf(figmaName) {
+  return norm(String(figmaName).split('/')[1] ?? '');
+}
+
+/** 同時檢查群組（Color/）與家族（Primary/…），兩層都要過 */
+export function isAllowedToken(figmaName) {
+  return (
+    ALLOWED_GROUPS.includes(groupOf(figmaName)) &&
+    ALLOWED_COLOR_FAMILIES.includes(familyOf(figmaName))
+  );
+}
+
+/** 說明為什麼被擋:是群組不對，還是命名系統不對 */
+export function whySkipped(figmaName) {
+  if (!ALLOWED_GROUPS.includes(groupOf(figmaName))) {
+    return `分組「${groupOf(figmaName)}」不在白名單`;
+  }
+  return `「${familyOf(figmaName)}」屬於色名命名那一套，本 repo 採用語意命名`;
 }
 
 /** "Color/Primary/060" → ['color', 'primary', '060'] */

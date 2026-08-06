@@ -15,7 +15,7 @@
  */
 
 import {
-  isAllowedGroup,
+  isAllowedToken,
   toTokenPath,
   normalizeHex,
   readTokens,
@@ -111,7 +111,7 @@ async function main() {
   const { variables, variableCollections } = meta;
 
   const colorVars = Object.values(variables)
-    .filter((v) => v.resolvedType === 'COLOR' && isAllowedGroup(v.name))
+    .filter((v) => v.resolvedType === 'COLOR' && isAllowedToken(v.name))
     .sort((a, b) => a.name.localeCompare(b.name));
 
   assertNoCollisions(findCollisions(colorVars.map((v) => v.name)));

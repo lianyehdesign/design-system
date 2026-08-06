@@ -35,6 +35,9 @@
           border: 1px solid var(--figma-color-border); border-radius: 4px;
           background: var(--figma-color-bg-secondary); color: var(--figma-color-text); }
   hr { border: 0; border-top: 1px solid var(--figma-color-border); margin: 14px 0; }
+  .check { display: flex; align-items: center; gap: 6px; margin: 12px 0 8px; cursor: pointer; }
+  .check input { width: auto; margin: 0; }
+  .check span { margin: 0; color: var(--figma-color-text); }
 </style>
 
 <h2>Design Tokens → GitHub</h2>
@@ -54,6 +57,11 @@
   <label><span>Workflow</span><input id="workflow"></label>
   <label><span>Branch</span><input id="ref"></label>
 </div>
+
+<label class="check">
+  <input type="checkbox" id="replace">
+  <span>整份重建（刪除 Figma 上已不存在的 token）</span>
+</label>
 
 <button class="primary" id="sync">讀取變數並觸發同步</button>
 <button class="secondary" id="copy">只讀取，複製 JSON</button>
@@ -160,7 +168,10 @@
       return;
     }
 
-    show('info', summary(data) + '\n\n觸發中…');
+    const mode = $('replace').checked
+      ? '整份重建（Figma 上沒有的會被刪除）'
+      : '合併（只新增／更新，不刪除）';
+    show('info', summary(data) + '\n模式:' + mode + '\n\n觸發中…');
 
     let res;
     try {
@@ -176,7 +187,12 @@
           },
           body: JSON.stringify({
             ref: s.ref,
-            inputs: { variables: body, source_url: 'Figma:' + fileName },
+            inputs: {
+              variables: body,
+              source_url: 'Figma:' + fileName,
+              // workflow_dispatch 的 input 值必須是字串，送 boolean 會 422
+              replace: String($('replace').checked),
+            },
           }),
         }
       );
