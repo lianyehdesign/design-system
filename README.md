@@ -136,11 +136,13 @@ FIGMA_TOKEN=xxx FIGMA_FILE_KEY=xxx npm run sync:api
 | --- | --- | --- | --- |
 | **Build tokens** | push / PR / 手動 | ✗ | ✅ |
 | **Sync tokens from Figma (link)** | 手動(貼 JSON) | ✗ | ✅ |
-| **Sync tokens from Figma (API)** | 每週一 + 手動 | ✓ | ❌ 等權限 |
+| **Sync tokens from Figma (API)** | 手動 | ✓ | ❌ 需 Enterprise |
 
 手動觸發的「Run workflow」按鈕**只會出現在預設分支(main)的 Actions 頁面上** —— 這是 GitHub 的行為,不是設定問題。
 
-`Build tokens` 會檢查 `platform/` 有沒有跟 `tokens/` 脫節。`Sync tokens from Figma (API)` 在沒設 secret 時會在第一步就擋下來並說明原因。
+`Build tokens` 會檢查 `platform/` 有沒有跟 `tokens/` 脫節。
+
+API 那條**刻意沒有設排程** —— 在方案升級之前,排程只會每週一失敗一次、寄一封失敗通知,除了製造雜訊沒有作用。
 
 需要的 secret:
 
@@ -149,19 +151,41 @@ FIGMA_TOKEN=xxx FIGMA_FILE_KEY=xxx npm run sync:api
 | `FIGMA_TOKEN` | Figma personal access token,**必須含 `file_variables:read` scope** |
 | `FIGMA_FILE_KEY` | `1TcgPhqHmLeZhPpv7LaCGO`(網址 `/design/<這段>/` 的值) |
 
-### 關於 `file_variables:read`
+### ⚠️ 目前這條路走不通
 
-Variables API **只認這一個 scope**,token 有其他一堆 scope 也沒用,會回 403:
+**2026-08-06 確認:Pinkoi 的 Figma 方案是 Professional,Variables REST API 是 Enterprise 限定。**
+
+建立 personal access token 時,Scopes 清單裡**沒有這個選項**。能勾的只有:
 
 ```
-Invalid scope(s): file_content:read, file_metadata:read, ...
+current_user:read
+file_comments:read / file_comments:write / file_content:read
+file_metadata:read / file_versions:read
+library_assets:read / library_content:read / team_library_content:read
+file_dev_resources:read / file_dev_resources:write
+projects:read / webhooks:read / webhooks:write
+```
+
+全部勾滿再打 Variables API,回:
+
+```
+403 Invalid scope(s): file_content:read, file_metadata:read, ...
 This endpoint requires the file_variables:read scope
 ```
 
-既有 token **沒辦法追加 scope**,必須重新建立:Figma → Settings → Security →
-Personal access tokens → Generate new token,建立時把 **Variables → Read** 勾起來。
+**這不是漏勾。這個 scope 只對 Enterprise 開放,Professional 差了兩個層級。**
 
-這個選項只有 **Enterprise 組織的帳號**看得到 —— 用個人帳號建的 token 不會有。
+容易搞混的一點:**Full seat 是「席次類型」(你能不能編輯),跟「方案層級」
+(組織買了哪一層)是兩回事。** 升到 Full seat 不會讓這個 scope 出現。
+
+所以 `sync-from-api.yml` 目前是**備而不用**的狀態 —— 程式寫好了,方案到位就能跑。
+
+### 不需要 Enterprise 的替代方案
+
+1. **`sync:link`(目前採用)** — 手動讀取 Figma 後貼 JSON,見上面「設計師改了顏色,怎麼更新?」
+2. **寫一個 Figma plugin** — Plugin API 的 `figma.variables.getLocalVariablesAsync()`
+   **沒有方案限制**,讀得到本地變數的值與 description。做成按一下就推 GitHub PR,
+   自動化程度接近 REST API 那條,但不用升級方案。Tokens Studio 走的就是這條路。
 
 ## 保護機制
 

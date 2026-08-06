@@ -46,12 +46,21 @@ function explainFailure(status, body) {
     hint([
       'token 缺少 file_variables:read scope（Variables API 只認這一個）。',
       '',
-      '既有 token 沒辦法追加 scope，必須重新建立:',
-      'Figma → Settings → Security → Personal access tokens → Generate new token，',
-      '建立時把 Variables → Read 勾起來，然後更新 repo 的 FIGMA_TOKEN secret。',
+      '先確認一件事:到 Figma → Settings → Security → Personal access tokens →',
+      'Generate new token，看 Scopes 清單裡「有沒有」file_variables:read 這個選項。',
       '',
-      '注意:這個選項只有 Enterprise 組織的帳號看得到。',
-      '用個人帳號建的 token 不會有這個 scope。',
+      '  有 → 舊 token 沒辦法追加 scope，重建一個並勾選它，',
+      '       然後更新 repo 的 FIGMA_TOKEN secret。',
+      '',
+      '  沒有 → 這條路現在走不通，不是你漏勾。這個 scope 只對 Enterprise',
+      '       方案開放，選單裡看不到就代表組織方案還沒到那一層。',
+      '       注意 Full seat 是「席次類型」，跟「方案層級」是兩回事，',
+      '       升到 Full seat 不會讓這個 scope 出現。',
+      '',
+      '       替代方案（都不需要 Enterprise）:',
+      '       1. npm run sync:link —— 手動讀取後貼上，現在就能用',
+      '       2. 寫一個 Figma plugin —— Plugin API 的',
+      '          figma.variables.getLocalVariablesAsync() 沒有方案限制',
     ]);
     return;
   }
