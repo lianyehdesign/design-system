@@ -2,7 +2,7 @@
 
 Pinkoi design tokens。Figma 是真實來源,這個 repo 存放轉譯後的 token,並自動產出各平台可直接使用的檔案。
 
-**目前範圍:只處理 Color(46 個)。** Spacing / Radius / Typography 之後再加。
+**目前範圍:只處理 Color(45 個)。** Spacing / Radius / Typography 之後再加。
 
 ## 流程
 
@@ -216,14 +216,37 @@ This endpoint requires the file_variables:read scope
 
 ## 已知待處理
 
-- **`Color/Gray/090` 疑似舊命名殘留。** 值 (`#66666a`) 與 `Color/Neutral/090` 完全相同。同系列的 `Color/Gray/080` 已由設計師改為 `Color/Neutral/080`,`Gray/090` 可能是同一批遺留,值得一併確認。
+- **Foundation 檔案裡有兩套完整並存的色彩命名,指向同樣的 45 個色值。本 repo 採用語意命名。**
 
-- **Figma 端有兩套平行的 Foundation library。SSOT 取 `[Design System] Foundation`。**
+  | 語意命名(採用 ✅) | 色名命名(過濾掉 ✗) | 數量 |
+  | --- | --- | --- |
+  | `Color/Primary/010–060` | `Color/Blue/000·020·050·100·200·300` | 6 |
+  | `Color/Secondary/010–060` | `Color/Salmon/…` | 6 |
+  | `Color/Neutral/000–140` | `Color/Gray/000–100·200–500` | 15 |
+  | `Color/Func-One/010–060` | `Color/green/…`(小寫) | 6 |
+  | `Color/Func-Two/010–060` | `Color/Red/…` | 6 |
+  | `Color/Func-Three/010–060` | `Color/Yellow/…` | 6 |
 
-  | Library | Collection | 命名風格 | 採用 |
-  | --- | --- | --- | --- |
-  | `[Design System] Foundation` | `Generic` | `Color/Primary/060`(有 description) | ✅ |
-  | `[Pinzap Design System] Foundation` | `Generic Token` | `Color/primary/010`(無 description) | ✗ |
+  比對過:**45 個相異色值,兩套完全 1:1 對應,沒有任何一個落單。**
+
+  選語意命名的理由:實際綁在元件上的是這一套(商品卡用的是 `Color/Primary/060`、`Color/Secondary/030`),而且語意命名撐得過改版 —— 換品牌色時「primary」還是對的,「blue」就錯了。
+
+  白名單在 [`scripts/lib/tokens.js`](scripts/lib/tokens.js) 的 `ALLOWED_COLOR_FAMILIES`。要改成色名那套的話換掉那個陣列就好,其餘程式碼不用動。
+
+- **`Color/Primary/040` 的 description 是錯的,要在 Figma 修。** 它跟 `Color/Primary/050` 的說明一字不差(都寫 hover 交互色),但同色值的 `Color/Blue/100` 寫的是「primary button 的 **default** 背景色 / toast normal / coach mark / tooltip / Membership 當年度主要用色」。後者才對。
+
+  這個錯誤會原封不動流進 `platform/ios/DesignTokens.swift` 的 doc comment 與 CSS 註解 —— pipeline 不會、也不該自作主張修正來源,但值得儘快在 Figma 上改掉。
+
+- **兩個 token 沒有 description**(`Color/Func-Three/030`、`Color/Neutral/110`),Figma 上本來就是空的。
+
+- **另外還有兩套平行的 Foundation *library*(跟上面的命名並存是不同的問題)。SSOT 取 `[Design System] Foundation`。**
+
+  | Library | Collection | 採用 |
+  | --- | --- | --- |
+  | `[Design System] Foundation` | `Generic` | ✅ |
+  | `[Pinzap Design System] Foundation` | `Generic Token` | ✗ |
+
+  兩邊有同名但只差大小寫的變數(`Color/Primary/010` vs `Color/primary/010`),正規化後路徑相同,撞名偵測會擋下來。
 
 - 色票 frame 上混著非 token 的項目(字型樣式、別的 UI kit 的灰階、`White` 等),白名單只放行 `Color/` 開頭的,會列在 log 裡。
 

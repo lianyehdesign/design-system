@@ -25,8 +25,8 @@
 
 import { readFile } from 'node:fs/promises';
 import {
-  isAllowedGroup,
-  groupOf,
+  isAllowedToken,
+  whySkipped,
   toTokenPath,
   normalizeHex,
   readTokens,
@@ -62,14 +62,15 @@ async function main() {
     process.exit(1);
   }
 
-  // 白名單過濾:色票 frame 上常混著字型樣式、別的 UI kit 的灰階等等
+  // 白名單過濾兩層:非 Color/ 的（字型樣式、別的 UI kit 灰階），
+  // 以及色名命名那一套（Blue/Salmon/Gray/…，與語意命名同色不同名）
   const colorNames = entries
     .map(([name]) => name)
-    .filter((name) => isAllowedGroup(name));
+    .filter((name) => isAllowedToken(name));
 
   const skipped = entries
     .map(([name]) => name)
-    .filter((name) => !isAllowedGroup(name));
+    .filter((name) => !isAllowedToken(name));
 
   assertNoCollisions(findCollisions(colorNames));
 
@@ -116,8 +117,8 @@ async function main() {
   reportDiff(before, after, replace ? 'replace' : 'merge', sourceKeys);
 
   if (skipped.length) {
-    console.log(`\n略過 ${skipped.length} 個非 Color 項目:`);
-    skipped.slice(0, 10).forEach((s) => console.log(`    ${s}`));
+    console.log(`\n略過 ${skipped.length} 個項目:`);
+    skipped.slice(0, 10).forEach((n) => console.log(`    ${n}（${whySkipped(n)}）`));
     if (skipped.length > 10) console.log(`    ...還有 ${skipped.length - 10} 個`);
   }
 
