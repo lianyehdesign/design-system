@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Do not edit directly, this file was auto-generated.
+-->
+<resources>
+  <color name="color_func_one_010">#ffe5f7f4</color>
+  <color name="color_func_one_020">#ff98ddd2</color>
+  <color name="color_func_one_030">#ff53c6b4</color>
+  <color name="color_func_one_040">#ff30bba5</color>
+  <color name="color_func_one_050">#ff2cac97</color>
+  <color name="color_func_one_060">#ff289c8a</color>
+  <color name="color_func_three_010">#fffef8ea</color>
+  <color name="color_func_three_020">#ffffedaf</color>
+  <color name="color_func_three_030">#ffffde71</color>
+  <color name="color_func_three_040">#fffacb4d</color>
+  <color name="color_func_three_050">#fff7bd2b</color>
+  <color name="color_func_three_060">#ffefae09</color>
+  <color name="color_func_two_010">#ffffe9ec</color>
+  <color name="color_func_two_020">#ffff9eaa</color>
+  <color name="color_func_two_030">#fff86173</color>
+  <color name="color_func_two_040">#ffe63349</color>
+  <color name="color_func_two_050">#ffd7213e</color>
+  <color name="color_func_two_060">#ffc41428</color>
+  <color name="color_gray_090">#ff66666a</color>
+  <color name="color_neutral_100">#ff515156</color>
+  <color name="color_neutral_110">#ff45454a</color>
+  <color name="color_neutral_120">#ff39393e</color>
+  <color name="color_neutral_130">#ff2c2c32</color>
+  <color name="color_neutral_140">#ff202026</color>
+  <color name="color_neutral_000">#ffffffff</color>
+  <color name="color_neutral_010">#fff7f7f8</color>
+  <color name="color_neutral_020">#ffeeeeef</color>
+  <color name="color_neutral_030">#ffe5e5e5</color>
+  <color name="color_neutral_040">#ffd3d3d5</color>
+  <color name="color_neutral_050">#ffbfbfc1</color>
+  <color name="color_neutral_060">#ffa8a8ab</color>
+  <color name="color_neutral_070">#ff929295</color>
+  <color name="color_neutral_080">#ff7c7c80</color>
+  <color name="color_neutral_090">#ff66666a</color>
+  <color name="color_primary_010">#ffeff7fd</color>
+  <color name="color_primary_020">#ffd2dde4</color>
+  <color name="color_primary_030">#ff2e90b7</color>
+  <color name="color_primary_040">#ff10567b</color>
+  <color name="color_primary_050">#ff064162</color>
+  <color name="color_primary_060">#ff003354</color>
+  <color name="color_secondary_010">#fffff8f7</color>
+  <color name="color_secondary_020">#fff5b3ae</color>
+  <color name="color_secondary_030">#ffee847d</color>
+  <color name="color_secondary_040">#fff16c5d</color>
+  <color name="color_secondary_050">#ffe56051</color>
+  <color name="color_secondary_060">#ffda5648</color>
+</resources>

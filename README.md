@@ -1,34 +1,63 @@
 # design-system
 
-Pinkoi design tokens。唯一真實來源是 Figma variables,經過三段互相獨立的流程產出各平台可直接使用的檔案。
+Pinkoi design tokens。Figma 是真實來源,這個 repo 存放轉譯後的 token,並自動產出各平台可直接使用的檔案。
 
-**目前範圍:只處理 Color。** Spacing / Radius / Typography 之後再加。
+**目前範圍:只處理 Color(46 個)。** Spacing / Radius / Typography 之後再加。
 
-## 架構:三段分離
+## 流程
 
 ```
-① INGEST（可替換的來源）        ② NORMALIZE           ③ BUILD
-┌────────────────────────┐
-│ scripts/ingest-        │
-│   figma-api.js         │ REST API（需 Enterprise）
-│                        │
-│ Figma MCP + AI 讀取     │ ──→ snapshots/*.json ──→ tokens/*.json ──→ dist/
-│                        │      原始快照,進版控      DTCG,SSOT       平台產出
-│ 手動編輯 snapshot        │
-└────────────────────────┘
+Figma variables
+   │
+   ├── sync:api    Variables REST API（需 Enterprise 權限,目前不通）
+   └── sync:link   從 Figma 讀出的「名稱 → 色值」對照表
+   │
+tokens/color.json      ← SSOT（DTCG 格式,進版控,可手改）
+   │  build
+platform/
+   ├── ios/DesignTokens.swift
+   ├── web/tokens.css · tokens.js · tokens.d.ts
+   └── android/colors.xml
 ```
 
-三段之間的介面是**磁碟上的檔案,不是函式呼叫**。所以每一段都能單獨跑、單獨測、單獨換掉 —— 之後接上 Figma API 時,只是多一支寫 `snapshots/` 的程式,②③ 一行都不用改。
+## 目錄結構
 
-各段的職責邊界:
+```
+design-system/
+├── tokens/                     ← 【真實來源】改這裡
+│   └── color.json                 DTCG 格式的色彩 token，進版控，可手改
+│
+├── platform/                   ← 【自動產出】不要手改
+│   ├── ios/DesignTokens.swift     SwiftUI 常數
+│   ├── web/tokens.css             CSS 變數
+│   ├── web/tokens.js              JS 常數
+│   ├── web/tokens.d.ts            TypeScript 型別宣告
+│   └── android/colors.xml         Android 資源檔
+│
+├── scripts/                    ← 【程式】跑流程的東西
+│   ├── build.js                   tokens/ → platform/，跑 Style Dictionary
+│   ├── sync-from-link.js          貼上的 JSON → tokens/（合併，不需權限）
+│   ├── sync-from-api.js           Figma API → tokens/（需 Enterprise 權限）
+│   ├── style-dictionary.config.js 定義每個平台輸出什麼格式、到哪個資料夾
+│   └── lib/tokens.js              共用邏輯：命名規則、hex 驗證、撞名偵測、讀寫 tokens/
+│
+├── .github/workflows/          ← 【CI】GitHub Actions
+│   ├── build.yml                  每次 push/PR 驗證 platform/ 沒脫節
+│   ├── sync-from-link.yml         手動貼 JSON 更新 token，開 PR
+│   └── sync-from-api.yml          每週自動從 Figma API 同步（等權限）
+│
+├── package.json                ← npm 設定：相依套件、npm run 的指令清單
+├── package-lock.json              鎖定套件版本，確保 CI 跟本機裝到一模一樣的東西
+├── Package.swift               ← Swift Package Manager 設定，讓 iOS 能直接依賴這個 repo
+├── .gitignore                     告訴 git 哪些檔案不要進版控
+└── node_modules/                  npm 裝下來的套件（不進版控，跑 npm install 會重建）
+```
 
-| 階段 | 唯一知道的事 | 產出 |
-| --- | --- | --- |
-| ① Ingest | Figma 長什麼樣(API 格式、MCP 回傳格式) | `snapshots/*.json` |
-| ② Normalize | 命名規則與 DTCG 語意(白名單、路徑正規化、撞名偵測) | `tokens/*.json` |
-| ③ Build | 平台長什麼樣(Swift / CSS / XML) | `dist/**` |
+**三個為什麼:**
 
-**為什麼 `snapshots/` 要進版控:** 這樣 PR diff 分得出「設計師改了色值」和「我們改了轉換邏輯」。只存 `tokens/` 的話,看到色值變了無法判斷是哪一種 —— 而這兩種需要完全不同的 review。
+- **`node_modules/` 為什麼不進版控** — 它是 `package.json` 的產物,幾萬個檔案、幾十 MB,而且跟作業系統有關。`package-lock.json` 已經精確記錄了每個套件的版本與雜湊值,任何人跑 `npm install` 都會得到一模一樣的結果。存原始碼、不存產物。
+- **`platform/` 為什麼**要**進版控** — 它也是產物,照理該忽略。但 iOS 端是用 SPM 直接從 git 拉檔案,SPM **不會幫你跑 build**。產出不 commit,iOS 就拿不到東西。這是刻意的例外,所以才需要 CI 檢查它有沒有跟 `tokens/` 脫節。
+- **`Package.swift` 和 `package.json` 為什麼在根目錄** — 不是我沒收好。SPM 和 npm 都規定設定檔必須在專案根目錄,移走就找不到了。
 
 ## 工程師怎麼用
 
@@ -37,8 +66,7 @@ Pinkoi design tokens。唯一真實來源是 Figma variables,經過三段互相�
 ```swift
 import DesignTokens
 
-Text("售價")
-    .foregroundColor(DesignTokens.colorPrimary060)
+Text("售價").foregroundColor(DesignTokens.colorPrimary060)
 ```
 
 Figma 上的使用說明會帶進 Swift doc comment,Xcode 自動完成時看得到。
@@ -46,7 +74,7 @@ Figma 上的使用說明會帶進 Swift doc comment,Xcode 自動完成時看得�
 **Web(CSS 變數)**
 
 ```css
-@import "@lianyehdesign/design-tokens/dist/web/tokens.css";
+@import "@lianyehdesign/design-tokens/platform/web/tokens.css";
 
 .price { color: var(--color-primary-060); }
 ```
@@ -57,75 +85,81 @@ Figma 上的使用說明會帶進 Swift doc comment,Xcode 自動完成時看得�
 import { ColorPrimary060 } from "@lianyehdesign/design-tokens";
 ```
 
-**Android** — 把 `dist/android/colors.xml` 併入 `res/values/`。
+**Android** — 把 `platform/android/colors.xml` 併入 `res/values/`。
 
 ## 規則
 
-- **不要手動改 `tokens/` 與 `dist/`。** 每次跑都會整個重新產生,手改會被蓋掉。
-- 要改色值請改 Figma,再重跑 ingest。
-- `dist/` 有進版控(不在 .gitignore 裡)。SPM 是直接從 git 拉檔案、不會幫你 build,所以產出必須 commit。
+- **不要手動改 `platform/`。** 每次 build 會整個重新產生,手改會被蓋掉。
+- `tokens/` **可以**手改 —— 它就是 SSOT。改完務必跑 `npm run build`,否則 CI 會擋。
+- `platform/` 有進版控(不在 .gitignore 裡)。SPM 直接從 git 拉檔案、不會幫你 build,所以產出必須 commit。
 
-## Snapshot 格式
+## 設計師改了顏色,怎麼更新?
 
-```json
-{
-  "$meta": {
-    "source": "figma-mcp",
-    "library": "[Design System] Foundation",
-    "fileKey": "...",
-    "nodeId": "2615:3116",
-    "capturedAt": "2026-08-06"
-  },
-  "variables": {
-    "Color/Primary/060": {
-      "value": "#003354",
-      "description": "選填。會帶進 Swift doc comment 與 CSS 註解"
-    },
-    "Color/Neutral/080": { "value": null }
-  }
-}
-```
+**現在(沒有 API 權限):用 Sync tokens from Figma (link)**
 
-`value` 為 `null` 代表**名稱已知但值還沒取得** —— 不會產出,但每次 normalize 都會列出來,不會被遺忘。
+讀取 Figma 這一步沒辦法在 CI 裡做 —— runner 上沒有 Figma、也沒有選取狀態。所以拆成:讀取在本機、轉檔在 CI。
+
+1. 在 Figma 桌面版**選取色票 frame**
+2. 用 Figma MCP(叫 AI 讀)或 Dev Mode,取得「變數名稱 → 色值」的 JSON:
+   ```json
+   {"Color/Primary/060":"#003354","Color/Neutral/000":"#ffffff"}
+   ```
+3. GitHub → Actions → **Sync tokens from Figma (link)** → Run workflow,把 JSON 貼進 `variables` 欄位
+4. Workflow 轉檔、產出各平台檔案、**開一個 PR** 給你 review
+
+**預設是合併,不刪除。** 因為這種讀取通常只涵蓋畫面上選到的部分,不是完整清單 —— 直接覆蓋會讓沒選到的 token 靜默消失,下游 app 就編不過了。確定是完整清單時再勾 `replace`。
+
+既有的 `$description` 會保留。`get_variable_defs` 不回傳 description,但那些使用說明是人工整理過的資產,不該被一次讀取蓋掉。
+
+**未來(拿到 API 權限後):用 Sync tokens from Figma (API)**
+
+設好 secret 後就會每週一自動跑,也可以手動觸發。API 回傳的是完整清單,所以那條路徑預設就是整份重建(含刪除),而且 description 直接從 API 帶。
 
 ## 本機開發
 
 ```bash
 npm install
-npm run all        # normalize + build
+npm run build                              # tokens/ → platform/
+npm run sync:link -- payload.json          # 合併更新（預設）
+npm run sync:link -- payload.json --replace  # 整份重建
 ```
 
-拿到 Figma API 權限後:
+拿到 API 權限後:
 
 ```bash
-FIGMA_TOKEN=xxx FIGMA_FILE_KEY=xxx npm run ingest:api && npm run all
+FIGMA_TOKEN=xxx FIGMA_FILE_KEY=xxx npm run sync:api
 ```
 
 ## CI
 
-| Workflow | 觸發 | 需要 secret |
-| --- | --- | --- |
-| `build.yml` | push / PR / **手動** | ✗ — 只跑 ②③,不碰網路 |
-| `sync-tokens.yml` | 每週一 + 手動 | ✓ `FIGMA_TOKEN`、`FIGMA_FILE_KEY` |
+| Workflow | 觸發 | 需要 secret | 現在能跑 |
+| --- | --- | --- | --- |
+| **Build tokens** | push / PR / 手動 | ✗ | ✅ |
+| **Sync tokens from Figma (link)** | 手動(貼 JSON) | ✗ | ✅ |
+| **Sync tokens from Figma (API)** | 每週一 + 手動 | ✓ | ❌ 等權限 |
 
-手動觸發的「Run workflow」按鈕**只會出現在預設分支(main)的 Actions 頁面上** —— 這是 GitHub 的行為,不是設定問題。所以 workflow 必須先合進 main 才戳得到。
+手動觸發的「Run workflow」按鈕**只會出現在預設分支(main)的 Actions 頁面上** —— 這是 GitHub 的行為,不是設定問題。
 
-`sync-tokens.yml` 在沒設 secret 時會**在第一步就擋下來並給出說明**,不會壞在看不懂的地方。
+`Build tokens` 會檢查 `platform/` 有沒有跟 `tokens/` 脫節。`Sync tokens from Figma (API)` 在沒設 secret 時會在第一步就擋下來並說明原因。
 
-`build.yml` 還會檢查 `tokens/` 與 `dist/` 有沒有跟 `snapshots/` 脫節。
-
-`sync-tokens.yml` 需要的 secret:
+需要的 secret:
 
 | Secret | 說明 |
 | --- | --- |
 | `FIGMA_TOKEN` | Figma personal access token,需含 `file_variables:read` scope |
 | `FIGMA_FILE_KEY` | `1TcgPhqHmLeZhPpv7LaCGO` |
 
+## 保護機制
+
+三個都是直接讓流程失敗,而不是靜默降級:
+
+- **撞名偵測** — Figma 上有兩套平行的 Foundation library,`Color/Primary/010` 與 `Color/primary/010` 只差大小寫,正規化後路徑相同。沒有這個檢查,後寫入的會靜默蓋掉先寫入的。
+- **hex 驗證** — sync 與 build 都會驗。`tokens/` 可以手改,錯字必須壞在 CI,不能流進 `platform/` 再流到 app。
+- **`platform/` 同步檢查** — iOS 是用 SPM 直接拉 `platform/` 裡的檔案,那些檔案跟 `tokens/` 脫節就是線上錯了。
+
 ## 已知待處理
 
-- **`Color/Neutral/080` 有名稱、有 description(「用於元件的外框深色」),但色票 frame 上沒有它。** 值目前是 `null`。需要確認是被移除了還是漏放在色票上。
-
-- **`Color/Gray/080` 和 `Color/Gray/090` 疑似舊命名殘留。** `Color/Gray/090` (`#66666a`) 與 `Color/Neutral/090` 值完全相同。而 `Color/Gray/080` (`#7c7c80`) 剛好落在 `Neutral/070` (`#929295`) 與 `Neutral/090` (`#66666a`) 之間 —— 有可能它就是缺席的 `Neutral/080`,但這是推測,要跟設計師確認。目前兩個都照樣產出。
+- **`Color/Gray/090` 疑似舊命名殘留。** 值 (`#66666a`) 與 `Color/Neutral/090` 完全相同。同系列的 `Color/Gray/080` 已由設計師改為 `Color/Neutral/080`,`Gray/090` 可能是同一批遺留,值得一併確認。
 
 - **Figma 端有兩套平行的 Foundation library。SSOT 取 `[Design System] Foundation`。**
 
@@ -134,8 +168,6 @@ FIGMA_TOKEN=xxx FIGMA_FILE_KEY=xxx npm run ingest:api && npm run all
   | `[Design System] Foundation` | `Generic` | `Color/Primary/060`(有 description) | ✅ |
   | `[Pinzap Design System] Foundation` | `Generic Token` | `Color/primary/010`(無 description) | ✗ |
 
-  兩邊有大量同名變數,**只差大小寫**。正規化後路徑會相同,所以 `scripts/lib/tokens.js` 的 `createCollector()` 會偵測撞名並讓 build 失敗,而不是靜默覆蓋。
+- 色票 frame 上混著非 token 的項目(字型樣式、別的 UI kit 的灰階、`White` 等),白名單只放行 `Color/` 開頭的,會列在 log 裡。
 
-- 舊的 `ColorSystem/` 命名(例如 `ColorSystem/Neutral 060`)不在 `Color/` 群組內,會被白名單擋掉。
-
-- 別名變數(variable alias)目前不展開,ingest 時值會記為 `null` 並列在 log 裡。
+- 別名變數(variable alias)目前不展開,API 路徑會列在 log 裡並略過。

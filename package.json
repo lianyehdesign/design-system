@@ -3,16 +3,15 @@
   "version": "0.1.0",
   "description": "Design tokens synced from Figma variables, built for iOS / Web / Android",
   "type": "module",
-  "main": "dist/web/tokens.js",
-  "types": "dist/web/tokens.d.ts",
+  "main": "platform/web/tokens.js",
+  "types": "platform/web/tokens.d.ts",
   "files": [
-    "dist"
+    "platform"
   ],
   "scripts": {
-    "ingest:api": "node scripts/ingest-figma-api.js",
-    "normalize": "node scripts/normalize.js",
-    "build": "node build.js",
-    "all": "npm run normalize && npm run build"
+    "sync:api": "node scripts/sync-from-api.js",
+    "sync:link": "node scripts/sync-from-link.js",
+    "build": "node scripts/build.js"
   },
   "devDependencies": {
     "style-dictionary": "^4.3.0"

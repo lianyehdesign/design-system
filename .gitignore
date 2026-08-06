@@ -2,7 +2,7 @@ node_modules/
 .DS_Store
 *.log
 
-# 注意:dist/ 刻意「不」忽略。
+# 注意:platform/ 刻意「不」忽略。
 # iOS 端用 Swift Package Manager 直接指向這個 repo,
 # SPM 是從 git 拉檔案、不會幫你跑 build,
 # 所以產生出來的檔案必須進版控。

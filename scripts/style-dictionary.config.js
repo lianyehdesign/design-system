@@ -16,7 +16,7 @@ export default {
     // SwiftUI 端每次都要再包一層 Color(uiColor:)。
     ios: {
       transforms: ['attribute/cti', 'name/camel'],
-      buildPath: 'dist/ios/',
+      buildPath: 'platform/ios/',
       options: { usesDtcg: true },
       files: [
         {
@@ -29,7 +29,7 @@ export default {
     // ---- Web：CSS 變數 ----
     css: {
       transformGroup: 'css',
-      buildPath: 'dist/web/',
+      buildPath: 'platform/web/',
       options: { usesDtcg: true },
       files: [
         {
@@ -43,7 +43,7 @@ export default {
     // ---- Web：JS / TS ----
     ts: {
       transformGroup: 'js',
-      buildPath: 'dist/web/',
+      buildPath: 'platform/web/',
       options: { usesDtcg: true },
       files: [
         { destination: 'tokens.js', format: 'javascript/es6' },
@@ -61,7 +61,7 @@ export default {
         'color/hex8android',
         'size/px-to-dp',
       ],
-      buildPath: 'dist/android/',
+      buildPath: 'platform/android/',
       options: { usesDtcg: true },
       files: [
         {

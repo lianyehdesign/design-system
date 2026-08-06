@@ -1,11 +1,12 @@
 /**
- * 跑 Style Dictionary，把 tokens/ 轉成 dist/ 底下各平台的檔案。
+ * 跑 Style Dictionary，把 tokens/ 轉成 platform/ 底下各平台的檔案。
  *
  *   npm run build
  */
 
 import StyleDictionary from 'style-dictionary';
 import config from './style-dictionary.config.js';
+import { readTokens, normalizeHex } from './lib/tokens.js';
 
 // ---- SwiftUI 用的自訂 format ----
 // 產出一個 DesignTokens enum，裡面是扁平的 static 常數:
@@ -82,6 +83,23 @@ function hexToRgba(hex) {
 }
 
 const fmt = (n) => Number(n.toFixed(4));
+
+// ---- build 前先驗證 tokens/ ----
+// tokens/ 是可以手改的 SSOT，所以錯字要壞在這裡，
+// 不能讓 NaN 之類的東西流進 platform/ 再流到 app。
+const colors = await readTokens('color');
+const bad = [];
+for (const [key, token] of colors) {
+  const type = token.$type ?? token.type;
+  const value = token.$value ?? token.value;
+  if (type !== 'color') continue;
+  if (normalizeHex(value) === null) bad.push(`${key} → ${JSON.stringify(value)}`);
+}
+if (bad.length) {
+  console.error(`✘ ${bad.length} 個 color token 的值不是合法 hex:`);
+  bad.forEach((b) => console.error(`  - ${b}`));
+  process.exit(1);
+}
 
 const sd = new StyleDictionary(config);
 await sd.cleanAllPlatforms();

@@ -11,6 +11,6 @@ let package = Package(
     .library(name: "DesignTokens", targets: ["DesignTokens"])
   ],
   targets: [
-    .target(name: "DesignTokens", path: "dist/ios")
+    .target(name: "DesignTokens", path: "platform/ios")
   ]
 )
