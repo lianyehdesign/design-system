@@ -1,13 +1,17 @@
-name: Sync tokens from Figma (API)
+name: Sync tokens from Figma (API — 需 Enterprise，目前不可用)
 
 # 從 Figma Variables REST API 更新 tokens/，再產出各平台檔案。
-# 需要 Figma Enterprise 權限 —— 在拿到之前這個 workflow 跑不起來，
-# 但 build.yml 已經能驗證 ②③ 兩段。
+#
+# 【目前不可用】Variables REST API 只對 Figma Enterprise 方案開放，
+# Pinkoi 是 Professional，token 的 scope 清單裡根本沒有 file_variables:read。
+# 這個 workflow 是備而不用 —— 方案升級到 Enterprise 的那天就能跑。
+#
+# 現在請改用「Sync tokens from Figma (link)」，那條不需要任何權限。
+#
+# 刻意「不」設 schedule:排程只會每週一失敗一次、寄一封失敗通知給你，
+# 除了製造雜訊沒有任何作用。
 on:
   workflow_dispatch:
-  # 每週一早上 9:00 (UTC+8)
-  schedule:
-    - cron: '0 1 * * 1'
 
 jobs:
   sync:
@@ -17,11 +21,11 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
-          node-version: '20'
+          node-version: '22'
           cache: npm
 
       # 先擋在這裡，給一個看得懂的錯誤訊息 ——
@@ -32,7 +36,7 @@ jobs:
           FIGMA_FILE_KEY: ${{ secrets.FIGMA_FILE_KEY }}
         run: |
           if [ -z "$FIGMA_TOKEN" ] || [ -z "$FIGMA_FILE_KEY" ]; then
-            echo "::error::尚未設定 FIGMA_TOKEN / FIGMA_FILE_KEY secret。這個 workflow 需要 Figma Enterprise 的 Variables API 權限。在拿到之前，請改用「Sync tokens from Figma (link)」workflow —— 它不需要任何 secret。"
+            echo "::error::尚未設定 FIGMA_TOKEN / FIGMA_FILE_KEY secret。不過即使設了，這個 workflow 目前也跑不完 —— Variables REST API 只對 Figma Enterprise 開放，Pinkoi 是 Professional。請改用「Sync tokens from Figma (link)」workflow。"
             exit 1
           fi
 
@@ -50,7 +54,7 @@ jobs:
       # 有變動才開 PR —— 不直接 push 到 main，
       # 讓工程師有機會 review 色值改動的影響範圍。
       - name: Create pull request
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v8
         with:
           commit-message: 'chore: sync color tokens from Figma'
           title: 'chore: sync color tokens from Figma'

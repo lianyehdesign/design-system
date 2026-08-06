@@ -33,6 +33,60 @@ if (!FIGMA_TOKEN || !FILE_KEY) {
   process.exit(1);
 }
 
+/**
+ * 把 Figma 的錯誤翻譯成「該去哪裡改什麼」。
+ *
+ * 這幾種失敗長得很像「程式壞了」，但其實全都是設定問題，
+ * 沒有這段說明的話很容易往錯的方向查。
+ */
+function explainFailure(status, body) {
+  const hint = (lines) => console.error(`\n→ ${lines.join('\n  ')}`);
+
+  if (status === 403 && body.includes('file_variables:read')) {
+    hint([
+      'token 缺少 file_variables:read scope（Variables API 只認這一個）。',
+      '',
+      '先確認一件事:到 Figma → Settings → Security → Personal access tokens →',
+      'Generate new token，看 Scopes 清單裡「有沒有」file_variables:read 這個選項。',
+      '',
+      '  有 → 舊 token 沒辦法追加 scope，重建一個並勾選它，',
+      '       然後更新 repo 的 FIGMA_TOKEN secret。',
+      '',
+      '  沒有 → 這條路現在走不通，不是你漏勾。這個 scope 只對 Enterprise',
+      '       方案開放，選單裡看不到就代表組織方案還沒到那一層。',
+      '       注意 Full seat 是「席次類型」，跟「方案層級」是兩回事，',
+      '       升到 Full seat 不會讓這個 scope 出現。',
+      '',
+      '       替代方案（都不需要 Enterprise）:',
+      '       1. npm run sync:link —— 手動讀取後貼上，現在就能用',
+      '       2. 寫一個 Figma plugin —— Plugin API 的',
+      '          figma.variables.getLocalVariablesAsync() 沒有方案限制',
+    ]);
+    return;
+  }
+
+  if (status === 403) {
+    hint([
+      'token 有效但沒有權限存取這個檔案。',
+      '確認 FIGMA_TOKEN 所屬的帳號有這個檔案的存取權，',
+      '而且 Variables REST API 需要 Figma Enterprise 方案。',
+    ]);
+    return;
+  }
+
+  if (status === 404) {
+    hint([
+      '找不到這個檔案。確認 FIGMA_FILE_KEY 是網址 /design/<這段>/ 的值，',
+      '不是整條網址、也不是 node-id。',
+    ]);
+    return;
+  }
+
+  if (status === 401) {
+    hint(['token 無效或已過期。重新產生一個並更新 FIGMA_TOKEN secret。']);
+  }
+}
+
 function rgbaToHex({ r, g, b, a = 1 }) {
   const ch = (v) =>
     Math.round(v * 255).toString(16).padStart(2, '0').toUpperCase();
@@ -47,7 +101,9 @@ async function main() {
   );
 
   if (!res.ok) {
-    console.error(`Figma API 回傳 ${res.status}: ${await res.text()}`);
+    const body = await res.text();
+    console.error(`Figma API 回傳 ${res.status}: ${body}`);
+    explainFailure(res.status, body);
     process.exit(1);
   }
 
