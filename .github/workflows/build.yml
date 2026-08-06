@@ -6,6 +6,9 @@ on:
   push:
     branches: ['**']
   pull_request:
+  # 手動觸發。注意:這個按鈕只會出現在預設分支（main）的 Actions 頁面上，
+  # 這是 GitHub 的行為，不是設定問題。
+  workflow_dispatch:
 
 jobs:
   build:

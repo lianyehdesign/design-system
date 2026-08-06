@@ -105,8 +105,12 @@ FIGMA_TOKEN=xxx FIGMA_FILE_KEY=xxx npm run ingest:api && npm run all
 
 | Workflow | 觸發 | 需要 secret |
 | --- | --- | --- |
-| `build.yml` | 每次 push / PR | ✗ — 只跑 ②③,不碰網路 |
+| `build.yml` | push / PR / **手動** | ✗ — 只跑 ②③,不碰網路 |
 | `sync-tokens.yml` | 每週一 + 手動 | ✓ `FIGMA_TOKEN`、`FIGMA_FILE_KEY` |
+
+手動觸發的「Run workflow」按鈕**只會出現在預設分支(main)的 Actions 頁面上** —— 這是 GitHub 的行為,不是設定問題。所以 workflow 必須先合進 main 才戳得到。
+
+`sync-tokens.yml` 在沒設 secret 時會**在第一步就擋下來並給出說明**,不會壞在看不懂的地方。
 
 `build.yml` 還會檢查 `tokens/` 與 `dist/` 有沒有跟 `snapshots/` 脫節。
 

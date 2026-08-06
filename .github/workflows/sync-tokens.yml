@@ -24,6 +24,18 @@ jobs:
           node-version: '20'
           cache: npm
 
+      # 先擋在這裡，給一個看得懂的錯誤訊息 ——
+      # 否則沒設 secret 時會壞在 node 裡面，訊息很難懂。
+      - name: Check Figma credentials
+        env:
+          FIGMA_TOKEN: ${{ secrets.FIGMA_TOKEN }}
+          FIGMA_FILE_KEY: ${{ secrets.FIGMA_FILE_KEY }}
+        run: |
+          if [ -z "$FIGMA_TOKEN" ] || [ -z "$FIGMA_FILE_KEY" ]; then
+            echo "::error::尚未設定 FIGMA_TOKEN / FIGMA_FILE_KEY secret。這個 workflow 需要 Figma Enterprise 的 Variables API 權限。在拿到之前，請改用「Build tokens」workflow —— 它跑 normalize + build，不需要任何 secret。"
+            exit 1
+          fi
+
       - run: npm ci
 
       - name: Pull variables from Figma → snapshots/
