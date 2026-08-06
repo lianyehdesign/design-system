@@ -33,6 +33,51 @@ if (!FIGMA_TOKEN || !FILE_KEY) {
   process.exit(1);
 }
 
+/**
+ * 把 Figma 的錯誤翻譯成「該去哪裡改什麼」。
+ *
+ * 這幾種失敗長得很像「程式壞了」，但其實全都是設定問題，
+ * 沒有這段說明的話很容易往錯的方向查。
+ */
+function explainFailure(status, body) {
+  const hint = (lines) => console.error(`\n→ ${lines.join('\n  ')}`);
+
+  if (status === 403 && body.includes('file_variables:read')) {
+    hint([
+      'token 缺少 file_variables:read scope（Variables API 只認這一個）。',
+      '',
+      '既有 token 沒辦法追加 scope，必須重新建立:',
+      'Figma → Settings → Security → Personal access tokens → Generate new token，',
+      '建立時把 Variables → Read 勾起來，然後更新 repo 的 FIGMA_TOKEN secret。',
+      '',
+      '注意:這個選項只有 Enterprise 組織的帳號看得到。',
+      '用個人帳號建的 token 不會有這個 scope。',
+    ]);
+    return;
+  }
+
+  if (status === 403) {
+    hint([
+      'token 有效但沒有權限存取這個檔案。',
+      '確認 FIGMA_TOKEN 所屬的帳號有這個檔案的存取權，',
+      '而且 Variables REST API 需要 Figma Enterprise 方案。',
+    ]);
+    return;
+  }
+
+  if (status === 404) {
+    hint([
+      '找不到這個檔案。確認 FIGMA_FILE_KEY 是網址 /design/<這段>/ 的值，',
+      '不是整條網址、也不是 node-id。',
+    ]);
+    return;
+  }
+
+  if (status === 401) {
+    hint(['token 無效或已過期。重新產生一個並更新 FIGMA_TOKEN secret。']);
+  }
+}
+
 function rgbaToHex({ r, g, b, a = 1 }) {
   const ch = (v) =>
     Math.round(v * 255).toString(16).padStart(2, '0').toUpperCase();
@@ -47,7 +92,9 @@ async function main() {
   );
 
   if (!res.ok) {
-    console.error(`Figma API 回傳 ${res.status}: ${await res.text()}`);
+    const body = await res.text();
+    console.error(`Figma API 回傳 ${res.status}: ${body}`);
+    explainFailure(res.status, body);
     process.exit(1);
   }
 

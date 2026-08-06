@@ -146,8 +146,22 @@ FIGMA_TOKEN=xxx FIGMA_FILE_KEY=xxx npm run sync:api
 
 | Secret | 說明 |
 | --- | --- |
-| `FIGMA_TOKEN` | Figma personal access token,需含 `file_variables:read` scope |
-| `FIGMA_FILE_KEY` | `1TcgPhqHmLeZhPpv7LaCGO` |
+| `FIGMA_TOKEN` | Figma personal access token,**必須含 `file_variables:read` scope** |
+| `FIGMA_FILE_KEY` | `1TcgPhqHmLeZhPpv7LaCGO`(網址 `/design/<這段>/` 的值) |
+
+### 關於 `file_variables:read`
+
+Variables API **只認這一個 scope**,token 有其他一堆 scope 也沒用,會回 403:
+
+```
+Invalid scope(s): file_content:read, file_metadata:read, ...
+This endpoint requires the file_variables:read scope
+```
+
+既有 token **沒辦法追加 scope**,必須重新建立:Figma → Settings → Security →
+Personal access tokens → Generate new token,建立時把 **Variables → Read** 勾起來。
+
+這個選項只有 **Enterprise 組織的帳號**看得到 —— 用個人帳號建的 token 不會有。
 
 ## 保護機制
 
