@@ -4,12 +4,13 @@
  *   npm run sync:link -- payload.json
  *   cat payload.json | npm run sync:link
  *
- * payload 就是 Figma Dev Mode / MCP get_variable_defs 直接吐出來的形狀:
+ * payload 接受兩種形狀:
  *
- *   {
- *     "Color/Primary/060": "#003354",
- *     "Color/Neutral/000": "#ffffff"
- *   }
+ *   1. Figma Dev Mode / MCP get_variable_defs 直接吐出來的:
+ *      { "Color/Primary/060": "#003354" }
+ *
+ *   2. figma-plugin/ 產生的（多帶 description）:
+ *      { "Color/Primary/060": { "value": "#003354", "description": "商品卡售價用色" } }
  *
  * 為什麼是「合併」而不是「覆蓋」:
  *   這種讀取通常只涵蓋畫面上選到的那部分，不是完整清單。
@@ -78,18 +79,28 @@ async function main() {
   const invalid = [];
 
   for (const name of colorNames) {
-    const hex = normalizeHex(payload[name]);
+    const entry = payload[name];
+    const isObject = entry !== null && typeof entry === 'object';
+    const rawValue = isObject ? entry.value : entry;
+    const sourceDescription = isObject ? entry.description : undefined;
+
+    const hex = normalizeHex(rawValue);
     if (!hex) {
-      invalid.push(`${name} → ${JSON.stringify(payload[name])}`);
+      invalid.push(`${name} → ${JSON.stringify(entry)}`);
       continue;
     }
 
     const key = toTokenPath(name).join('.');
     const token = { $type: 'color', $value: hex };
 
-    // 既有的 description 是人工整理的資產，不能被一次讀取蓋掉
-    const existing = before.get(key);
-    if (existing?.$description) token.$description = existing.$description;
+    // description 的優先順序:來源帶了就用來源的（那是 Figma 上的現況），
+    // 沒帶才沿用既有的。
+    //
+    // 這兩種情況都會發生:
+    //   figma-plugin 讀得到 description  → 以 Figma 為準
+    //   MCP / Dev Mode 讀不到 description → 保留人工整理過的內容，不能被清掉
+    const description = sourceDescription || before.get(key)?.$description;
+    if (description) token.$description = description;
 
     after.set(key, token);
     sourceKeys.add(key);

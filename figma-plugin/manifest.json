@@ -1,0 +1,12 @@
+{
+  "name": "Design Tokens → GitHub",
+  "id": "pinkoi-design-tokens-sync",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "editorType": ["figma"],
+  "networkAccess": {
+    "allowedDomains": ["https://api.github.com"],
+    "reasoning": "觸發 design-system repo 的 token 同步 workflow。不會傳送設計內容，只傳送色彩變數的名稱與色值。"
+  }
+}
