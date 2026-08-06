@@ -41,6 +41,12 @@ design-system/
 │   ├── style-dictionary.config.js 定義每個平台輸出什麼格式、到哪個資料夾
 │   └── lib/tokens.js              共用邏輯：命名規則、hex 驗證、撞名偵測、讀寫 tokens/
 │
+├── figma-plugin/               ← 【Figma plugin】在 Figma 按一下就觸發同步
+│   ├── manifest.json              plugin 設定
+│   ├── code.js                    讀變數（主執行緒，無網路）
+│   ├── ui.html                    設定畫面 + 呼叫 GitHub（iframe，有網路）
+│   └── README.md                  安裝步驟與 token 權限設定
+│
 ├── .github/workflows/          ← 【CI】GitHub Actions
 │   ├── build.yml                  每次 push/PR 驗證 platform/ 沒脫節
 │   ├── sync-from-link.yml         手動貼 JSON 更新 token，開 PR
@@ -95,9 +101,15 @@ import { ColorPrimary060 } from "@lianyehdesign/design-tokens";
 
 ## 設計師改了顏色,怎麼更新?
 
-**現在(沒有 API 權限):用 Sync tokens from Figma (link)**
+讀取 Figma 這一步沒辦法在 CI 裡做 —— runner 上沒有 Figma、也沒有選取狀態。所以讀取一定在本機,轉檔在 CI。有兩種讀法,**送出的東西完全一樣、走同一個 workflow**。
 
-讀取 Figma 這一步沒辦法在 CI 裡做 —— runner 上沒有 Figma、也沒有選取狀態。所以拆成:讀取在本機、轉檔在 CI。
+### 方式一:Figma plugin(推薦)
+
+在 Foundation 檔案裡按一下 `figma-plugin/`,直接觸發同步。安裝見 [figma-plugin/README.md](figma-plugin/README.md)。
+
+比手動路徑多兩個好處:**帶得回 description**(不用再人工維護),而且**會展開別名變數**。
+
+### 方式二:手動貼 JSON(fallback)
 
 1. 在 Figma 桌面版**選取色票 frame**
 2. 用 Figma MCP(叫 AI 讀)或 Dev Mode,取得「變數名稱 → 色值」的 JSON:
@@ -107,9 +119,16 @@ import { ColorPrimary060 } from "@lianyehdesign/design-tokens";
 3. GitHub → Actions → **Sync tokens from Figma (link)** → Run workflow,把 JSON 貼進 `variables` 欄位
 4. Workflow 轉檔、產出各平台檔案、**開一個 PR** 給你 review
 
+`variables` 兩種格式都接受:
+
+```json
+"Color/Primary/060": "#003354"
+"Color/Primary/060": { "value": "#003354", "description": "商品卡售價用色" }
+```
+
 **預設是合併,不刪除。** 因為這種讀取通常只涵蓋畫面上選到的部分,不是完整清單 —— 直接覆蓋會讓沒選到的 token 靜默消失,下游 app 就編不過了。確定是完整清單時再勾 `replace`。
 
-既有的 `$description` 會保留。`get_variable_defs` 不回傳 description,但那些使用說明是人工整理過的資產,不該被一次讀取蓋掉。
+**description 的優先順序:來源帶了就用來源的,沒帶才沿用既有的。** plugin 讀得到 description,以 Figma 為準;MCP / Dev Mode 讀不到,就保留人工整理過的內容不被清掉。
 
 **未來(拿到 API 權限後):用 Sync tokens from Figma (API)**
 

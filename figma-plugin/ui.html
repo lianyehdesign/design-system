@@ -1,0 +1,246 @@
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 16px;
+    font: 11px/1.5 Inter, -apple-system, sans-serif;
+    background: var(--figma-color-bg); color: var(--figma-color-text);
+  }
+  h2 { font-size: 12px; margin: 0 0 4px; }
+  .hint { color: var(--figma-color-text-secondary); margin-bottom: 12px; }
+  label { display: block; margin-bottom: 8px; }
+  label span { display: block; margin-bottom: 3px; color: var(--figma-color-text-secondary); }
+  input {
+    width: 100%; padding: 6px 8px; border-radius: 4px;
+    border: 1px solid var(--figma-color-border);
+    background: var(--figma-color-bg-secondary); color: var(--figma-color-text);
+    font: inherit;
+  }
+  input:focus { outline: 1px solid var(--figma-color-border-selected); }
+  .row { display: flex; gap: 8px; }
+  .row label { flex: 1; }
+  button {
+    width: 100%; padding: 8px; border: 0; border-radius: 6px;
+    font: inherit; font-weight: 600; cursor: pointer; margin-top: 4px;
+  }
+  .primary { background: var(--figma-color-bg-brand); color: var(--figma-color-text-onbrand); }
+  .secondary { background: var(--figma-color-bg-secondary); color: var(--figma-color-text); }
+  button:disabled { opacity: .5; cursor: default; }
+  #status { margin-top: 12px; padding: 8px; border-radius: 4px; white-space: pre-wrap; display: none; }
+  #status.show { display: block; }
+  .ok   { background: var(--figma-color-bg-success-tertiary); }
+  .err  { background: var(--figma-color-bg-danger-tertiary); }
+  .info { background: var(--figma-color-bg-secondary); }
+  #json { display: none; width: 100%; height: 90px; margin-top: 8px;
+          font-family: monospace; font-size: 10px;
+          border: 1px solid var(--figma-color-border); border-radius: 4px;
+          background: var(--figma-color-bg-secondary); color: var(--figma-color-text); }
+  hr { border: 0; border-top: 1px solid var(--figma-color-border); margin: 14px 0; }
+</style>
+
+<h2>Design Tokens → GitHub</h2>
+<div class="hint" id="file"></div>
+
+<label>
+  <span>GitHub token（fine-grained，只需 Actions: Read and write）</span>
+  <input id="token" type="password" placeholder="github_pat_...">
+</label>
+
+<div class="row">
+  <label><span>Owner</span><input id="owner"></label>
+  <label><span>Repo</span><input id="repo"></label>
+</div>
+
+<div class="row">
+  <label><span>Workflow</span><input id="workflow"></label>
+  <label><span>Branch</span><input id="ref"></label>
+</div>
+
+<button class="primary" id="sync">讀取變數並觸發同步</button>
+<button class="secondary" id="copy">只讀取，複製 JSON</button>
+
+<div id="status"></div>
+<textarea id="json" readonly></textarea>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  const FIELDS = ['token', 'owner', 'repo', 'workflow', 'ref'];
+  let fileName = '';
+  let lastPayload = null;
+
+  const post = (msg) => parent.postMessage({ pluginMessage: msg }, '*');
+
+  function show(kind, text) {
+    const el = $('status');
+    el.className = 'show ' + kind;
+    el.textContent = text;
+  }
+
+  function settings() {
+    const s = {};
+    FIELDS.forEach((f) => (s[f] = $(f).value.trim()));
+    return s;
+  }
+
+  function summary(d) {
+    const lines = [`讀到 ${d.count} 個 Color 變數。`];
+    if (d.unresolved.length) {
+      lines.push(`\n${d.unresolved.length} 個無法解析出色值（已略過）:`);
+      d.unresolved.forEach((n) => lines.push('  ' + n));
+    }
+    if (d.skipped.length) {
+      lines.push(`\n略過 ${d.skipped.length} 個非 Color/ 變數。`);
+    }
+    return lines.join('\n');
+  }
+
+  onmessage = async (event) => {
+    const msg = event.data.pluginMessage;
+    if (!msg) return;
+
+    if (msg.type === 'settings') {
+      FIELDS.forEach((f) => ($(f).value = msg.settings[f] || ''));
+      fileName = msg.fileName || '';
+      $('file').textContent = '目前檔案:' + fileName;
+      return;
+    }
+
+    if (msg.type === 'error') {
+      show('err', msg.message);
+      $('sync').disabled = false;
+      $('copy').disabled = false;
+      return;
+    }
+
+    if (msg.type === 'variables') {
+      lastPayload = msg.payload;
+
+      if (msg.count === 0) {
+        show('err',
+          '這個檔案裡沒有 Color/ 開頭的本地變數。\n\n' +
+          'plugin 只讀「當前檔案的本地變數」。請在 Foundation 檔案裡執行 —— ' +
+          '在引用 library 的檔案裡跑會讀不到，那些是 remote 變數。');
+        $('sync').disabled = false;
+        $('copy').disabled = false;
+        return;
+      }
+
+      if (pendingAction === 'copy') {
+        $('json').style.display = 'block';
+        $('json').value = JSON.stringify(lastPayload);
+        $('json').select();
+        let copied = false;
+        try {
+          await navigator.clipboard.writeText($('json').value);
+          copied = true;
+        } catch (e) {
+          try { copied = document.execCommand('copy'); } catch (e2) { copied = false; }
+        }
+        show('ok', summary(msg) + (copied
+          ? '\n\n已複製到剪貼簿，貼進 workflow 的 variables 欄位即可。'
+          : '\n\n複製失敗，請從下方框選取後手動複製。'));
+        $('sync').disabled = false;
+        $('copy').disabled = false;
+        return;
+      }
+
+      await dispatch(msg);
+    }
+  };
+
+  async function dispatch(data) {
+    const s = settings();
+    const body = JSON.stringify(lastPayload);
+
+    // workflow_dispatch 的輸入有大小上限，先擋在這裡給明確訊息，
+    // 不要讓它變成 GitHub 那邊語意不明的 422。
+    if (body.length > 60000) {
+      show('err', `payload 太大（${body.length} bytes）。workflow_dispatch 的輸入上限約 64KB，請改用「只讀取，複製 JSON」後分批處理。`);
+      $('sync').disabled = false;
+      $('copy').disabled = false;
+      return;
+    }
+
+    show('info', summary(data) + '\n\n觸發中…');
+
+    let res;
+    try {
+      res = await fetch(
+        `https://api.github.com/repos/${s.owner}/${s.repo}/actions/workflows/${s.workflow}/dispatches`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: 'Bearer ' + s.token,
+            Accept: 'application/vnd.github+json',
+            'X-GitHub-Api-Version': '2022-11-28',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            ref: s.ref,
+            inputs: { variables: body, source_url: 'Figma:' + fileName },
+          }),
+        }
+      );
+    } catch (err) {
+      show('err', '連不到 GitHub:' + err.message);
+      $('sync').disabled = false;
+      $('copy').disabled = false;
+      return;
+    }
+
+    if (res.status === 204) {
+      post({ type: 'save-settings', settings: s });
+      show('ok',
+        summary(data) +
+        `\n\n✔ 已觸發。到 GitHub → Actions 看執行結果。\n` +
+        `有色值變動時會開一個 PR；沒變動就不會開。`);
+      post({ type: 'notify', message: `已觸發同步（${data.count} 個 token）` });
+    } else {
+      let detail = '';
+      try { detail = (await res.json()).message || ''; } catch (e) {}
+      show('err', explain(res.status, detail));
+      post({ type: 'notify', message: '同步觸發失敗', error: true });
+    }
+
+    $('sync').disabled = false;
+    $('copy').disabled = false;
+  }
+
+  function explain(status, detail) {
+    const base = `GitHub 回傳 ${status}${detail ? ':' + detail : ''}\n\n`;
+    if (status === 401) return base + 'token 無效或已過期。重新產生一個 fine-grained token。';
+    if (status === 403) return base + 'token 權限不足。需要對這個 repo 的 Actions: Read and write。';
+    if (status === 404) return base +
+      '找不到 workflow。可能原因:\n' +
+      '  · owner / repo / workflow 檔名打錯\n' +
+      '  · token 沒有勾選這個 repository\n' +
+      '  · 該 workflow 還沒合併進 ' + $('ref').value + ' 分支';
+    if (status === 422) return base + '輸入不合法。通常是 branch 名稱錯誤，或 workflow 沒有 workflow_dispatch 觸發器。';
+    return base;
+  }
+
+  let pendingAction = null;
+
+  $('sync').onclick = () => {
+    const s = settings();
+    const missing = FIELDS.filter((f) => !s[f]);
+    if (missing.length) {
+      show('err', '以下欄位還沒填:' + missing.join('、'));
+      return;
+    }
+    pendingAction = 'sync';
+    $('sync').disabled = true;
+    $('copy').disabled = true;
+    show('info', '讀取變數中…');
+    post({ type: 'read-variables' });
+  };
+
+  $('copy').onclick = () => {
+    pendingAction = 'copy';
+    $('sync').disabled = true;
+    $('copy').disabled = true;
+    show('info', '讀取變數中…');
+    post({ type: 'read-variables' });
+  };
+
+  post({ type: 'ready' });
+</script>
