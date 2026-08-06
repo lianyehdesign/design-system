@@ -1,0 +1,59 @@
+name: Sync tokens from Figma
+
+# ① INGEST：從 Figma API 抓變數更新 snapshot，然後跑完整條 pipeline。
+# 需要 Figma Enterprise 權限 —— 在拿到之前這個 workflow 跑不起來，
+# 但 build.yml 已經能驗證 ②③ 兩段。
+on:
+  workflow_dispatch:
+  # 每週一早上 9:00 (UTC+8)
+  schedule:
+    - cron: '0 1 * * 1'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - run: npm ci
+
+      - name: Pull variables from Figma → snapshots/
+        env:
+          FIGMA_TOKEN: ${{ secrets.FIGMA_TOKEN }}
+          FIGMA_FILE_KEY: ${{ secrets.FIGMA_FILE_KEY }}
+        run: npm run ingest:api
+
+      - name: Normalize + build
+        run: npm run all
+
+      # 有變動才開 PR —— 不直接 push 到 main，
+      # 讓工程師有機會 review 色值改動的影響範圍。
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: 'chore: sync color tokens from Figma'
+          title: 'chore: sync color tokens from Figma'
+          body: |
+            Figma variables 有變動，已自動同步。
+
+            **怎麼讀這份 diff:**
+            - `snapshots/` 的變動 = 設計師在 Figma 改了東西
+            - `tokens/` 與 `dist/` 的變動 = 上面那些改動的下游結果
+
+            如果 `tokens/` 變了但 `snapshots/` 沒變，代表是轉換邏輯改了，不是設計改了。
+
+            請確認:
+            - [ ] 色值改動是否符合預期
+            - [ ] 有沒有 token 被意外刪除（會導致下游 build 失敗）
+            - [ ] 略過與待填的變數清單（見 Actions log）是否有該納入卻漏掉的
+          branch: chore/sync-figma-tokens
+          delete-branch: true
