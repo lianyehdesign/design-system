@@ -1,7 +1,6 @@
 name: Build tokens
 
-# 驗證 ② NORMALIZE 與 ③ BUILD 這兩段。不需要任何 secret ——
-# 因為這兩段只吃 snapshots/ 裡的檔案，不碰網路。
+# 驗證 tokens/ → platform/ 這段。不需要任何 secret —— 只吃 repo 裡的檔案，不碰網路。
 on:
   push:
     branches: ['**']
@@ -23,18 +22,15 @@ jobs:
 
       - run: npm ci
 
-      - name: Normalize snapshots → tokens
-        run: npm run normalize
-
-      - name: Build tokens → dist
+      - name: Build tokens → platform
         run: npm run build
 
-      # tokens/ 與 dist/ 都有進版控（dist 是 SPM 需要），
-      # 所以它們必須跟 snapshots/ 保持同步。
-      # 有人改了 snapshot 卻忘了重跑，這一步會擋下來。
-      - name: Check tokens/ and dist/ are up to date
+      # platform/ 有進版控（SPM 需要直接從 git 拉檔案），
+      # 所以它必須跟 tokens/ 保持同步。
+      # 有人改了 tokens/ 卻忘了重跑 build，這一步會擋下來。
+      - name: Check platform/ is up to date
         run: |
-          if ! git diff --exit-code --stat tokens/ dist/; then
-            echo "::error::tokens/ 或 dist/ 與 snapshots/ 不同步。請在本機跑 npm run all 後一起 commit。"
+          if ! git diff --exit-code --stat platform/; then
+            echo "::error::platform/ 與 tokens/ 不同步。請在本機跑 npm run build 後把 platform/ 一起 commit。"
             exit 1
           fi

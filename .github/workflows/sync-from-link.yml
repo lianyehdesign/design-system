@@ -1,0 +1,82 @@
+name: Sync tokens from Figma (link)
+
+# 不需要任何 secret —— 這是在拿到 Figma Enterprise API 權限前的主要更新路徑。
+#
+# 前提:讀取 Figma 這一步沒辦法在 CI 裡做（runner 上沒有 Figma、沒有選取狀態）。
+# 所以流程是:
+#   1. 在 Figma 桌面版選取色票 frame
+#   2. 由 Figma MCP / Dev Mode 讀出「變數名稱 → 色值」的 JSON
+#   3. 把那段 JSON 貼進下面的 variables 欄位，按 Run workflow
+#   4. 這個 workflow 負責轉檔、產出各平台檔案、開 PR
+on:
+  workflow_dispatch:
+    inputs:
+      variables:
+        description: '從 Figma 讀出的 JSON，例如 {"Color/Primary/060":"#003354"}'
+        required: true
+        type: string
+      source_url:
+        description: 'Figma 連結（記錄在 PR 裡，方便日後追來源）'
+        required: false
+        type: string
+      replace:
+        description: '整份重建 tokens（勾選代表上面是完整清單，沒出現的會被刪除）'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - run: npm ci
+
+      # 走環境變數而不是直接內插進 shell —— 輸入是任意字串，
+      # 直接展開進指令會被當成 shell 語法。
+      - name: Write payload
+        env:
+          PAYLOAD: ${{ inputs.variables }}
+        run: printf '%s' "$PAYLOAD" > /tmp/payload.json
+
+      - name: Sync tokens
+        run: |
+          if [ "${{ inputs.replace }}" = "true" ]; then
+            npm run sync:link -- /tmp/payload.json --replace
+          else
+            npm run sync:link -- /tmp/payload.json
+          fi
+
+      - name: Build platform outputs
+        run: npm run build
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: 'chore: sync color tokens from Figma (link)'
+          title: 'chore: sync color tokens from Figma (link)'
+          body: |
+            由 **Sync tokens from Figma (link)** 觸發，資料來自手動讀取的 Figma 變數。
+
+            - 來源連結:${{ inputs.source_url || '（未填）' }}
+            - 模式:${{ inputs.replace && '整份重建（會刪除來源中沒有的 token）' || '合併（只新增／更新，不刪除）' }}
+            - 觸發者:@${{ github.actor }}
+
+            **完整的新增／變動／未涵蓋清單見 Actions log。**
+
+            請確認:
+            - [ ] 色值改動符合預期
+            - [ ] 合併模式下「不在這次來源裡」的 token 是刻意保留，不是漏讀
+            - [ ] 沒有 token 被意外刪除（會導致下游 build 失敗）
+          branch: chore/sync-tokens-from-link
+          delete-branch: true

@@ -1,67 +1,89 @@
 {
   "color": {
-    "primary": {
+    "func-one": {
       "010": {
         "$type": "color",
-        "$value": "#EFF7FD",
-        "$description": "Primary Background Color Weak：default 元件強調時的背景色；未讀訊息的背景色"
+        "$value": "#E5F7F4"
       },
       "020": {
         "$type": "color",
-        "$value": "#D2DDE4",
-        "$description": "page foundation 的背景色，較灰階以表現消極感，用於失敗的空白頁面"
+        "$value": "#98DDD2"
       },
       "030": {
         "$type": "color",
-        "$value": "#2E90B7",
-        "$description": "text link / text button 或元件上需強調時的用色；商品卡 badge 背景色；Pagination selected 用色"
+        "$value": "#53C6B4"
       },
       "040": {
         "$type": "color",
-        "$value": "#10567B",
-        "$description": "交互時 hover 的交互色；primary button hover 交互色"
+        "$value": "#30BBA5"
       },
       "050": {
         "$type": "color",
-        "$value": "#064162",
-        "$description": "交互時 hover 的交互色；primary button hover 交互色"
+        "$value": "#2CAC97"
       },
       "060": {
         "$type": "color",
-        "$value": "#003354",
-        "$description": "call to action focus 用色，例如 button-primary active / bottom bar active；商品卡售價用色"
+        "$value": "#289C8A"
       }
     },
-    "secondary": {
+    "func-three": {
       "010": {
         "$type": "color",
-        "$value": "#FFF8F7",
-        "$description": "Weak discount color，用於優惠元件的背景色，例如 campaign banner、trending badge"
+        "$value": "#FEF8EA"
       },
       "020": {
         "$type": "color",
-        "$value": "#F5B3AE",
-        "$description": "用於元件上的 text color，例如 coach mark 的 title"
+        "$value": "#FFEDAF"
       },
       "030": {
         "$type": "color",
-        "$value": "#EE847D",
-        "$description": "商品卡上的 badge 背景色；Pinkoi Logo 次要品牌色"
+        "$value": "#FFDE71"
       },
       "040": {
         "$type": "color",
-        "$value": "#F16C5D",
-        "$description": "purchase button 的 default 背景色；通知提示、狀態、switch、首頁 tab；介面上的購買行為文字訊息"
+        "$value": "#FACB4D"
       },
       "050": {
         "$type": "color",
-        "$value": "#E56051",
-        "$description": "購買行為按鈕交互時 hover 的交互色"
+        "$value": "#F7BD2B"
       },
       "060": {
         "$type": "color",
-        "$value": "#DA5648",
-        "$description": "購買行為交互色，例如 purchase / add to cart button active；filter & sort active；check box selected"
+        "$value": "#EFAE09"
+      }
+    },
+    "func-two": {
+      "010": {
+        "$type": "color",
+        "$value": "#FFE9EC",
+        "$description": "警示 / 特殊 functional 的 foundation 用色"
+      },
+      "020": {
+        "$type": "color",
+        "$value": "#FF9EAA",
+        "$description": "警示 / 特殊 functional 的 icon 用色"
+      },
+      "030": {
+        "$type": "color",
+        "$value": "#F86173"
+      },
+      "040": {
+        "$type": "color",
+        "$value": "#E63349"
+      },
+      "050": {
+        "$type": "color",
+        "$value": "#D7213E"
+      },
+      "060": {
+        "$type": "color",
+        "$value": "#C41428"
+      }
+    },
+    "gray": {
+      "090": {
+        "$type": "color",
+        "$value": "#66666A"
       }
     },
     "neutral": {
@@ -129,100 +151,79 @@
         "$value": "#929295",
         "$description": "介面文字深色中性色"
       },
+      "080": {
+        "$type": "color",
+        "$value": "#7C7C80",
+        "$description": "用於元件的外框深色"
+      },
       "090": {
         "$type": "color",
         "$value": "#66666A",
         "$description": "介面文字深色用色；icon 用色"
       }
     },
-    "func-one": {
+    "primary": {
       "010": {
         "$type": "color",
-        "$value": "#E5F7F4"
+        "$value": "#EFF7FD",
+        "$description": "Primary Background Color Weak：default 元件強調時的背景色；未讀訊息的背景色"
       },
       "020": {
         "$type": "color",
-        "$value": "#98DDD2"
+        "$value": "#D2DDE4",
+        "$description": "page foundation 的背景色，較灰階以表現消極感，用於失敗的空白頁面"
       },
       "030": {
         "$type": "color",
-        "$value": "#53C6B4"
+        "$value": "#2E90B7",
+        "$description": "text link / text button 或元件上需強調時的用色；商品卡 badge 背景色；Pagination selected 用色"
       },
       "040": {
         "$type": "color",
-        "$value": "#30BBA5"
+        "$value": "#10567B",
+        "$description": "交互時 hover 的交互色；primary button hover 交互色"
       },
       "050": {
         "$type": "color",
-        "$value": "#2CAC97"
+        "$value": "#064162",
+        "$description": "交互時 hover 的交互色；primary button hover 交互色"
       },
       "060": {
         "$type": "color",
-        "$value": "#289C8A"
+        "$value": "#003354",
+        "$description": "call to action focus 用色，例如 button-primary active / bottom bar active；商品卡售價用色"
       }
     },
-    "func-two": {
+    "secondary": {
       "010": {
         "$type": "color",
-        "$value": "#FFE9EC",
-        "$description": "警示 / 特殊 functional 的 foundation 用色"
+        "$value": "#FFF8F7",
+        "$description": "Weak discount color，用於優惠元件的背景色，例如 campaign banner、trending badge"
       },
       "020": {
         "$type": "color",
-        "$value": "#FF9EAA",
-        "$description": "警示 / 特殊 functional 的 icon 用色"
+        "$value": "#F5B3AE",
+        "$description": "用於元件上的 text color，例如 coach mark 的 title"
       },
       "030": {
         "$type": "color",
-        "$value": "#F86173"
+        "$value": "#EE847D",
+        "$description": "商品卡上的 badge 背景色；Pinkoi Logo 次要品牌色"
       },
       "040": {
         "$type": "color",
-        "$value": "#E63349"
+        "$value": "#F16C5D",
+        "$description": "purchase button 的 default 背景色；通知提示、狀態、switch、首頁 tab；介面上的購買行為文字訊息"
       },
       "050": {
         "$type": "color",
-        "$value": "#D7213E"
+        "$value": "#E56051",
+        "$description": "購買行為按鈕交互時 hover 的交互色"
       },
       "060": {
         "$type": "color",
-        "$value": "#C41428"
-      }
-    },
-    "func-three": {
-      "010": {
-        "$type": "color",
-        "$value": "#FEF8EA"
-      },
-      "020": {
-        "$type": "color",
-        "$value": "#FFEDAF"
-      },
-      "030": {
-        "$type": "color",
-        "$value": "#FFDE71"
-      },
-      "040": {
-        "$type": "color",
-        "$value": "#FACB4D"
-      },
-      "050": {
-        "$type": "color",
-        "$value": "#F7BD2B"
-      },
-      "060": {
-        "$type": "color",
-        "$value": "#EFAE09"
-      }
-    },
-    "gray": {
-      "080": {
-        "$type": "color",
-        "$value": "#7C7C80"
-      },
-      "090": {
-        "$type": "color",
-        "$value": "#66666A"
+        "$value": "#DA5648",
+        "$description": "購買行為交互色，例如 purchase / add to cart button active；filter & sort active；check box selected"
       }
     }
   }
