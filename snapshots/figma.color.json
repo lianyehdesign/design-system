@@ -1,0 +1,122 @@
+{
+  "$meta": {
+    "source": "figma-mcp",
+    "library": "[Design System] Foundation",
+    "collection": "Generic",
+    "fileKey": "1TcgPhqHmLeZhPpv7LaCGO",
+    "nodeId": "2615:3116",
+    "nodeName": "Colors System palette",
+    "capturedAt": "2026-08-06",
+    "note": "色值由 Figma MCP get_variable_defs 從選取的色票 frame 讀出。description 由 search_design_system 取得，只有部分變數有。"
+  },
+
+  "variables": {
+    "Color/Primary/010": {
+      "value": "#eff7fd",
+      "description": "Primary Background Color Weak：default 元件強調時的背景色；未讀訊息的背景色"
+    },
+    "Color/Primary/020": {
+      "value": "#d2dde4",
+      "description": "page foundation 的背景色，較灰階以表現消極感，用於失敗的空白頁面"
+    },
+    "Color/Primary/030": {
+      "value": "#2e90b7",
+      "description": "text link / text button 或元件上需強調時的用色；商品卡 badge 背景色；Pagination selected 用色"
+    },
+    "Color/Primary/040": {
+      "value": "#10567b",
+      "description": "交互時 hover 的交互色；primary button hover 交互色"
+    },
+    "Color/Primary/050": {
+      "value": "#064162",
+      "description": "交互時 hover 的交互色；primary button hover 交互色"
+    },
+    "Color/Primary/060": {
+      "value": "#003354",
+      "description": "call to action focus 用色，例如 button-primary active / bottom bar active；商品卡售價用色"
+    },
+
+    "Color/Secondary/010": {
+      "value": "#fff8f7",
+      "description": "Weak discount color，用於優惠元件的背景色，例如 campaign banner、trending badge"
+    },
+    "Color/Secondary/020": {
+      "value": "#f5b3ae",
+      "description": "用於元件上的 text color，例如 coach mark 的 title"
+    },
+    "Color/Secondary/030": {
+      "value": "#ee847d",
+      "description": "商品卡上的 badge 背景色；Pinkoi Logo 次要品牌色"
+    },
+    "Color/Secondary/040": {
+      "value": "#f16c5d",
+      "description": "purchase button 的 default 背景色；通知提示、狀態、switch、首頁 tab；介面上的購買行為文字訊息"
+    },
+    "Color/Secondary/050": {
+      "value": "#e56051",
+      "description": "購買行為按鈕交互時 hover 的交互色"
+    },
+    "Color/Secondary/060": {
+      "value": "#da5648",
+      "description": "購買行為交互色，例如 purchase / add to cart button active；filter & sort active；check box selected"
+    },
+
+    "Color/Neutral/000": {
+      "value": "#ffffff",
+      "description": "背景的 default 用色；default on primary 文字用色"
+    },
+    "Color/Neutral/010": { "value": "#f7f7f8", "description": "用於背景色淺色" },
+    "Color/Neutral/020": { "value": "#eeeeef", "description": "用於背景色" },
+    "Color/Neutral/030": {
+      "value": "#e5e5e5",
+      "description": "用於背景深色；divider 用色；用於元件的外框淺色"
+    },
+    "Color/Neutral/040": { "value": "#d3d3d5", "description": "divider 深色用色" },
+    "Color/Neutral/050": { "value": "#bfbfc1", "description": "用於元件的外框中性色" },
+    "Color/Neutral/060": { "value": "#a8a8ab", "description": "介面文字深色淺色" },
+    "Color/Neutral/070": { "value": "#929295", "description": "介面文字深色中性色" },
+    "Color/Neutral/080": { "value": null, "description": "用於元件的外框深色" },
+    "Color/Neutral/090": {
+      "value": "#66666a",
+      "description": "介面文字深色用色；icon 用色"
+    },
+    "Color/Neutral/100": { "value": "#515156", "description": "商品卡的商品特點標籤" },
+    "Color/Neutral/110": { "value": "#45454a" },
+    "Color/Neutral/120": { "value": "#39393e", "description": "介面文字深色用色" },
+    "Color/Neutral/130": {
+      "value": "#2c2c32",
+      "description": "用於 title / icon / 文字按鈕入口"
+    },
+    "Color/Neutral/140": { "value": "#202026", "description": "介面文字強調用色" },
+
+    "Color/Func-One/010": { "value": "#e5f7f4" },
+    "Color/Func-One/020": { "value": "#98ddd2" },
+    "Color/Func-One/030": { "value": "#53c6b4" },
+    "Color/Func-One/040": { "value": "#30bba5" },
+    "Color/Func-One/050": { "value": "#2cac97" },
+    "Color/Func-One/060": { "value": "#289c8a" },
+
+    "Color/Func-Two/010": {
+      "value": "#ffe9ec",
+      "description": "警示 / 特殊 functional 的 foundation 用色"
+    },
+    "Color/Func-Two/020": {
+      "value": "#ff9eaa",
+      "description": "警示 / 特殊 functional 的 icon 用色"
+    },
+    "Color/Func-Two/030": { "value": "#f86173" },
+    "Color/Func-Two/040": { "value": "#e63349" },
+    "Color/Func-Two/050": { "value": "#d7213e" },
+    "Color/Func-Two/060": { "value": "#c41428" },
+
+    "Color/Func-Three/010": { "value": "#fef8ea" },
+    "Color/Func-Three/020": { "value": "#ffedaf" },
+    "Color/Func-Three/030": { "value": "#ffde71" },
+    "Color/Func-Three/040": { "value": "#facb4d" },
+    "Color/Func-Three/050": { "value": "#f7bd2b" },
+    "Color/Func-Three/060": { "value": "#efae09" },
+
+    "Color/Gray/080": { "value": "#7c7c80" },
+    "Color/Gray/090": { "value": "#66666a" }
+  }
+}

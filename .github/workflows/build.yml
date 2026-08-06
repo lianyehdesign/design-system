@@ -1,0 +1,40 @@
+name: Build tokens
+
+# 驗證 ② NORMALIZE 與 ③ BUILD 這兩段。不需要任何 secret ——
+# 因為這兩段只吃 snapshots/ 裡的檔案，不碰網路。
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  # 手動觸發。注意:這個按鈕只會出現在預設分支（main）的 Actions 頁面上，
+  # 這是 GitHub 的行為，不是設定問題。
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - run: npm ci
+
+      - name: Normalize snapshots → tokens
+        run: npm run normalize
+
+      - name: Build tokens → dist
+        run: npm run build
+
+      # tokens/ 與 dist/ 都有進版控（dist 是 SPM 需要），
+      # 所以它們必須跟 snapshots/ 保持同步。
+      # 有人改了 snapshot 卻忘了重跑，這一步會擋下來。
+      - name: Check tokens/ and dist/ are up to date
+        run: |
+          if ! git diff --exit-code --stat tokens/ dist/; then
+            echo "::error::tokens/ 或 dist/ 與 snapshots/ 不同步。請在本機跑 npm run all 後一起 commit。"
+            exit 1
+          fi
