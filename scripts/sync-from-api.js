@@ -22,7 +22,10 @@ import {
   writeTokens,
   findCollisions,
   assertNoCollisions,
+  computeDiff,
   reportDiff,
+  summaryMarkdown,
+  writeStepSummary,
 } from './lib/tokens.js';
 
 const FIGMA_TOKEN = process.env.FIGMA_TOKEN;
@@ -150,7 +153,21 @@ async function main() {
   }
 
   await writeTokens('color', after);
-  reportDiff(before, after, 'replace');
+
+  const diff = computeDiff(before, after);
+  reportDiff(diff, 'replace');
+
+  await writeStepSummary(
+    summaryMarkdown({
+      title: '從 Figma Variables API 同步色彩 token',
+      source: `Figma file \`${FILE_KEY}\``,
+      mode: 'replace',
+      diff,
+      notes: aliases.length
+        ? [`> ⚠️ ${aliases.length} 個別名變數未展開，這次沒有寫入。`]
+        : null,
+    })
+  );
 
   if (aliases.length) {
     console.log(`\n⚠ ${aliases.length} 個別名變數未展開，這次沒有寫入:`);

@@ -50,6 +50,9 @@ jobs:
         run: printf '%s' "$PAYLOAD" > /tmp/payload.json
 
       - name: Sync tokens
+        env:
+          # 腳本會把來源寫進 Summary，方便日後追這批值哪來的
+          SOURCE_URL: ${{ inputs.source_url || '（未填）' }}
         run: |
           if [ "${{ inputs.replace }}" = "true" ]; then
             npm run sync:link -- /tmp/payload.json --replace
@@ -61,6 +64,7 @@ jobs:
         run: npm run build
 
       - name: Create pull request
+        id: cpr
         uses: peter-evans/create-pull-request@v8
         with:
           commit-message: 'chore: sync color tokens from Figma (link)'
@@ -80,3 +84,26 @@ jobs:
             - [ ] 沒有 token 被意外刪除（會導致下游 build 失敗）
           branch: chore/sync-tokens-from-link
           delete-branch: true
+
+      # 沒有這一步的話，「跑成功了但沒開 PR」看起來像出錯。
+      # 那其實是最常見也最健康的結果:Figma 跟 repo 一致。
+      - name: Report outcome
+        env:
+          PR: ${{ steps.cpr.outputs.pull-request-number }}
+          OP: ${{ steps.cpr.outputs.pull-request-operation }}
+          URL: ${{ steps.cpr.outputs.pull-request-url }}
+        run: |
+          {
+            if [ -n "$PR" ]; then
+              echo "## ✅ 已開 PR [#${PR}](${URL})"
+              echo ""
+              echo "操作:\`${OP}\`。請 review 上面的變動後合併 —— 合併之後 app / web 才會拿到新的值。"
+            else
+              echo "## ✅ 沒有變動，未開 PR"
+              echo ""
+              echo "Figma 與 repo 的內容一致，所以沒有東西要改。"
+              echo ""
+              echo "> 這是**預期行為，不是失敗**。這條 pipeline 是冪等的 ——"
+              echo "> 同樣的輸入跑幾次都不會產生空 PR。"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
