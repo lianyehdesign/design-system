@@ -5,7 +5,7 @@
  * 兩條 sync 路徑都寫這裡，build 只讀這裡。
  */
 
-import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, appendFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 export const TOKEN_DIR = 'tokens';
@@ -179,16 +179,16 @@ export function assertNoCollisions(collisions) {
  *   'merge'   — 合併模式（sync:link 預設），保留不刪
  *   'replace' — 整份重建（sync:api、sync:link --replace），已刪除
  */
-export function reportDiff(before, after, mode = 'merge', sourceKeys = null) {
+export function computeDiff(before, after, sourceKeys = null) {
   const added = [];
   const changed = [];
   const missing = [];
 
   for (const [key, token] of after) {
     const prev = before.get(key);
-    if (!prev) added.push(key);
+    if (!prev) added.push({ key, value: token.$value });
     else if (prev.$value !== token.$value)
-      changed.push(`${key}: ${prev.$value} → ${token.$value}`);
+      changed.push({ key, from: prev.$value, to: token.$value });
   }
 
   // 「來源裡沒有」要跟「輸出裡沒有」分開算 ——
@@ -196,16 +196,22 @@ export function reportDiff(before, after, mode = 'merge', sourceKeys = null) {
   // 那則提醒就等於失效了。有給 sourceKeys 就以來源為準。
   const present = sourceKeys ?? new Set(after.keys());
   for (const key of before.keys()) {
-    if (!present.has(key)) missing.push(key);
+    if (!present.has(key)) missing.push({ key, value: before.get(key).$value });
   }
+
+  return { added, changed, missing };
+}
+
+export function reportDiff(diff, mode = 'merge') {
+  const { added, changed, missing } = diff;
 
   if (added.length) {
     console.log(`\n+ 新增 ${added.length} 個:`);
-    added.forEach((k) => console.log(`    ${k}`));
+    added.forEach((a) => console.log(`    ${a.key}  ${a.value}`));
   }
   if (changed.length) {
     console.log(`\n~ 色值變動 ${changed.length} 個:`);
-    changed.forEach((c) => console.log(`    ${c}`));
+    changed.forEach((c) => console.log(`    ${c.key}: ${c.from} → ${c.to}`));
   }
   if (missing.length) {
     const label =
@@ -213,9 +219,104 @@ export function reportDiff(before, after, mode = 'merge', sourceKeys = null) {
         ? `已刪除 ${missing.length} 個（來源裡不再有）`
         : `${missing.length} 個既有 token 不在這次來源裡（保留未刪除）`;
     console.log(`\n${mode === 'replace' ? '-' : '!'} ${label}:`);
-    missing.forEach((k) => console.log(`    ${k}`));
+    missing.forEach((m) => console.log(`    ${m.key}  ${m.value}`));
   }
   if (!added.length && !changed.length && !missing.length) {
     console.log('\n沒有任何變動。');
   }
+}
+
+/**
+ * 把結果寫進 GitHub Actions 的 Summary 頁面。
+ *
+ * 不寫的話那一頁是空的，要看發生什麼事得點進 step 展開 log ——
+ * 對「只想知道這次改了什麼」的人來說門檻太高。
+ *
+ * 本機執行時 GITHUB_STEP_SUMMARY 不存在，直接跳過。
+ */
+export async function writeStepSummary(markdown) {
+  const file = process.env.GITHUB_STEP_SUMMARY;
+  if (!file) return;
+  await appendFile(file, markdown.join('\n') + '\n');
+}
+
+/** 產生 sync 結果的 Summary markdown */
+export function summaryMarkdown({ title, source, mode, diff, skipped, notes }) {
+  const { added, changed, missing } = diff;
+  const total = added.length + changed.length + missing.length;
+  const md = [];
+
+  md.push(`## ${total === 0 ? '✅' : '📝'} ${title}`, '');
+
+  md.push('| | |', '| --- | --- |');
+  if (source) md.push(`| 來源 | ${source} |`);
+  md.push(
+    `| 模式 | ${mode === 'replace' ? '整份重建（來源沒有的會刪除）' : '合併（只新增／更新，不刪除）'} |`
+  );
+  md.push(`| 新增 | ${added.length} |`);
+  md.push(`| 色值變動 | ${changed.length} |`);
+  md.push(
+    `| ${mode === 'replace' ? '刪除' : '未涵蓋（保留）'} | ${missing.length} |`
+  );
+  if (skipped) md.push(`| 略過 | ${skipped.length} |`);
+  md.push('');
+
+  if (total === 0) {
+    md.push(
+      '> **沒有任何變動。** Figma 與 repo 的內容一致，因此不會開 PR —— ',
+      '> 這是預期行為，不是失敗。',
+      ''
+    );
+  }
+
+  const table = (rows, head) => {
+    md.push(head, '| --- | --- |');
+    rows.forEach((r) => md.push(r));
+    md.push('');
+  };
+
+  if (added.length) {
+    md.push(`### ➕ 新增 ${added.length} 個`, '');
+    table(
+      added.map((a) => `| \`${a.key}\` | \`${a.value}\` |`),
+      '| Token | 色值 |'
+    );
+  }
+  if (changed.length) {
+    md.push(`### 🔄 色值變動 ${changed.length} 個`, '');
+    table(
+      changed.map((c) => `| \`${c.key}\` | \`${c.from}\` → \`${c.to}\` |`),
+      '| Token | 變動 |'
+    );
+  }
+  if (missing.length) {
+    md.push(
+      mode === 'replace'
+        ? `### ➖ 刪除 ${missing.length} 個`
+        : `### ⚠️ ${missing.length} 個未涵蓋（已保留）`,
+      ''
+    );
+    if (mode !== 'replace') {
+      md.push(
+        '這些 token 不在這次的來源裡。合併模式不會刪除它們 —— ',
+        '請確認是**漏讀**還是設計師**真的刪掉了**。後者的話要勾「整份重建」重跑。',
+        ''
+      );
+    }
+    table(
+      missing.map((m) => `| \`${m.key}\` | \`${m.value}\` |`),
+      '| Token | 色值 |'
+    );
+  }
+
+  if (skipped?.length) {
+    md.push('<details>', `<summary>略過的 ${skipped.length} 個項目</summary>`, '');
+    md.push('```');
+    skipped.forEach((s) => md.push(s));
+    md.push('```', '</details>', '');
+  }
+
+  if (notes?.length) md.push(...notes, '');
+
+  return md;
 }

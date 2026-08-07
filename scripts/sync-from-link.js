@@ -33,7 +33,10 @@ import {
   writeTokens,
   findCollisions,
   assertNoCollisions,
+  computeDiff,
   reportDiff,
+  summaryMarkdown,
+  writeStepSummary,
 } from './lib/tokens.js';
 
 const args = process.argv.slice(2);
@@ -114,7 +117,23 @@ async function main() {
   }
 
   await writeTokens('color', after);
-  reportDiff(before, after, replace ? 'replace' : 'merge', sourceKeys);
+
+  const mode = replace ? 'replace' : 'merge';
+  const diff = computeDiff(before, after, sourceKeys);
+  reportDiff(diff, mode);
+
+  await writeStepSummary(
+    summaryMarkdown({
+      title: '從 Figma 同步色彩 token',
+      source: process.env.SOURCE_URL || null,
+      mode,
+      diff,
+      skipped: skipped.map((n) => `${n}（${whySkipped(n)}）`),
+      notes: [
+        `讀入 ${entries.length} 個項目，其中 ${colorNames.length} 個進入 \`tokens/color.json\`。`,
+      ],
+    })
+  );
 
   if (skipped.length) {
     console.log(`\n略過 ${skipped.length} 個項目:`);

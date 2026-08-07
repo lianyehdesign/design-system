@@ -6,7 +6,7 @@
 
 import StyleDictionary from 'style-dictionary';
 import config from './style-dictionary.config.js';
-import { readTokens, normalizeHex } from './lib/tokens.js';
+import { readTokens, normalizeHex, writeStepSummary } from './lib/tokens.js';
 
 // ---- SwiftUI 用的自訂 format ----
 // 產出一個 DesignTokens enum，裡面是扁平的 static 常數:
@@ -104,3 +104,32 @@ if (bad.length) {
 const sd = new StyleDictionary(config);
 await sd.cleanAllPlatforms();
 await sd.buildAllPlatforms();
+
+// ---- 把結果寫進 Actions 的 Summary 頁面 ----
+// 不寫的話那一頁是空的，得點進 step 展開 log 才知道發生什麼事。
+const families = new Map();
+for (const key of colors.keys()) {
+  const family = key.split('.')[1] ?? '?';
+  families.set(family, (families.get(family) ?? 0) + 1);
+}
+
+await writeStepSummary([
+  '## 🎨 產出各平台檔案',
+  '',
+  `\`tokens/\` 的 **${colors.size} 個 color token** 已轉成下列檔案:`,
+  '',
+  '| 平台 | 檔案 |',
+  '| --- | --- |',
+  '| iOS | `platform/ios/DesignTokens.swift` |',
+  '| Web | `platform/web/tokens.css` · `tokens.js` · `tokens.d.ts` |',
+  '| Android | `platform/android/colors.xml` |',
+  '',
+  '<details>',
+  '<summary>各家族的 token 數</summary>',
+  '',
+  '| 家族 | 數量 |',
+  '| --- | --- |',
+  ...[...families.entries()].sort().map(([f, n]) => `| \`${f}\` | ${n} |`),
+  '',
+  '</details>',
+]);

@@ -30,7 +30,25 @@ jobs:
       # 有人改了 tokens/ 卻忘了重跑 build，這一步會擋下來。
       - name: Check platform/ is up to date
         run: |
-          if ! git diff --exit-code --stat platform/; then
+          if git diff --exit-code --stat platform/; then
+            echo "## ✅ platform/ 與 tokens/ 同步" >> "$GITHUB_STEP_SUMMARY"
+          else
+            {
+              echo "## ❌ platform/ 與 tokens/ 不同步"
+              echo ""
+              echo "有人改了 \`tokens/\` 但沒有重跑 build，或改了 \`platform/\` 底下的產出。"
+              echo ""
+              echo "修法:"
+              echo '```bash'
+              echo "npm run build"
+              echo "git add platform/ && git commit -m 'chore: rebuild platform outputs'"
+              echo '```'
+              echo ""
+              echo "### 不同步的檔案"
+              echo '```'
+              git diff --stat platform/
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
             echo "::error::platform/ 與 tokens/ 不同步。請在本機跑 npm run build 後把 platform/ 一起 commit。"
             exit 1
           fi

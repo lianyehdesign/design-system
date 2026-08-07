@@ -54,6 +54,7 @@ jobs:
       # 有變動才開 PR —— 不直接 push 到 main，
       # 讓工程師有機會 review 色值改動的影響範圍。
       - name: Create pull request
+        id: cpr
         uses: peter-evans/create-pull-request@v8
         with:
           commit-message: 'chore: sync color tokens from Figma'
@@ -69,3 +70,21 @@ jobs:
             - [ ] 略過與待填的變數清單（見 Actions log）是否有該納入卻漏掉的
           branch: chore/sync-figma-tokens
           delete-branch: true
+
+      - name: Report outcome
+        env:
+          PR: ${{ steps.cpr.outputs.pull-request-number }}
+          OP: ${{ steps.cpr.outputs.pull-request-operation }}
+          URL: ${{ steps.cpr.outputs.pull-request-url }}
+        run: |
+          {
+            if [ -n "$PR" ]; then
+              echo "## ✅ 已開 PR [#${PR}](${URL})"
+              echo ""
+              echo "操作:\`${OP}\`。"
+            else
+              echo "## ✅ 沒有變動，未開 PR"
+              echo ""
+              echo "Figma 與 repo 的內容一致，所以沒有東西要改。"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
