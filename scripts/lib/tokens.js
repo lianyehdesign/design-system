@@ -15,37 +15,6 @@ export const TOKEN_DIR = 'tokens';
 // Pinkoi 的 Foundation collection 叫 Generic，分類資訊在名稱裡:Color/Primary/060。
 export const ALLOWED_GROUPS = ['color'];
 
-/**
- * ---- 採用語意命名這一套 ----
- *
- * Foundation 檔案裡有兩套完整並存的色彩命名，指向同樣的 45 個色值:
- *
- *   語意          色名        色值範例
- *   Primary   ↔  Blue        #003354
- *   Secondary ↔  Salmon      #f16c5d
- *   Neutral   ↔  Gray        #66666a
- *   Func-One  ↔  green       #2cac97   ← 色名那套裡只有這個是小寫
- *   Func-Two  ↔  Red         #d7213e
- *   Func-Three↔  Yellow      #efae09
- *
- * 兩套都放行的話，工程師會同時拿到 colorPrimary060 和 colorBlue300 ——
- * 兩個名字、同一個顏色。這正是 token 系統最該避免的事。
- *
- * 選語意命名的理由:實際綁在元件上的是這一套（商品卡用的是
- * Color/Primary/060、Color/Secondary/030），而且語意命名撐得過改版 ——
- * 換品牌色時「primary」還是對的，「blue」就錯了。
- *
- * 要改成色名那套的話，換掉這個陣列就好，其餘程式碼不用動。
- */
-export const ALLOWED_COLOR_FAMILIES = [
-  'primary',
-  'secondary',
-  'neutral',
-  'func-one',
-  'func-two',
-  'func-three',
-];
-
 const norm = (s) => String(s).trim().toLowerCase().replace(/\s+/g, '-');
 
 /** "Color/Primary/060" → "color" */
@@ -58,20 +27,32 @@ export function familyOf(figmaName) {
   return norm(String(figmaName).split('/')[1] ?? '');
 }
 
-/** 同時檢查群組（Color/）與家族（Primary/…），兩層都要過 */
+/**
+ * 只認形狀:Color/<家族>/<階層>。
+ *
+ * 刻意「不」維護一份家族白名單 —— 那等於在 repo 裡再記一次
+ * 「Figma 上有哪些家族」，而那份記錄一定會過期。
+ * 新增家族是設計端的決定，這裡照單全收，命名治理留在 Figma。
+ *
+ * 代價:Figma 上有什麼，這裡就會有什麼。同色不同名的變數若同時存在，
+ * 兩個都會進 tokens/。要避免的話得在 Figma 端把重複的刪掉。
+ */
 export function isAllowedToken(figmaName) {
   return (
     ALLOWED_GROUPS.includes(groupOf(figmaName)) &&
-    ALLOWED_COLOR_FAMILIES.includes(familyOf(figmaName))
+    toTokenPath(figmaName).length >= 3
   );
 }
 
-/** 說明為什麼被擋:是群組不對，還是命名系統不對 */
+/** 說明為什麼被擋。只剩兩種原因。 */
 export function whySkipped(figmaName) {
-  if (!ALLOWED_GROUPS.includes(groupOf(figmaName))) {
-    return `分組「${groupOf(figmaName)}」不在白名單`;
+  const group = groupOf(figmaName);
+  if (!ALLOWED_GROUPS.includes(group)) {
+    return `不是 Color/ 開頭（讀到的分組是「${group}」）`;
   }
-  return `「${familyOf(figmaName)}」屬於色名命名那一套，本 repo 採用語意命名`;
+  return `層級不足，需要 Color/<家族>/<階層> 三層（讀到 ${toTokenPath(
+    figmaName
+  ).length} 層）`;
 }
 
 /** "Color/Primary/060" → ['color', 'primary', '060'] */

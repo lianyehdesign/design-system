@@ -216,9 +216,9 @@ This endpoint requires the file_variables:read scope
 
 ## 已知待處理
 
-- **Foundation 檔案裡有兩套完整並存的色彩命名,指向同樣的 45 個色值。本 repo 採用語意命名。**
+- **Figma 上有兩套完整並存的色彩命名,指向同樣的 45 個色值。**
 
-  | 語意命名(採用 ✅) | 色名命名(過濾掉 ✗) | 數量 |
+  | 語意命名 | 色名命名 | 數量 |
   | --- | --- | --- |
   | `Color/Primary/010–060` | `Color/Blue/000·020·050·100·200·300` | 6 |
   | `Color/Secondary/010–060` | `Color/Salmon/…` | 6 |
@@ -227,11 +227,11 @@ This endpoint requires the file_variables:read scope
   | `Color/Func-Two/010–060` | `Color/Red/…` | 6 |
   | `Color/Func-Three/010–060` | `Color/Yellow/…` | 6 |
 
-  比對過:**45 個相異色值,兩套完全 1:1 對應,沒有任何一個落單。**
+  比對過:45 個相異色值,兩套完全 1:1,沒有任何一個落單。
 
-  選語意命名的理由:實際綁在元件上的是這一套(商品卡用的是 `Color/Primary/060`、`Color/Secondary/030`),而且語意命名撐得過改版 —— 換品牌色時「primary」還是對的,「blue」就錯了。
+  **這個 repo 不做家族過濾** —— 只要符合 `Color/<家族>/<階層>` 就收。所以兩套都會進 `tokens/`,工程師會同時看到 `colorPrimary060` 和 `colorBlue300`(同一個顏色)。
 
-  白名單在 [`scripts/lib/tokens.js`](scripts/lib/tokens.js) 的 `ALLOWED_COLOR_FAMILIES`。要改成色名那套的話換掉那個陣列就好,其餘程式碼不用動。
+  **要收斂成一套,得在 Figma 端把重複的刪掉。** 這是刻意的分工:命名治理屬於設計端,repo 不該再維護一份「有哪些家族」的清單 —— 那份清單一定會過期,而且會讓「Figma 加了東西但 repo 沒收到」變成一個需要改程式碼才能解決的問題。
 
 - **`Color/Primary/040` 的 description 是錯的,要在 Figma 修。** 它跟 `Color/Primary/050` 的說明一字不差(都寫 hover 交互色),但同色值的 `Color/Blue/100` 寫的是「primary button 的 **default** 背景色 / toast normal / coach mark / tooltip / Membership 當年度主要用色」。後者才對。
 
