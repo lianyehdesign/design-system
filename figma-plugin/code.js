@@ -25,16 +25,26 @@ const SUPPORTED_GROUPS = ['color', 'spacing', 'radius'];
  * 是兩邊的對照憑據，漂移會出現在 diff 裡。
  */
 function symbolNames(path, dtcgType) {
-  const camel = path
-    .map(function (seg, i) {
-      return i === 0 ? seg : seg.charAt(0).toUpperCase() + seg.slice(1);
+  // 先拆字再組合 —— 段落本身可能含連字號（func-two），
+  // 直接大寫化會留下 colorFunc-two030 這種編不過的名字。
+  var words = [];
+  path.forEach(function (seg) {
+    seg.split(/[^a-zA-Z0-9]+/).forEach(function (w) {
+      if (w) words.push(w);
+    });
+  });
+
+  var camel = words
+    .map(function (w, i) {
+      return i === 0 ? w : w.charAt(0).toUpperCase() + w.slice(1);
     })
     .join('');
+
   return {
     iOS: 'DesignTokens.' + camel,
-    WEB: 'var(--' + path.join('-') + ')',
+    WEB: 'var(--' + words.join('-') + ')',
     ANDROID:
-      'R.' + (dtcgType === 'color' ? 'color' : 'dimen') + '.' + path.join('_'),
+      'R.' + (dtcgType === 'color' ? 'color' : 'dimen') + '.' + words.join('_'),
   };
 }
 

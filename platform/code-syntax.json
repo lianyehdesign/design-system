@@ -32,94 +32,94 @@
       "ANDROID": "R.color.color_blue_050"
     },
     "color.func-one.010": {
-      "iOS": "DesignTokens.colorFunc-one010",
+      "iOS": "DesignTokens.colorFuncOne010",
       "WEB": "var(--color-func-one-010)",
-      "ANDROID": "R.color.color_func-one_010"
+      "ANDROID": "R.color.color_func_one_010"
     },
     "color.func-one.020": {
-      "iOS": "DesignTokens.colorFunc-one020",
+      "iOS": "DesignTokens.colorFuncOne020",
       "WEB": "var(--color-func-one-020)",
-      "ANDROID": "R.color.color_func-one_020"
+      "ANDROID": "R.color.color_func_one_020"
     },
     "color.func-one.030": {
-      "iOS": "DesignTokens.colorFunc-one030",
+      "iOS": "DesignTokens.colorFuncOne030",
       "WEB": "var(--color-func-one-030)",
-      "ANDROID": "R.color.color_func-one_030"
+      "ANDROID": "R.color.color_func_one_030"
     },
     "color.func-one.040": {
-      "iOS": "DesignTokens.colorFunc-one040",
+      "iOS": "DesignTokens.colorFuncOne040",
       "WEB": "var(--color-func-one-040)",
-      "ANDROID": "R.color.color_func-one_040"
+      "ANDROID": "R.color.color_func_one_040"
     },
     "color.func-one.050": {
-      "iOS": "DesignTokens.colorFunc-one050",
+      "iOS": "DesignTokens.colorFuncOne050",
       "WEB": "var(--color-func-one-050)",
-      "ANDROID": "R.color.color_func-one_050"
+      "ANDROID": "R.color.color_func_one_050"
     },
     "color.func-one.060": {
-      "iOS": "DesignTokens.colorFunc-one060",
+      "iOS": "DesignTokens.colorFuncOne060",
       "WEB": "var(--color-func-one-060)",
-      "ANDROID": "R.color.color_func-one_060"
+      "ANDROID": "R.color.color_func_one_060"
     },
     "color.func-three.010": {
-      "iOS": "DesignTokens.colorFunc-three010",
+      "iOS": "DesignTokens.colorFuncThree010",
       "WEB": "var(--color-func-three-010)",
-      "ANDROID": "R.color.color_func-three_010"
+      "ANDROID": "R.color.color_func_three_010"
     },
     "color.func-three.020": {
-      "iOS": "DesignTokens.colorFunc-three020",
+      "iOS": "DesignTokens.colorFuncThree020",
       "WEB": "var(--color-func-three-020)",
-      "ANDROID": "R.color.color_func-three_020"
+      "ANDROID": "R.color.color_func_three_020"
     },
     "color.func-three.030": {
-      "iOS": "DesignTokens.colorFunc-three030",
+      "iOS": "DesignTokens.colorFuncThree030",
       "WEB": "var(--color-func-three-030)",
-      "ANDROID": "R.color.color_func-three_030"
+      "ANDROID": "R.color.color_func_three_030"
     },
     "color.func-three.040": {
-      "iOS": "DesignTokens.colorFunc-three040",
+      "iOS": "DesignTokens.colorFuncThree040",
       "WEB": "var(--color-func-three-040)",
-      "ANDROID": "R.color.color_func-three_040"
+      "ANDROID": "R.color.color_func_three_040"
     },
     "color.func-three.050": {
-      "iOS": "DesignTokens.colorFunc-three050",
+      "iOS": "DesignTokens.colorFuncThree050",
       "WEB": "var(--color-func-three-050)",
-      "ANDROID": "R.color.color_func-three_050"
+      "ANDROID": "R.color.color_func_three_050"
     },
     "color.func-three.060": {
-      "iOS": "DesignTokens.colorFunc-three060",
+      "iOS": "DesignTokens.colorFuncThree060",
       "WEB": "var(--color-func-three-060)",
-      "ANDROID": "R.color.color_func-three_060"
+      "ANDROID": "R.color.color_func_three_060"
     },
     "color.func-two.010": {
-      "iOS": "DesignTokens.colorFunc-two010",
+      "iOS": "DesignTokens.colorFuncTwo010",
       "WEB": "var(--color-func-two-010)",
-      "ANDROID": "R.color.color_func-two_010"
+      "ANDROID": "R.color.color_func_two_010"
     },
     "color.func-two.020": {
-      "iOS": "DesignTokens.colorFunc-two020",
+      "iOS": "DesignTokens.colorFuncTwo020",
       "WEB": "var(--color-func-two-020)",
-      "ANDROID": "R.color.color_func-two_020"
+      "ANDROID": "R.color.color_func_two_020"
     },
     "color.func-two.030": {
-      "iOS": "DesignTokens.colorFunc-two030",
+      "iOS": "DesignTokens.colorFuncTwo030",
       "WEB": "var(--color-func-two-030)",
-      "ANDROID": "R.color.color_func-two_030"
+      "ANDROID": "R.color.color_func_two_030"
     },
     "color.func-two.040": {
-      "iOS": "DesignTokens.colorFunc-two040",
+      "iOS": "DesignTokens.colorFuncTwo040",
       "WEB": "var(--color-func-two-040)",
-      "ANDROID": "R.color.color_func-two_040"
+      "ANDROID": "R.color.color_func_two_040"
     },
     "color.func-two.050": {
-      "iOS": "DesignTokens.colorFunc-two050",
+      "iOS": "DesignTokens.colorFuncTwo050",
       "WEB": "var(--color-func-two-050)",
-      "ANDROID": "R.color.color_func-two_050"
+      "ANDROID": "R.color.color_func_two_050"
     },
     "color.func-two.060": {
-      "iOS": "DesignTokens.colorFunc-two060",
+      "iOS": "DesignTokens.colorFuncTwo060",
       "WEB": "var(--color-func-two-060)",
-      "ANDROID": "R.color.color_func-two_060"
+      "ANDROID": "R.color.color_func_two_060"
     },
     "color.gray.100": {
       "iOS": "DesignTokens.colorGray100",
@@ -455,6 +455,186 @@
       "iOS": "DesignTokens.colorYellow050",
       "WEB": "var(--color-yellow-050)",
       "ANDROID": "R.color.color_yellow_050"
+    },
+    "spacing.2xl": {
+      "iOS": "DesignTokens.spacing2xl",
+      "WEB": "var(--spacing-2xl)",
+      "ANDROID": "R.dimen.spacing_2xl"
+    },
+    "spacing.3xl": {
+      "iOS": "DesignTokens.spacing3xl",
+      "WEB": "var(--spacing-3xl)",
+      "ANDROID": "R.dimen.spacing_3xl"
+    },
+    "spacing.4xl": {
+      "iOS": "DesignTokens.spacing4xl",
+      "WEB": "var(--spacing-4xl)",
+      "ANDROID": "R.dimen.spacing_4xl"
+    },
+    "spacing.5xl": {
+      "iOS": "DesignTokens.spacing5xl",
+      "WEB": "var(--spacing-5xl)",
+      "ANDROID": "R.dimen.spacing_5xl"
+    },
+    "spacing.l": {
+      "iOS": "DesignTokens.spacingL",
+      "WEB": "var(--spacing-l)",
+      "ANDROID": "R.dimen.spacing_l"
+    },
+    "spacing.least": {
+      "iOS": "DesignTokens.spacingLeast",
+      "WEB": "var(--spacing-least)",
+      "ANDROID": "R.dimen.spacing_least"
+    },
+    "spacing.m": {
+      "iOS": "DesignTokens.spacingM",
+      "WEB": "var(--spacing-m)",
+      "ANDROID": "R.dimen.spacing_m"
+    },
+    "spacing.none": {
+      "iOS": "DesignTokens.spacingNone",
+      "WEB": "var(--spacing-none)",
+      "ANDROID": "R.dimen.spacing_none"
+    },
+    "spacing.s": {
+      "iOS": "DesignTokens.spacingS",
+      "WEB": "var(--spacing-s)",
+      "ANDROID": "R.dimen.spacing_s"
+    },
+    "spacing.spacing0": {
+      "iOS": "DesignTokens.spacingSpacing0",
+      "WEB": "var(--spacing-spacing0)",
+      "ANDROID": "R.dimen.spacing_spacing0"
+    },
+    "spacing.spacing10": {
+      "iOS": "DesignTokens.spacingSpacing10",
+      "WEB": "var(--spacing-spacing10)",
+      "ANDROID": "R.dimen.spacing_spacing10"
+    },
+    "spacing.spacing14": {
+      "iOS": "DesignTokens.spacingSpacing14",
+      "WEB": "var(--spacing-spacing14)",
+      "ANDROID": "R.dimen.spacing_spacing14"
+    },
+    "spacing.spacing2": {
+      "iOS": "DesignTokens.spacingSpacing2",
+      "WEB": "var(--spacing-spacing2)",
+      "ANDROID": "R.dimen.spacing_spacing2"
+    },
+    "spacing.spacing20": {
+      "iOS": "DesignTokens.spacingSpacing20",
+      "WEB": "var(--spacing-spacing20)",
+      "ANDROID": "R.dimen.spacing_spacing20"
+    },
+    "spacing.spacing24": {
+      "iOS": "DesignTokens.spacingSpacing24",
+      "WEB": "var(--spacing-spacing24)",
+      "ANDROID": "R.dimen.spacing_spacing24"
+    },
+    "spacing.spacing36": {
+      "iOS": "DesignTokens.spacingSpacing36",
+      "WEB": "var(--spacing-spacing36)",
+      "ANDROID": "R.dimen.spacing_spacing36"
+    },
+    "spacing.spacing4": {
+      "iOS": "DesignTokens.spacingSpacing4",
+      "WEB": "var(--spacing-spacing4)",
+      "ANDROID": "R.dimen.spacing_spacing4"
+    },
+    "spacing.spacing48": {
+      "iOS": "DesignTokens.spacingSpacing48",
+      "WEB": "var(--spacing-spacing48)",
+      "ANDROID": "R.dimen.spacing_spacing48"
+    },
+    "spacing.spacing6": {
+      "iOS": "DesignTokens.spacingSpacing6",
+      "WEB": "var(--spacing-spacing6)",
+      "ANDROID": "R.dimen.spacing_spacing6"
+    },
+    "spacing.spacing64": {
+      "iOS": "DesignTokens.spacingSpacing64",
+      "WEB": "var(--spacing-spacing64)",
+      "ANDROID": "R.dimen.spacing_spacing64"
+    },
+    "spacing.xl": {
+      "iOS": "DesignTokens.spacingXl",
+      "WEB": "var(--spacing-xl)",
+      "ANDROID": "R.dimen.spacing_xl"
+    },
+    "spacing.xs": {
+      "iOS": "DesignTokens.spacingXs",
+      "WEB": "var(--spacing-xs)",
+      "ANDROID": "R.dimen.spacing_xs"
+    },
+    "radius.circular": {
+      "iOS": "DesignTokens.radiusCircular",
+      "WEB": "var(--radius-circular)",
+      "ANDROID": "R.dimen.radius_circular"
+    },
+    "radius.l": {
+      "iOS": "DesignTokens.radiusL",
+      "WEB": "var(--radius-l)",
+      "ANDROID": "R.dimen.radius_l"
+    },
+    "radius.m": {
+      "iOS": "DesignTokens.radiusM",
+      "WEB": "var(--radius-m)",
+      "ANDROID": "R.dimen.radius_m"
+    },
+    "radius.none": {
+      "iOS": "DesignTokens.radiusNone",
+      "WEB": "var(--radius-none)",
+      "ANDROID": "R.dimen.radius_none"
+    },
+    "radius.radius0": {
+      "iOS": "DesignTokens.radiusRadius0",
+      "WEB": "var(--radius-radius0)",
+      "ANDROID": "R.dimen.radius_radius0"
+    },
+    "radius.radius10": {
+      "iOS": "DesignTokens.radiusRadius10",
+      "WEB": "var(--radius-radius10)",
+      "ANDROID": "R.dimen.radius_radius10"
+    },
+    "radius.radius2": {
+      "iOS": "DesignTokens.radiusRadius2",
+      "WEB": "var(--radius-radius2)",
+      "ANDROID": "R.dimen.radius_radius2"
+    },
+    "radius.radius4": {
+      "iOS": "DesignTokens.radiusRadius4",
+      "WEB": "var(--radius-radius4)",
+      "ANDROID": "R.dimen.radius_radius4"
+    },
+    "radius.radius6": {
+      "iOS": "DesignTokens.radiusRadius6",
+      "WEB": "var(--radius-radius6)",
+      "ANDROID": "R.dimen.radius_radius6"
+    },
+    "radius.radius8": {
+      "iOS": "DesignTokens.radiusRadius8",
+      "WEB": "var(--radius-radius8)",
+      "ANDROID": "R.dimen.radius_radius8"
+    },
+    "radius.radius999": {
+      "iOS": "DesignTokens.radiusRadius999",
+      "WEB": "var(--radius-radius999)",
+      "ANDROID": "R.dimen.radius_radius999"
+    },
+    "radius.s": {
+      "iOS": "DesignTokens.radiusS",
+      "WEB": "var(--radius-s)",
+      "ANDROID": "R.dimen.radius_s"
+    },
+    "radius.xl": {
+      "iOS": "DesignTokens.radiusXl",
+      "WEB": "var(--radius-xl)",
+      "ANDROID": "R.dimen.radius_xl"
+    },
+    "radius.xs": {
+      "iOS": "DesignTokens.radiusXs",
+      "WEB": "var(--radius-xs)",
+      "ANDROID": "R.dimen.radius_xs"
     }
   }
 }
