@@ -43,6 +43,9 @@ design-system/
 │   ├── style-dictionary.config.js 定義每個平台輸出什麼格式、到哪個資料夾
 │   └── lib/tokens.js              共用邏輯：分組登記表、值轉換、撞名偵測、讀寫 tokens/
 │
+├── .claude/skills/             ← 【給 AI 的作業說明】
+│   └── design-tokens-typography/  字體:為什麼跟其他 token 不同、怎麼處理
+│
 ├── figma-plugin/               ← 【Figma plugin】在 Figma 按一下就觸發同步
 │   ├── manifest.json              plugin 設定
 │   ├── code.js                    讀變數（主執行緒，無網路）
@@ -259,6 +262,23 @@ tokens/  →  symbolNames()  →  Figma 變數的 Code syntax
 **兩者都需要。** Code syntax 只是標籤,不會建立任何東西 —— 沒有 `platform/` 的話,Dev Mode 會叫工程師寫一個不存在的符號。也因此兩邊的命名必須一致,所以都從 `symbolNames()` 出來。
 
 **前提:元件必須真的綁到變數。** 設計師手動填的色值沒有變數可以對應,再多工具也救不了 —— 那要在 Figma 上補綁。
+
+## 字體(尚未接上 pipeline)
+
+字體**不走現有的路** —— Figma 的 typography 是 text style 不是 variable:
+
+| | Color / Spacing / Radius | Typography |
+| --- | --- | --- |
+| Figma 端型別 | variable | **text style** |
+| plugin 讀取 | `getLocalVariablesAsync()` | **`getLocalTextStylesAsync()`** |
+| Code syntax | ✅ 支援 | **❌ 不支援(variable 專屬)** |
+| 值的形狀 | 單一值 | **複合值(6 個屬性)** |
+
+因為 Code syntax 不適用,生成程式碼時要靠**樣式名稱**去對應 token,那一層對應寫在 [`.claude/skills/design-tokens-typography/`](.claude/skills/design-tokens-typography/SKILL.md)。
+
+Figma 上目前有 9 個 text style,命名是 `<尺寸>-<字重>`(`s-medium`、`4xl-semibold`),尺寸階層跟 `Spacing/` 共用。
+
+**尚未實作:** `GROUPS` 還沒有 `typography` 這一筆,plugin 也還沒讀 text style。skill 裡有完整的實作計畫與待確認事項。
 
 ## 保護機制
 
