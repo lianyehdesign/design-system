@@ -7,6 +7,10 @@
   }
   h2 { font-size: 12px; margin: 0 0 4px; }
   .hint { color: var(--figma-color-text-secondary); margin-bottom: 12px; }
+  /* 「目前檔案」是排查問題時最關鍵的一行，灰字容易被略過 */
+  #file { padding: 6px 8px; border-radius: 4px; margin-bottom: 12px;
+          background: var(--figma-color-bg-secondary);
+          color: var(--figma-color-text); font-weight: 600; }
   label { display: block; margin-bottom: 8px; }
   label span { display: block; margin-bottom: 3px; color: var(--figma-color-text-secondary); }
   input {
@@ -41,7 +45,7 @@
 </style>
 
 <h2>Design Tokens → GitHub</h2>
-<div class="hint" id="file"></div>
+<div id="file"></div>
 
 <label>
   <span>GitHub token（fine-grained，只需 Actions: Read and write）</span>
@@ -89,15 +93,72 @@
     return s;
   }
 
+  /**
+   * 讀到 0 個 Color/ 變數時，講清楚「到底讀到了什麼」。
+   *
+   * 三種情況的處理方式完全不同，但如果只說「沒有 Color/ 開頭的變數」，
+   * 三種看起來一模一樣，使用者只能猜。
+   */
+  function explainEmpty(d) {
+    const where = '目前檔案:' + (fileName || '（不明）');
+
+    if (d.totalLocal === 0) {
+      return (
+        where + '\n\n' +
+        '這個檔案裡「一個本地變數都沒有」。\n\n' +
+        'plugin 只讀當前檔案的本地變數。變數是從 library 引用進來的話，' +
+        '在這裡是 remote 變數，讀不到。\n\n' +
+        '→ 請打開 [Design System] Foundation 檔案再執行一次。'
+      );
+    }
+
+    if (d.totalColor === 0) {
+      return (
+        where + '\n\n' +
+        '這個檔案有 ' + d.totalLocal + ' 個本地變數，但「沒有一個是顏色型別」。\n\n' +
+        '看起來是對的檔案、但不是放顏色的那一個（可能是 spacing、radius 之類）。\n\n' +
+        '→ 請確認顏色變數是定義在這個檔案裡。'
+      );
+    }
+
+    return (
+      where + '\n\n' +
+      '這個檔案有 ' + d.totalColor + ' 個顏色變數，但「沒有一個以 Color/ 開頭」。\n\n' +
+      '讀到的名稱長這樣:\n' +
+      d.sampleNames.map(function (n) { return '  · ' + n; }).join('\n') +
+      '\n\n檔案應該是對的，但命名前綴跟 repo 的白名單對不上。\n' +
+      '→ 把這段訊息貼給我，我調整白名單。'
+    );
+  }
+
+  /** 名稱清單，太長就截斷 —— 但一定要列出來，只給數字等於沒說 */
+  function listNames(names, max) {
+    const shown = names.slice(0, max).map((n) => '  · ' + n);
+    if (names.length > max) shown.push('  … 還有 ' + (names.length - max) + ' 個');
+    return shown.join('\n');
+  }
+
   function summary(d) {
     const lines = [`讀到 ${d.count} 個 Color 變數。`];
+
     if (d.unresolved.length) {
       lines.push(`\n${d.unresolved.length} 個無法解析出色值（已略過）:`);
-      d.unresolved.forEach((n) => lines.push('  ' + n));
+      lines.push(listNames(d.unresolved, 10));
     }
+
+    // 略過的一定要列名稱。只給數字的話，「我新增的變數為什麼沒出現」
+    // 這個問題完全無從查起 —— 它就躺在這個清單裡。
     if (d.skipped.length) {
-      lines.push(`\n略過 ${d.skipped.length} 個非 Color/ 變數。`);
+      lines.push(
+        `\n略過 ${d.skipped.length} 個（名稱不是 Color/ 開頭）:`
+      );
+      lines.push(listNames(d.skipped, 10));
+      lines.push(
+        '\n要納入的話，變數名稱必須是 Color/<家族>/<階層>，' +
+        '例如 Color/Primary/070。'
+      );
     }
+
     return lines.join('\n');
   }
 
@@ -123,10 +184,7 @@
       lastPayload = msg.payload;
 
       if (msg.count === 0) {
-        show('err',
-          '這個檔案裡沒有 Color/ 開頭的本地變數。\n\n' +
-          'plugin 只讀「當前檔案的本地變數」。請在 Foundation 檔案裡執行 —— ' +
-          '在引用 library 的檔案裡跑會讀不到，那些是 remote 變數。');
+        show('err', explainEmpty(msg));
         $('sync').disabled = false;
         $('copy').disabled = false;
         return;
