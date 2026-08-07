@@ -159,6 +159,10 @@ FIGMA_TOKEN=xxx FIGMA_FILE_KEY=xxx npm run sync:api
 | **Sync tokens from Figma (link)** | 手動(貼 JSON) | ✗ | ✅ |
 | **Sync tokens from Figma (API)** | 手動 | ✓ | ❌ 需 Enterprise |
 
+**plugin 不綁定任何檔案** —— 它讀的是「當前開啟的檔案」的本地變數。要換來源檔案(例如改用備份檔),直接開那個檔案跑 plugin 就好,程式不用改。`FIGMA_FILE_KEY` 只有 API 那條路徑會用到。
+
+換來源時記得在 workflow 的 `source_url` 欄位填上檔名或連結 —— **那是 PR 上唯一能追出「這批值來自哪個檔案」的線索。**
+
 手動觸發的「Run workflow」按鈕**只會出現在預設分支(main)的 Actions 頁面上** —— 這是 GitHub 的行為,不是設定問題。
 
 `Build tokens` 會檢查 `platform/` 有沒有跟 `tokens/` 脫節。
@@ -170,7 +174,7 @@ API 那條**刻意沒有設排程** —— 在方案升級之前,排程只會每
 | Secret | 說明 |
 | --- | --- |
 | `FIGMA_TOKEN` | Figma personal access token,**必須含 `file_variables:read` scope** |
-| `FIGMA_FILE_KEY` | `1TcgPhqHmLeZhPpv7LaCGO`(網址 `/design/<這段>/` 的值) |
+| `FIGMA_FILE_KEY` | 要同步的檔案 key,網址 `/design/<這段>/` 的值 |
 
 ### ⚠️ 目前這條路走不通
 
