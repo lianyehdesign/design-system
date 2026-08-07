@@ -1,0 +1,460 @@
+{
+  "$comment": "Figma 變數的 Code syntax 對照表。key 是正規化後的 token 路徑（Color/Primary/060 → color.primary.060）。由 figma-plugin 寫回 Figma，讓 Dev Mode 顯示 token 名稱而不是色值。",
+  "tokens": {
+    "color.blue.100": {
+      "iOS": "DesignTokens.colorBlue100",
+      "WEB": "var(--color-blue-100)",
+      "ANDROID": "R.color.color_blue_100"
+    },
+    "color.blue.200": {
+      "iOS": "DesignTokens.colorBlue200",
+      "WEB": "var(--color-blue-200)",
+      "ANDROID": "R.color.color_blue_200"
+    },
+    "color.blue.300": {
+      "iOS": "DesignTokens.colorBlue300",
+      "WEB": "var(--color-blue-300)",
+      "ANDROID": "R.color.color_blue_300"
+    },
+    "color.blue.000": {
+      "iOS": "DesignTokens.colorBlue000",
+      "WEB": "var(--color-blue-000)",
+      "ANDROID": "R.color.color_blue_000"
+    },
+    "color.blue.020": {
+      "iOS": "DesignTokens.colorBlue020",
+      "WEB": "var(--color-blue-020)",
+      "ANDROID": "R.color.color_blue_020"
+    },
+    "color.blue.050": {
+      "iOS": "DesignTokens.colorBlue050",
+      "WEB": "var(--color-blue-050)",
+      "ANDROID": "R.color.color_blue_050"
+    },
+    "color.func-one.010": {
+      "iOS": "DesignTokens.colorFunc-one010",
+      "WEB": "var(--color-func-one-010)",
+      "ANDROID": "R.color.color_func-one_010"
+    },
+    "color.func-one.020": {
+      "iOS": "DesignTokens.colorFunc-one020",
+      "WEB": "var(--color-func-one-020)",
+      "ANDROID": "R.color.color_func-one_020"
+    },
+    "color.func-one.030": {
+      "iOS": "DesignTokens.colorFunc-one030",
+      "WEB": "var(--color-func-one-030)",
+      "ANDROID": "R.color.color_func-one_030"
+    },
+    "color.func-one.040": {
+      "iOS": "DesignTokens.colorFunc-one040",
+      "WEB": "var(--color-func-one-040)",
+      "ANDROID": "R.color.color_func-one_040"
+    },
+    "color.func-one.050": {
+      "iOS": "DesignTokens.colorFunc-one050",
+      "WEB": "var(--color-func-one-050)",
+      "ANDROID": "R.color.color_func-one_050"
+    },
+    "color.func-one.060": {
+      "iOS": "DesignTokens.colorFunc-one060",
+      "WEB": "var(--color-func-one-060)",
+      "ANDROID": "R.color.color_func-one_060"
+    },
+    "color.func-three.010": {
+      "iOS": "DesignTokens.colorFunc-three010",
+      "WEB": "var(--color-func-three-010)",
+      "ANDROID": "R.color.color_func-three_010"
+    },
+    "color.func-three.020": {
+      "iOS": "DesignTokens.colorFunc-three020",
+      "WEB": "var(--color-func-three-020)",
+      "ANDROID": "R.color.color_func-three_020"
+    },
+    "color.func-three.030": {
+      "iOS": "DesignTokens.colorFunc-three030",
+      "WEB": "var(--color-func-three-030)",
+      "ANDROID": "R.color.color_func-three_030"
+    },
+    "color.func-three.040": {
+      "iOS": "DesignTokens.colorFunc-three040",
+      "WEB": "var(--color-func-three-040)",
+      "ANDROID": "R.color.color_func-three_040"
+    },
+    "color.func-three.050": {
+      "iOS": "DesignTokens.colorFunc-three050",
+      "WEB": "var(--color-func-three-050)",
+      "ANDROID": "R.color.color_func-three_050"
+    },
+    "color.func-three.060": {
+      "iOS": "DesignTokens.colorFunc-three060",
+      "WEB": "var(--color-func-three-060)",
+      "ANDROID": "R.color.color_func-three_060"
+    },
+    "color.func-two.010": {
+      "iOS": "DesignTokens.colorFunc-two010",
+      "WEB": "var(--color-func-two-010)",
+      "ANDROID": "R.color.color_func-two_010"
+    },
+    "color.func-two.020": {
+      "iOS": "DesignTokens.colorFunc-two020",
+      "WEB": "var(--color-func-two-020)",
+      "ANDROID": "R.color.color_func-two_020"
+    },
+    "color.func-two.030": {
+      "iOS": "DesignTokens.colorFunc-two030",
+      "WEB": "var(--color-func-two-030)",
+      "ANDROID": "R.color.color_func-two_030"
+    },
+    "color.func-two.040": {
+      "iOS": "DesignTokens.colorFunc-two040",
+      "WEB": "var(--color-func-two-040)",
+      "ANDROID": "R.color.color_func-two_040"
+    },
+    "color.func-two.050": {
+      "iOS": "DesignTokens.colorFunc-two050",
+      "WEB": "var(--color-func-two-050)",
+      "ANDROID": "R.color.color_func-two_050"
+    },
+    "color.func-two.060": {
+      "iOS": "DesignTokens.colorFunc-two060",
+      "WEB": "var(--color-func-two-060)",
+      "ANDROID": "R.color.color_func-two_060"
+    },
+    "color.gray.100": {
+      "iOS": "DesignTokens.colorGray100",
+      "WEB": "var(--color-gray-100)",
+      "ANDROID": "R.color.color_gray_100"
+    },
+    "color.gray.200": {
+      "iOS": "DesignTokens.colorGray200",
+      "WEB": "var(--color-gray-200)",
+      "ANDROID": "R.color.color_gray_200"
+    },
+    "color.gray.300": {
+      "iOS": "DesignTokens.colorGray300",
+      "WEB": "var(--color-gray-300)",
+      "ANDROID": "R.color.color_gray_300"
+    },
+    "color.gray.400": {
+      "iOS": "DesignTokens.colorGray400",
+      "WEB": "var(--color-gray-400)",
+      "ANDROID": "R.color.color_gray_400"
+    },
+    "color.gray.500": {
+      "iOS": "DesignTokens.colorGray500",
+      "WEB": "var(--color-gray-500)",
+      "ANDROID": "R.color.color_gray_500"
+    },
+    "color.gray.000": {
+      "iOS": "DesignTokens.colorGray000",
+      "WEB": "var(--color-gray-000)",
+      "ANDROID": "R.color.color_gray_000"
+    },
+    "color.gray.010": {
+      "iOS": "DesignTokens.colorGray010",
+      "WEB": "var(--color-gray-010)",
+      "ANDROID": "R.color.color_gray_010"
+    },
+    "color.gray.020": {
+      "iOS": "DesignTokens.colorGray020",
+      "WEB": "var(--color-gray-020)",
+      "ANDROID": "R.color.color_gray_020"
+    },
+    "color.gray.030": {
+      "iOS": "DesignTokens.colorGray030",
+      "WEB": "var(--color-gray-030)",
+      "ANDROID": "R.color.color_gray_030"
+    },
+    "color.gray.040": {
+      "iOS": "DesignTokens.colorGray040",
+      "WEB": "var(--color-gray-040)",
+      "ANDROID": "R.color.color_gray_040"
+    },
+    "color.gray.050": {
+      "iOS": "DesignTokens.colorGray050",
+      "WEB": "var(--color-gray-050)",
+      "ANDROID": "R.color.color_gray_050"
+    },
+    "color.gray.060": {
+      "iOS": "DesignTokens.colorGray060",
+      "WEB": "var(--color-gray-060)",
+      "ANDROID": "R.color.color_gray_060"
+    },
+    "color.gray.070": {
+      "iOS": "DesignTokens.colorGray070",
+      "WEB": "var(--color-gray-070)",
+      "ANDROID": "R.color.color_gray_070"
+    },
+    "color.gray.080": {
+      "iOS": "DesignTokens.colorGray080",
+      "WEB": "var(--color-gray-080)",
+      "ANDROID": "R.color.color_gray_080"
+    },
+    "color.gray.090": {
+      "iOS": "DesignTokens.colorGray090",
+      "WEB": "var(--color-gray-090)",
+      "ANDROID": "R.color.color_gray_090"
+    },
+    "color.green.100": {
+      "iOS": "DesignTokens.colorGreen100",
+      "WEB": "var(--color-green-100)",
+      "ANDROID": "R.color.color_green_100"
+    },
+    "color.green.200": {
+      "iOS": "DesignTokens.colorGreen200",
+      "WEB": "var(--color-green-200)",
+      "ANDROID": "R.color.color_green_200"
+    },
+    "color.green.300": {
+      "iOS": "DesignTokens.colorGreen300",
+      "WEB": "var(--color-green-300)",
+      "ANDROID": "R.color.color_green_300"
+    },
+    "color.green.000": {
+      "iOS": "DesignTokens.colorGreen000",
+      "WEB": "var(--color-green-000)",
+      "ANDROID": "R.color.color_green_000"
+    },
+    "color.green.020": {
+      "iOS": "DesignTokens.colorGreen020",
+      "WEB": "var(--color-green-020)",
+      "ANDROID": "R.color.color_green_020"
+    },
+    "color.green.050": {
+      "iOS": "DesignTokens.colorGreen050",
+      "WEB": "var(--color-green-050)",
+      "ANDROID": "R.color.color_green_050"
+    },
+    "color.neutral.100": {
+      "iOS": "DesignTokens.colorNeutral100",
+      "WEB": "var(--color-neutral-100)",
+      "ANDROID": "R.color.color_neutral_100"
+    },
+    "color.neutral.110": {
+      "iOS": "DesignTokens.colorNeutral110",
+      "WEB": "var(--color-neutral-110)",
+      "ANDROID": "R.color.color_neutral_110"
+    },
+    "color.neutral.120": {
+      "iOS": "DesignTokens.colorNeutral120",
+      "WEB": "var(--color-neutral-120)",
+      "ANDROID": "R.color.color_neutral_120"
+    },
+    "color.neutral.130": {
+      "iOS": "DesignTokens.colorNeutral130",
+      "WEB": "var(--color-neutral-130)",
+      "ANDROID": "R.color.color_neutral_130"
+    },
+    "color.neutral.140": {
+      "iOS": "DesignTokens.colorNeutral140",
+      "WEB": "var(--color-neutral-140)",
+      "ANDROID": "R.color.color_neutral_140"
+    },
+    "color.neutral.000": {
+      "iOS": "DesignTokens.colorNeutral000",
+      "WEB": "var(--color-neutral-000)",
+      "ANDROID": "R.color.color_neutral_000"
+    },
+    "color.neutral.010": {
+      "iOS": "DesignTokens.colorNeutral010",
+      "WEB": "var(--color-neutral-010)",
+      "ANDROID": "R.color.color_neutral_010"
+    },
+    "color.neutral.020": {
+      "iOS": "DesignTokens.colorNeutral020",
+      "WEB": "var(--color-neutral-020)",
+      "ANDROID": "R.color.color_neutral_020"
+    },
+    "color.neutral.030": {
+      "iOS": "DesignTokens.colorNeutral030",
+      "WEB": "var(--color-neutral-030)",
+      "ANDROID": "R.color.color_neutral_030"
+    },
+    "color.neutral.040": {
+      "iOS": "DesignTokens.colorNeutral040",
+      "WEB": "var(--color-neutral-040)",
+      "ANDROID": "R.color.color_neutral_040"
+    },
+    "color.neutral.050": {
+      "iOS": "DesignTokens.colorNeutral050",
+      "WEB": "var(--color-neutral-050)",
+      "ANDROID": "R.color.color_neutral_050"
+    },
+    "color.neutral.060": {
+      "iOS": "DesignTokens.colorNeutral060",
+      "WEB": "var(--color-neutral-060)",
+      "ANDROID": "R.color.color_neutral_060"
+    },
+    "color.neutral.070": {
+      "iOS": "DesignTokens.colorNeutral070",
+      "WEB": "var(--color-neutral-070)",
+      "ANDROID": "R.color.color_neutral_070"
+    },
+    "color.neutral.080": {
+      "iOS": "DesignTokens.colorNeutral080",
+      "WEB": "var(--color-neutral-080)",
+      "ANDROID": "R.color.color_neutral_080"
+    },
+    "color.neutral.090": {
+      "iOS": "DesignTokens.colorNeutral090",
+      "WEB": "var(--color-neutral-090)",
+      "ANDROID": "R.color.color_neutral_090"
+    },
+    "color.primary.010": {
+      "iOS": "DesignTokens.colorPrimary010",
+      "WEB": "var(--color-primary-010)",
+      "ANDROID": "R.color.color_primary_010"
+    },
+    "color.primary.020": {
+      "iOS": "DesignTokens.colorPrimary020",
+      "WEB": "var(--color-primary-020)",
+      "ANDROID": "R.color.color_primary_020"
+    },
+    "color.primary.030": {
+      "iOS": "DesignTokens.colorPrimary030",
+      "WEB": "var(--color-primary-030)",
+      "ANDROID": "R.color.color_primary_030"
+    },
+    "color.primary.040": {
+      "iOS": "DesignTokens.colorPrimary040",
+      "WEB": "var(--color-primary-040)",
+      "ANDROID": "R.color.color_primary_040"
+    },
+    "color.primary.050": {
+      "iOS": "DesignTokens.colorPrimary050",
+      "WEB": "var(--color-primary-050)",
+      "ANDROID": "R.color.color_primary_050"
+    },
+    "color.primary.060": {
+      "iOS": "DesignTokens.colorPrimary060",
+      "WEB": "var(--color-primary-060)",
+      "ANDROID": "R.color.color_primary_060"
+    },
+    "color.red.100": {
+      "iOS": "DesignTokens.colorRed100",
+      "WEB": "var(--color-red-100)",
+      "ANDROID": "R.color.color_red_100"
+    },
+    "color.red.200": {
+      "iOS": "DesignTokens.colorRed200",
+      "WEB": "var(--color-red-200)",
+      "ANDROID": "R.color.color_red_200"
+    },
+    "color.red.300": {
+      "iOS": "DesignTokens.colorRed300",
+      "WEB": "var(--color-red-300)",
+      "ANDROID": "R.color.color_red_300"
+    },
+    "color.red.010": {
+      "iOS": "DesignTokens.colorRed010",
+      "WEB": "var(--color-red-010)",
+      "ANDROID": "R.color.color_red_010"
+    },
+    "color.red.020": {
+      "iOS": "DesignTokens.colorRed020",
+      "WEB": "var(--color-red-020)",
+      "ANDROID": "R.color.color_red_020"
+    },
+    "color.red.050": {
+      "iOS": "DesignTokens.colorRed050",
+      "WEB": "var(--color-red-050)",
+      "ANDROID": "R.color.color_red_050"
+    },
+    "color.salmon.100": {
+      "iOS": "DesignTokens.colorSalmon100",
+      "WEB": "var(--color-salmon-100)",
+      "ANDROID": "R.color.color_salmon_100"
+    },
+    "color.salmon.200": {
+      "iOS": "DesignTokens.colorSalmon200",
+      "WEB": "var(--color-salmon-200)",
+      "ANDROID": "R.color.color_salmon_200"
+    },
+    "color.salmon.300": {
+      "iOS": "DesignTokens.colorSalmon300",
+      "WEB": "var(--color-salmon-300)",
+      "ANDROID": "R.color.color_salmon_300"
+    },
+    "color.salmon.000": {
+      "iOS": "DesignTokens.colorSalmon000",
+      "WEB": "var(--color-salmon-000)",
+      "ANDROID": "R.color.color_salmon_000"
+    },
+    "color.salmon.020": {
+      "iOS": "DesignTokens.colorSalmon020",
+      "WEB": "var(--color-salmon-020)",
+      "ANDROID": "R.color.color_salmon_020"
+    },
+    "color.salmon.050": {
+      "iOS": "DesignTokens.colorSalmon050",
+      "WEB": "var(--color-salmon-050)",
+      "ANDROID": "R.color.color_salmon_050"
+    },
+    "color.secondary.010": {
+      "iOS": "DesignTokens.colorSecondary010",
+      "WEB": "var(--color-secondary-010)",
+      "ANDROID": "R.color.color_secondary_010"
+    },
+    "color.secondary.020": {
+      "iOS": "DesignTokens.colorSecondary020",
+      "WEB": "var(--color-secondary-020)",
+      "ANDROID": "R.color.color_secondary_020"
+    },
+    "color.secondary.030": {
+      "iOS": "DesignTokens.colorSecondary030",
+      "WEB": "var(--color-secondary-030)",
+      "ANDROID": "R.color.color_secondary_030"
+    },
+    "color.secondary.040": {
+      "iOS": "DesignTokens.colorSecondary040",
+      "WEB": "var(--color-secondary-040)",
+      "ANDROID": "R.color.color_secondary_040"
+    },
+    "color.secondary.050": {
+      "iOS": "DesignTokens.colorSecondary050",
+      "WEB": "var(--color-secondary-050)",
+      "ANDROID": "R.color.color_secondary_050"
+    },
+    "color.secondary.060": {
+      "iOS": "DesignTokens.colorSecondary060",
+      "WEB": "var(--color-secondary-060)",
+      "ANDROID": "R.color.color_secondary_060"
+    },
+    "color.test.000": {
+      "iOS": "DesignTokens.colorTest000",
+      "WEB": "var(--color-test-000)",
+      "ANDROID": "R.color.color_test_000"
+    },
+    "color.yellow.100": {
+      "iOS": "DesignTokens.colorYellow100",
+      "WEB": "var(--color-yellow-100)",
+      "ANDROID": "R.color.color_yellow_100"
+    },
+    "color.yellow.200": {
+      "iOS": "DesignTokens.colorYellow200",
+      "WEB": "var(--color-yellow-200)",
+      "ANDROID": "R.color.color_yellow_200"
+    },
+    "color.yellow.300": {
+      "iOS": "DesignTokens.colorYellow300",
+      "WEB": "var(--color-yellow-300)",
+      "ANDROID": "R.color.color_yellow_300"
+    },
+    "color.yellow.000": {
+      "iOS": "DesignTokens.colorYellow000",
+      "WEB": "var(--color-yellow-000)",
+      "ANDROID": "R.color.color_yellow_000"
+    },
+    "color.yellow.010": {
+      "iOS": "DesignTokens.colorYellow010",
+      "WEB": "var(--color-yellow-010)",
+      "ANDROID": "R.color.color_yellow_010"
+    },
+    "color.yellow.050": {
+      "iOS": "DesignTokens.colorYellow050",
+      "WEB": "var(--color-yellow-050)",
+      "ANDROID": "R.color.color_yellow_050"
+    }
+  }
+}

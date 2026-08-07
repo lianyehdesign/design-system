@@ -42,6 +42,8 @@
   .check { display: flex; align-items: center; gap: 6px; margin: 12px 0 8px; cursor: pointer; }
   .check input { width: auto; margin: 0; }
   .check span { margin: 0; color: var(--figma-color-text); }
+  code { font-family: monospace; font-size: 10px;
+         background: var(--figma-color-bg-secondary); padding: 1px 3px; border-radius: 2px; }
 </style>
 
 <h2>Design Tokens → GitHub</h2>
@@ -69,6 +71,13 @@
 
 <button class="primary" id="sync">讀取變數並觸發同步</button>
 <button class="secondary" id="copy">只讀取，複製 JSON</button>
+
+<hr>
+<div class="hint">
+  把 token 名稱寫進 Figma 變數的 Code syntax，之後 Dev Mode 讀元件會顯示
+  <code>DesignTokens.colorPrimary060</code> 而不是色值。不需要 GitHub token。
+</div>
+<button class="secondary" id="syntax">推送 Code syntax 到 Figma</button>
 
 <div id="status"></div>
 <textarea id="json" readonly></textarea>
@@ -165,8 +174,31 @@
 
     if (msg.type === 'error') {
       show('err', msg.message);
-      $('sync').disabled = false;
-      $('copy').disabled = false;
+      enable();
+      return;
+    }
+
+    if (msg.type === 'code-syntax-done') {
+      const lines = [];
+      lines.push('✔ 已更新 ' + msg.updated.length + ' 個變數的 Code syntax。');
+      if (msg.unchanged.length) {
+        lines.push('\n' + msg.unchanged.length + ' 個原本就是對的，沒有動。');
+      }
+      if (msg.updated.length) {
+        lines.push('\n更新的:');
+        lines.push(listNames(msg.updated, 8));
+      }
+      if (msg.skipped.length) {
+        lines.push('\n略過 ' + msg.skipped.length + ' 個:');
+        lines.push(listNames(msg.skipped, 5));
+      }
+      lines.push(
+        '\n現在用 Dev Mode 看任何「有綁到這些變數」的元件，' +
+        '就會顯示 token 名稱而不是色值。\n\n' +
+        '沒綁變數的圖層不受影響 —— 那要在 Figma 上補綁，工具幫不上忙。'
+      );
+      show(msg.updated.length ? 'ok' : 'info', lines.join('\n'));
+      enable();
       return;
     }
 
@@ -175,8 +207,7 @@
 
       if (msg.count === 0) {
         show('err', explainEmpty(msg));
-        $('sync').disabled = false;
-        $('copy').disabled = false;
+        enable();
         return;
       }
 
@@ -194,8 +225,7 @@
         show('ok', summary(msg) + (copied
           ? '\n\n已複製到剪貼簿，貼進 workflow 的 variables 欄位即可。'
           : '\n\n複製失敗，請從下方框選取後手動複製。'));
-        $('sync').disabled = false;
-        $('copy').disabled = false;
+        enable();
         return;
       }
 
@@ -211,8 +241,7 @@
     // 不要讓它變成 GitHub 那邊語意不明的 422。
     if (body.length > 60000) {
       show('err', `payload 太大（${body.length} bytes）。workflow_dispatch 的輸入上限約 64KB，請改用「只讀取，複製 JSON」後分批處理。`);
-      $('sync').disabled = false;
-      $('copy').disabled = false;
+      enable();
       return;
     }
 
@@ -246,8 +275,7 @@
       );
     } catch (err) {
       show('err', '連不到 GitHub:' + err.message);
-      $('sync').disabled = false;
-      $('copy').disabled = false;
+      enable();
       return;
     }
 
@@ -265,8 +293,7 @@
       post({ type: 'notify', message: '同步觸發失敗', error: true });
     }
 
-    $('sync').disabled = false;
-    $('copy').disabled = false;
+    enable();
   }
 
   function explain(status, detail) {
@@ -284,6 +311,20 @@
 
   let pendingAction = null;
 
+  function enable() {
+    ['sync', 'copy', 'syntax'].forEach((id) => ($(id).disabled = false));
+  }
+
+  function disable() {
+    ['sync', 'copy', 'syntax'].forEach((id) => ($(id).disabled = true));
+  }
+
+  $('syntax').onclick = () => {
+    disable();
+    show('info', '寫入 Code syntax 中…');
+    post({ type: 'push-code-syntax' });
+  };
+
   $('sync').onclick = () => {
     const s = settings();
     const missing = FIELDS.filter((f) => !s[f]);
@@ -292,16 +333,14 @@
       return;
     }
     pendingAction = 'sync';
-    $('sync').disabled = true;
-    $('copy').disabled = true;
+    disable();
     show('info', '讀取變數中…');
     post({ type: 'read-variables' });
   };
 
   $('copy').onclick = () => {
     pendingAction = 'copy';
-    $('sync').disabled = true;
-    $('copy').disabled = true;
+    disable();
     show('info', '讀取變數中…');
     post({ type: 'read-variables' });
   };

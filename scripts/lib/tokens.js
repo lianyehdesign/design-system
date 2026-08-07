@@ -107,6 +107,37 @@ export function normalizeHex(raw) {
   return `#${expanded.toUpperCase()}`;
 }
 
+/**
+ * ---- 各平台的符號名稱 ----
+ *
+ * 這三個函式決定了 platform/ 底下產出什麼名字，也決定了要寫回 Figma
+ * 的 Code syntax 是什麼。兩者**必須一致** —— Code syntax 只是一個標籤，
+ * 它不會建立任何東西。名字對不上的話，Dev Mode 會叫工程師寫一個
+ * 不存在的符號，然後編譯失敗。
+ *
+ * 注意:figma-plugin/code.js 有一份相同的實作（plugin 沙箱讀不到這個檔案）。
+ * 改這裡的話那邊也要改。platform/code-syntax.json 是兩邊的對照憑據 ——
+ * 它進版控，所以任何漂移都會出現在 diff 裡。
+ */
+export function symbolNames(tokenPath, dtcgType) {
+  const path = Array.isArray(tokenPath) ? tokenPath : tokenPath.split('.');
+
+  const camel = path
+    .map((seg, i) => (i === 0 ? seg : seg.charAt(0).toUpperCase() + seg.slice(1)))
+    .join('');
+  const kebab = path.join('-');
+  const snake = path.join('_');
+
+  return {
+    // Xcode 自動完成看得到的形式
+    iOS: `DesignTokens.${camel}`,
+    // CSS 直接可用
+    WEB: `var(--${kebab})`,
+    // Android 的資源型別跟著 token 型別走
+    ANDROID: `R.${dtcgType === 'color' ? 'color' : 'dimen'}.${snake}`,
+  };
+}
+
 /** 巢狀 token 樹 → 扁平 Map：'color.primary.060' → token */
 export function flatten(tree, prefix = [], out = new Map()) {
   for (const [key, value] of Object.entries(tree)) {

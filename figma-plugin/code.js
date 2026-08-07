@@ -8,6 +8,46 @@
 
 const STORAGE_KEY = 'settings';
 
+/**
+ * 哪些分組會被 repo 收下。必須跟 scripts/lib/tokens.js 的 GROUPS 一致。
+ *
+ * 沒登記的分組（例如 ColorSystem/）不該寫 Code syntax ——
+ * 那會讓 Dev Mode 指向一個 platform/ 裡不存在的符號，工程師照著寫會編不過。
+ */
+const SUPPORTED_GROUPS = ['color', 'spacing', 'radius'];
+
+/**
+ * 各平台的符號名稱。
+ *
+ * 這是 scripts/lib/tokens.js 的 symbolNames() 的鏡像 ——
+ * plugin 沙箱讀不到 repo 的檔案，只能複製一份。
+ * 改動時兩邊都要改；platform/code-syntax.json 進版控，
+ * 是兩邊的對照憑據，漂移會出現在 diff 裡。
+ */
+function symbolNames(path, dtcgType) {
+  const camel = path
+    .map(function (seg, i) {
+      return i === 0 ? seg : seg.charAt(0).toUpperCase() + seg.slice(1);
+    })
+    .join('');
+  return {
+    iOS: 'DesignTokens.' + camel,
+    WEB: 'var(--' + path.join('-') + ')',
+    ANDROID:
+      'R.' + (dtcgType === 'color' ? 'color' : 'dimen') + '.' + path.join('_'),
+  };
+}
+
+/** "Color/Primary/060" → ['color','primary','060'] */
+function toPath(name) {
+  return String(name)
+    .split('/')
+    .map(function (s) {
+      return s.trim().toLowerCase().replace(/\s+/g, '-');
+    })
+    .filter(Boolean);
+}
+
 const DEFAULT_SETTINGS = {
   owner: 'lianyehdesign',
   repo: 'design-system',
@@ -16,7 +56,7 @@ const DEFAULT_SETTINGS = {
   token: '',
 };
 
-figma.showUI(__html__, { width: 380, height: 560, themeColors: true });
+figma.showUI(__html__, { width: 380, height: 660, themeColors: true });
 
 figma.ui.onmessage = async (msg) => {
   try {
@@ -39,6 +79,12 @@ figma.ui.onmessage = async (msg) => {
     if (msg.type === 'read-variables') {
       const result = await readVariables();
       figma.ui.postMessage({ type: 'variables', ...result });
+      return;
+    }
+
+    if (msg.type === 'push-code-syntax') {
+      const result = await pushCodeSyntax();
+      figma.ui.postMessage({ type: 'code-syntax-done', ...result });
       return;
     }
 
@@ -98,6 +144,57 @@ async function resolveValue(variable, modeId, depth) {
     return typeof raw === 'number' ? raw : null;
   }
   return null;
+}
+
+/**
+ * 把 token 名稱寫進 Figma 變數的 Code syntax。
+ *
+ * 這是 pipeline 的反向:平常是 Figma → repo，這一步是 repo 的命名規則 → Figma。
+ * 設定之後，Dev Mode 與 MCP 讀元件時回傳的是 DesignTokens.colorPrimary060
+ * 這種字串，而不是 #003354 —— 也就是生成的程式碼會用 token 而不是 magic number。
+ *
+ * 前提仍然是元件有綁到變數。沒綁的話這裡做什麼都沒用。
+ */
+async function pushCodeSyntax() {
+  const all = await figma.variables.getLocalVariablesAsync();
+
+  const updated = [];
+  const unchanged = [];
+  const skipped = [];
+
+  for (const variable of all) {
+    const path = toPath(variable.name);
+    const group = path[0];
+
+    if (SUPPORTED_GROUPS.indexOf(group) === -1) {
+      skipped.push(variable.name + '（分組「' + group + '」不在支援清單）');
+      continue;
+    }
+
+    const dtcgType = variable.resolvedType === 'COLOR' ? 'color' : 'dimension';
+    const want = symbolNames(path, dtcgType);
+    const have = variable.codeSyntax || {};
+
+    if (
+      have.iOS === want.iOS &&
+      have.WEB === want.WEB &&
+      have.ANDROID === want.ANDROID
+    ) {
+      unchanged.push(variable.name);
+      continue;
+    }
+
+    variable.setVariableCodeSyntax('WEB', want.WEB);
+    variable.setVariableCodeSyntax('iOS', want.iOS);
+    variable.setVariableCodeSyntax('ANDROID', want.ANDROID);
+    updated.push(variable.name + ' → ' + want.iOS);
+  }
+
+  return {
+    updated: updated.sort(),
+    unchanged: unchanged.sort(),
+    skipped: skipped.sort(),
+  };
 }
 
 async function readVariables() {

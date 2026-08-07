@@ -236,6 +236,26 @@ dimension  數字  → CGFloat            10px      10dp
 
 **層級深度刻意不限制。** `Color/Primary/060` 是三層、`Spacing/m` 是兩層,未來也可能有 `Color/Brand/Primary/060`。層數是設計端的事。
 
+## 讓元件的程式碼用 token 而不是 magic number
+
+`platform/` 定義了 `DesignTokens.colorPrimary060`,但 Figma 那邊預設不知道這個名字 —— Dev Mode 讀元件只會回傳 `#003354`。所以生成出來的程式碼會是寫死的色值。
+
+解法是幫每個變數設 **Code syntax**,plugin 的「推送 Code syntax 到 Figma」按鈕會自動做:
+
+```
+tokens/  →  symbolNames()  →  Figma 變數的 Code syntax
+                            →  Dev Mode / MCP 回傳 token 名稱
+```
+
+| | 做什麼 |
+| --- | --- |
+| `platform/` | **定義**符號 |
+| Code syntax | **指路** —— 告訴 Figma「這個變數在程式裡叫什麼」 |
+
+**兩者都需要。** Code syntax 只是標籤,不會建立任何東西 —— 沒有 `platform/` 的話,Dev Mode 會叫工程師寫一個不存在的符號。也因此兩邊的命名必須一致,所以都從 `symbolNames()` 出來。
+
+**前提:元件必須真的綁到變數。** 設計師手動填的色值沒有變數可以對應,再多工具也救不了 —— 那要在 Figma 上補綁。
+
 ## 保護機制
 
 三個都是直接讓流程失敗,而不是靜默降級:
