@@ -223,16 +223,22 @@ async function readTextStyles() {
   const unresolved = [];
 
   for (const style of styles) {
-    // lineHeight 有三種單位，必須看 unit 而不是猜數字。
-    // AUTO 代表跟著字體本身的行高走，沒有可移植的數值 —— 只能跳過。
-    var lineHeight;
-    if (style.lineHeight.unit === 'PERCENT') {
-      lineHeight = style.lineHeight.value / 100;
-    } else if (style.lineHeight.unit === 'PIXELS') {
-      lineHeight = style.lineHeight.value / style.fontSize;
-    } else {
-      unresolved.push(style.name + '（lineHeight 是 AUTO，沒有可移植的值）');
-      continue;
+    // 行高刻意不納入 token。
+    //
+    // 目前所有樣式都是 AUTO（跟著字體本身的行高走），而那是三個平台的
+    // 預設行為 —— 帶著一個永遠等於「什麼都不做」的欄位只是雜訊。
+    //
+    // 但不能靜默丟掉:設計師哪天設了固定行高，那是有意圖的，
+    // pipeline 不該當作沒看到。回報出來讓人決定要不要把欄位加回去。
+    if (style.lineHeight.unit !== 'AUTO') {
+      unresolved.push(
+        style.name +
+          '（行高不是 AUTO，是 ' +
+          style.lineHeight.value +
+          ' ' +
+          style.lineHeight.unit +
+          ' —— 目前的 token 不帶行高，這個設定會被忽略）'
+      );
     }
 
     var letterSpacing = 0;
@@ -247,7 +253,6 @@ async function readTextStyles() {
         fontFamily: style.fontName.family,
         fontSize: style.fontSize,
         fontWeight: weightFromStyle(style.fontName.style),
-        lineHeight: lineHeight,
         letterSpacing: letterSpacing,
       },
     };

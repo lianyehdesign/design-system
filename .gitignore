@@ -6,3 +6,8 @@ node_modules/
 # iOS 端用 Swift Package Manager 直接指向這個 repo,
 # SPM 是從 git 拉檔案、不會幫你跑 build,
 # 所以產生出來的檔案必須進版控。
+
+# 未決問題清單留在本機，不進版控。
+# 它記的是「還沒決定的事」，變動頻繁而且多半只對當下的人有意義 ——
+# 進版控的話每次討論都會產生 commit 雜訊。
+docs/

@@ -113,24 +113,18 @@ export function normalizeHex(raw) {
 }
 
 /**
- * 字體是複合值:六個屬性，缺一不可。
+ * 字體是複合值。
  *
- * lineHeight 一律存成「無單位倍數」（1 = 100%）—— 那是唯一三個平台
- * 都能無損換算的形式:
- *   CSS      line-height: 1
- *   SwiftUI  lineSpacing = 字級 × (倍數 - 1)
- *   Android  lineHeight = 字級 × 倍數
- *
- * 存成 px 的話，字級一改行高就錯了，而且不會有任何錯誤訊息。
+ * **不含行高** —— Figma 上所有樣式都是 AUTO（跟著字體本身走），而那是
+ * 三個平台的預設行為，帶一個永遠等於「什麼都不做」的欄位只是雜訊。
+ * 哪天有樣式設了固定行高，plugin 會回報，屆時再把欄位加回來。
  */
 function toTypographyValue(raw) {
   if (raw === null || typeof raw !== 'object') return null;
 
   const size = Number(raw.fontSize);
   const weight = Number(raw.fontWeight);
-  const lineHeight = Number(raw.lineHeight);
   if (!Number.isFinite(size) || !Number.isFinite(weight)) return null;
-  if (!Number.isFinite(lineHeight) || lineHeight <= 0) return null;
   if (!raw.fontFamily) return null;
 
   const letterSpacing = Number(raw.letterSpacing ?? 0);
@@ -139,7 +133,6 @@ function toTypographyValue(raw) {
     fontFamily: String(raw.fontFamily),
     fontSize: `${size}px`,
     fontWeight: weight,
-    lineHeight,
     letterSpacing: `${Number.isFinite(letterSpacing) ? letterSpacing : 0}px`,
   };
 }
