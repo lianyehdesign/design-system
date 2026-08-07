@@ -122,11 +122,17 @@ export function normalizeHex(raw) {
 export function symbolNames(tokenPath, dtcgType) {
   const path = Array.isArray(tokenPath) ? tokenPath : tokenPath.split('.');
 
-  const camel = path
-    .map((seg, i) => (i === 0 ? seg : seg.charAt(0).toUpperCase() + seg.slice(1)))
+  // 先拆成「字」再組合。段落本身可能含連字號（func-two、on-surface），
+  // 直接對段落做大寫轉換會留下連字號 —— colorFunc-two030 不是合法的
+  // Swift 識別字，Android 資源名也不接受。Style Dictionary 是先拆字再組，
+  // 這裡必須跟它一致，否則 Code syntax 會指向一個編不過的符號。
+  const words = path.flatMap((seg) => seg.split(/[^a-zA-Z0-9]+/).filter(Boolean));
+
+  const camel = words
+    .map((w, i) => (i === 0 ? w : w.charAt(0).toUpperCase() + w.slice(1)))
     .join('');
-  const kebab = path.join('-');
-  const snake = path.join('_');
+  const kebab = words.join('-');
+  const snake = words.join('_');
 
   return {
     // Xcode 自動完成看得到的形式

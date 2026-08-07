@@ -32,94 +32,94 @@
       "ANDROID": "R.color.color_blue_050"
     },
     "color.func-one.010": {
-      "iOS": "DesignTokens.colorFunc-one010",
+      "iOS": "DesignTokens.colorFuncOne010",
       "WEB": "var(--color-func-one-010)",
-      "ANDROID": "R.color.color_func-one_010"
+      "ANDROID": "R.color.color_func_one_010"
     },
     "color.func-one.020": {
-      "iOS": "DesignTokens.colorFunc-one020",
+      "iOS": "DesignTokens.colorFuncOne020",
       "WEB": "var(--color-func-one-020)",
-      "ANDROID": "R.color.color_func-one_020"
+      "ANDROID": "R.color.color_func_one_020"
     },
     "color.func-one.030": {
-      "iOS": "DesignTokens.colorFunc-one030",
+      "iOS": "DesignTokens.colorFuncOne030",
       "WEB": "var(--color-func-one-030)",
-      "ANDROID": "R.color.color_func-one_030"
+      "ANDROID": "R.color.color_func_one_030"
     },
     "color.func-one.040": {
-      "iOS": "DesignTokens.colorFunc-one040",
+      "iOS": "DesignTokens.colorFuncOne040",
       "WEB": "var(--color-func-one-040)",
-      "ANDROID": "R.color.color_func-one_040"
+      "ANDROID": "R.color.color_func_one_040"
     },
     "color.func-one.050": {
-      "iOS": "DesignTokens.colorFunc-one050",
+      "iOS": "DesignTokens.colorFuncOne050",
       "WEB": "var(--color-func-one-050)",
-      "ANDROID": "R.color.color_func-one_050"
+      "ANDROID": "R.color.color_func_one_050"
     },
     "color.func-one.060": {
-      "iOS": "DesignTokens.colorFunc-one060",
+      "iOS": "DesignTokens.colorFuncOne060",
       "WEB": "var(--color-func-one-060)",
-      "ANDROID": "R.color.color_func-one_060"
+      "ANDROID": "R.color.color_func_one_060"
     },
     "color.func-three.010": {
-      "iOS": "DesignTokens.colorFunc-three010",
+      "iOS": "DesignTokens.colorFuncThree010",
       "WEB": "var(--color-func-three-010)",
-      "ANDROID": "R.color.color_func-three_010"
+      "ANDROID": "R.color.color_func_three_010"
     },
     "color.func-three.020": {
-      "iOS": "DesignTokens.colorFunc-three020",
+      "iOS": "DesignTokens.colorFuncThree020",
       "WEB": "var(--color-func-three-020)",
-      "ANDROID": "R.color.color_func-three_020"
+      "ANDROID": "R.color.color_func_three_020"
     },
     "color.func-three.030": {
-      "iOS": "DesignTokens.colorFunc-three030",
+      "iOS": "DesignTokens.colorFuncThree030",
       "WEB": "var(--color-func-three-030)",
-      "ANDROID": "R.color.color_func-three_030"
+      "ANDROID": "R.color.color_func_three_030"
     },
     "color.func-three.040": {
-      "iOS": "DesignTokens.colorFunc-three040",
+      "iOS": "DesignTokens.colorFuncThree040",
       "WEB": "var(--color-func-three-040)",
-      "ANDROID": "R.color.color_func-three_040"
+      "ANDROID": "R.color.color_func_three_040"
     },
     "color.func-three.050": {
-      "iOS": "DesignTokens.colorFunc-three050",
+      "iOS": "DesignTokens.colorFuncThree050",
       "WEB": "var(--color-func-three-050)",
-      "ANDROID": "R.color.color_func-three_050"
+      "ANDROID": "R.color.color_func_three_050"
     },
     "color.func-three.060": {
-      "iOS": "DesignTokens.colorFunc-three060",
+      "iOS": "DesignTokens.colorFuncThree060",
       "WEB": "var(--color-func-three-060)",
-      "ANDROID": "R.color.color_func-three_060"
+      "ANDROID": "R.color.color_func_three_060"
     },
     "color.func-two.010": {
-      "iOS": "DesignTokens.colorFunc-two010",
+      "iOS": "DesignTokens.colorFuncTwo010",
       "WEB": "var(--color-func-two-010)",
-      "ANDROID": "R.color.color_func-two_010"
+      "ANDROID": "R.color.color_func_two_010"
     },
     "color.func-two.020": {
-      "iOS": "DesignTokens.colorFunc-two020",
+      "iOS": "DesignTokens.colorFuncTwo020",
       "WEB": "var(--color-func-two-020)",
-      "ANDROID": "R.color.color_func-two_020"
+      "ANDROID": "R.color.color_func_two_020"
     },
     "color.func-two.030": {
-      "iOS": "DesignTokens.colorFunc-two030",
+      "iOS": "DesignTokens.colorFuncTwo030",
       "WEB": "var(--color-func-two-030)",
-      "ANDROID": "R.color.color_func-two_030"
+      "ANDROID": "R.color.color_func_two_030"
     },
     "color.func-two.040": {
-      "iOS": "DesignTokens.colorFunc-two040",
+      "iOS": "DesignTokens.colorFuncTwo040",
       "WEB": "var(--color-func-two-040)",
-      "ANDROID": "R.color.color_func-two_040"
+      "ANDROID": "R.color.color_func_two_040"
     },
     "color.func-two.050": {
-      "iOS": "DesignTokens.colorFunc-two050",
+      "iOS": "DesignTokens.colorFuncTwo050",
       "WEB": "var(--color-func-two-050)",
-      "ANDROID": "R.color.color_func-two_050"
+      "ANDROID": "R.color.color_func_two_050"
     },
     "color.func-two.060": {
-      "iOS": "DesignTokens.colorFunc-two060",
+      "iOS": "DesignTokens.colorFuncTwo060",
       "WEB": "var(--color-func-two-060)",
-      "ANDROID": "R.color.color_func-two_060"
+      "ANDROID": "R.color.color_func_two_060"
     },
     "color.gray.100": {
       "iOS": "DesignTokens.colorGray100",
