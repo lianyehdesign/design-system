@@ -131,15 +131,34 @@
     );
   }
 
+  /** 名稱清單，太長就截斷 —— 但一定要列出來，只給數字等於沒說 */
+  function listNames(names, max) {
+    const shown = names.slice(0, max).map((n) => '  · ' + n);
+    if (names.length > max) shown.push('  … 還有 ' + (names.length - max) + ' 個');
+    return shown.join('\n');
+  }
+
   function summary(d) {
     const lines = [`讀到 ${d.count} 個 Color 變數。`];
+
     if (d.unresolved.length) {
       lines.push(`\n${d.unresolved.length} 個無法解析出色值（已略過）:`);
-      d.unresolved.forEach((n) => lines.push('  ' + n));
+      lines.push(listNames(d.unresolved, 10));
     }
+
+    // 略過的一定要列名稱。只給數字的話，「我新增的變數為什麼沒出現」
+    // 這個問題完全無從查起 —— 它就躺在這個清單裡。
     if (d.skipped.length) {
-      lines.push(`\n略過 ${d.skipped.length} 個非 Color/ 變數。`);
+      lines.push(
+        `\n略過 ${d.skipped.length} 個（名稱不是 Color/ 開頭）:`
+      );
+      lines.push(listNames(d.skipped, 10));
+      lines.push(
+        '\n要納入的話，變數名稱必須是 Color/<家族>/<階層>，' +
+        '例如 Color/Primary/070。'
+      );
     }
+
     return lines.join('\n');
   }
 

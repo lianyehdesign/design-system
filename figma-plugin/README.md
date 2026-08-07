@@ -85,6 +85,12 @@ plugin 讀的是**這個檔案所有的本地變數**,所以它拿到的是完�
 
   面板最上方一定會顯示**目前檔案名稱** —— 排查時先看那一行。
 - **只取預設 mode。** 目前沒有 light/dark 多主題,要支援得改 `code.js` 的 `resolveColor`。
+- **變數名稱必須是 `Color/<家族>/<階層>`。** 例如 `Color/Primary/070`。
+
+  只叫 `Test` 或 `Brand/Blue` 的變數會被略過 —— plugin 會把略過的名稱**列出來**，不會只給數字。
+
+  兩層過濾要注意:plugin 擋掉非 `Color/` 開頭的，workflow 再擋掉不在 `ALLOWED_COLOR_FAMILIES` 裡的家族。所以 `Color/Test/010` 過得了第一關、過不了第二關。想加測試 token 的話，用既有家族的空號（例如 `Color/Primary/070`）最快。
+
 - **只送 `Color/` 開頭的變數。** 跟 repo 端的白名單一致,`ColorSystem/` 這種舊命名會被擋掉。
 - **payload 上限約 64KB。** 這是 `workflow_dispatch` 的輸入限制。目前 46 個 color token 約 2KB,離上限很遠,但加了 typography 之後要留意。plugin 會先擋下來並給明確訊息,不會變成 GitHub 那邊語意不明的 422。
 
