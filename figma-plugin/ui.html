@@ -112,22 +112,13 @@
       );
     }
 
-    if (d.totalColor === 0) {
-      return (
-        where + '\n\n' +
-        '這個檔案有 ' + d.totalLocal + ' 個本地變數，但「沒有一個是顏色型別」。\n\n' +
-        '看起來是對的檔案、但不是放顏色的那一個（可能是 spacing、radius 之類）。\n\n' +
-        '→ 請確認顏色變數是定義在這個檔案裡。'
-      );
-    }
-
     return (
       where + '\n\n' +
-      '這個檔案有 ' + d.totalColor + ' 個顏色變數，但「沒有一個以 Color/ 開頭」。\n\n' +
+      '這個檔案有 ' + d.totalLocal + ' 個本地變數，但沒有一個是支援的型別。\n\n' +
+      '目前只處理顏色（COLOR）與數值（FLOAT）。\n\n' +
       '讀到的名稱長這樣:\n' +
       d.sampleNames.map(function (n) { return '  · ' + n; }).join('\n') +
-      '\n\n檔案應該是對的，但命名前綴跟 repo 的白名單對不上。\n' +
-      '→ 把這段訊息貼給我，我調整白名單。'
+      '\n\n→ 把這段訊息貼給我，我看要怎麼調整。'
     );
   }
 
@@ -139,7 +130,7 @@
   }
 
   function summary(d) {
-    const lines = [`讀到 ${d.count} 個 Color 變數。`];
+    const lines = [`讀到 ${d.count} 個變數（顏色 + 數值）。`];
 
     if (d.unresolved.length) {
       lines.push(`\n${d.unresolved.length} 個無法解析出色值（已略過）:`);
@@ -149,15 +140,14 @@
     // 略過的一定要列名稱。只給數字的話，「我新增的變數為什麼沒出現」
     // 這個問題完全無從查起 —— 它就躺在這個清單裡。
     if (d.skipped.length) {
-      lines.push(
-        `\n略過 ${d.skipped.length} 個（名稱不是 Color/ 開頭）:`
-      );
+      lines.push(`\n${d.skipped.length} 個型別不支援（未送出）:`);
       lines.push(listNames(d.skipped, 10));
-      lines.push(
-        '\n要納入的話，變數名稱必須是 Color/<家族>/<階層>，' +
-        '例如 Color/Primary/070。'
-      );
     }
+
+    lines.push(
+      '\n哪些分組會進 tokens/ 由 repo 的 GROUPS 決定，' +
+      '不在這裡過濾。沒被收下的會列在 Actions 的 Summary 裡。'
+    );
 
     return lines.join('\n');
   }
@@ -267,7 +257,7 @@
         summary(data) +
         `\n\n✔ 已觸發。到 GitHub → Actions 看執行結果。\n` +
         `有色值變動時會開一個 PR；沒變動就不會開。`);
-      post({ type: 'notify', message: `已觸發同步（${data.count} 個 token）` });
+      post({ type: 'notify', message: `已觸發同步（${data.count} 個變數）` });
     } else {
       let detail = '';
       try { detail = (await res.json()).message || ''; } catch (e) {}

@@ -2,7 +2,7 @@
 
 Pinkoi design tokens。Figma 是真實來源,這個 repo 存放轉譯後的 token,並自動產出各平台可直接使用的檔案。
 
-**目前範圍:只處理 Color(45 個)。** Spacing / Radius / Typography 之後再加。
+**目前支援 Color / Spacing / Radius。** `tokens/` 目前只有 Color(45 個)—— Spacing 與 Radius 的 pipeline 已經通了,等第一次 sync 帶進來。
 
 ## 流程
 
@@ -24,8 +24,10 @@ platform/
 
 ```
 design-system/
-├── tokens/                     ← 【真實來源】改這裡
-│   └── color.json                 DTCG 格式的色彩 token，進版控，可手改
+├── tokens/                     ← 【真實來源】改這裡，一個分組一個檔
+│   ├── color.json                 色彩（DTCG 格式，進版控，可手改）
+│   ├── spacing.json               間距（sync 後產生）
+│   └── radius.json                圓角（sync 後產生）
 │
 ├── platform/                   ← 【自動產出】不要手改
 │   ├── ios/DesignTokens.swift     SwiftUI 常數
@@ -39,7 +41,7 @@ design-system/
 │   ├── sync-from-link.js          貼上的 JSON → tokens/（合併，不需權限）
 │   ├── sync-from-api.js           Figma API → tokens/（需 Enterprise 權限）
 │   ├── style-dictionary.config.js 定義每個平台輸出什麼格式、到哪個資料夾
-│   └── lib/tokens.js              共用邏輯：命名規則、hex 驗證、撞名偵測、讀寫 tokens/
+│   └── lib/tokens.js              共用邏輯：分組登記表、值轉換、撞名偵測、讀寫 tokens/
 │
 ├── figma-plugin/               ← 【Figma plugin】在 Figma 按一下就觸發同步
 │   ├── manifest.json              plugin 設定
@@ -205,6 +207,34 @@ This endpoint requires the file_variables:read scope
 2. **寫一個 Figma plugin** — Plugin API 的 `figma.variables.getLocalVariablesAsync()`
    **沒有方案限制**,讀得到本地變數的值與 description。做成按一下就推 GitHub PR,
    自動化程度接近 REST API 那條,但不用升級方案。Tokens Studio 走的就是這條路。
+
+## 新增一種 token 類型
+
+分組(`Color/` / `Spacing/` / `Radius/`)登記在 [`scripts/lib/tokens.js`](scripts/lib/tokens.js) 的 `GROUPS`:
+
+```js
+export const GROUPS = {
+  color:   { dtcgType: 'color',     figmaType: 'COLOR' },
+  spacing: { dtcgType: 'dimension', figmaType: 'FLOAT' },
+  radius:  { dtcgType: 'dimension', figmaType: 'FLOAT' },
+};
+```
+
+**這不是「允許誰進來」的白名單,是「這種東西怎麼轉換」的對照表。** 兩者的差別很重要:
+
+| | 該不該在 repo 裡記? |
+| --- | --- |
+| **家族**(`Primary` / `Blue` / `Test`) | ❌ 只是名字 —— 設計師在 `Color/` 底下加任何家族都不用改程式 |
+| **分組**(`Color` / `Spacing` / …) | ✅ 決定型別 —— 值是 hex 還是數字、各平台輸出成什麼 |
+
+```
+color      hex   → Color(.sRGB, …)   #003354   #ff003354
+dimension  數字  → CGFloat            10px      10dp
+```
+
+遇到沒登記過的分組,pipeline 不知道值該怎麼解讀。**新增一種 token 類型本來就該有人做決定** —— 例如 `Elevation/` 在 iOS 上是 shadow 還是 z-index,那不是能照單全收的事。
+
+**層級深度刻意不限制。** `Color/Primary/060` 是三層、`Spacing/m` 是兩層,未來也可能有 `Color/Brand/Primary/060`。層數是設計端的事。
 
 ## 保護機制
 

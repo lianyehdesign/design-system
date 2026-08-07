@@ -37,7 +37,7 @@ figma.ui.onmessage = async (msg) => {
     }
 
     if (msg.type === 'read-variables') {
-      const result = await readColorVariables();
+      const result = await readVariables();
       figma.ui.postMessage({ type: 'variables', ...result });
       return;
     }
@@ -67,17 +67,19 @@ function rgbaToHex(c) {
 }
 
 /**
- * 展開別名變數（指向另一個變數的變數）。
+ * 展開別名變數（指向另一個變數的變數），並回傳可用的值。
  *
  * 這是 plugin 相對於其他讀取方式的優勢:REST API 那條與 MCP 讀取
- * 都只能把別名記下來然後跳過，這裡可以一路追到真正的色值。
+ * 都只能把別名記下來然後跳過，這裡可以一路追到真正的值。
  * depth 上限是防呆 —— 理論上 Figma 不允許循環，但不值得為此當掉。
+ *
+ * COLOR 回傳 hex 字串，FLOAT 回傳數字，其餘回傳 null。
  */
-async function resolveColor(variable, modeId, depth) {
+async function resolveValue(variable, modeId, depth) {
   if (depth > 10) return null;
 
   const raw = variable.valuesByMode[modeId];
-  if (!raw) return null;
+  if (raw === undefined || raw === null) return null;
 
   if (raw.type === 'VARIABLE_ALIAS') {
     const target = await figma.variables.getVariableByIdAsync(raw.id);
@@ -86,32 +88,33 @@ async function resolveColor(variable, modeId, depth) {
       target.variableCollectionId
     );
     if (!collection) return null;
-    return resolveColor(target, collection.defaultModeId, depth + 1);
+    return resolveValue(target, collection.defaultModeId, depth + 1);
   }
 
-  if (typeof raw.r !== 'number') return null;
-  return rgbaToHex(raw);
+  if (variable.resolvedType === 'COLOR') {
+    return typeof raw.r === 'number' ? rgbaToHex(raw) : null;
+  }
+  if (variable.resolvedType === 'FLOAT') {
+    return typeof raw === 'number' ? raw : null;
+  }
+  return null;
 }
 
-async function readColorVariables() {
+async function readVariables() {
   // 只讀「這個檔案的本地變數」。在引用 library 的檔案裡跑會讀不到東西 ——
   // 那些是 remote 變數，不屬於當前檔案。
   //
-  // 也一併數「所有型別」的本地變數。讀到 0 個 Color/ 時，
-  // 光看這個數字就能分辨是「跑錯檔案」還是「跑對檔案但命名不同」——
-  // 沒有它的話，兩種情況的錯誤訊息一模一樣。
-  const allLocal = await figma.variables.getLocalVariablesAsync();
-  const variables = await figma.variables.getLocalVariablesAsync('COLOR');
+  // 不在這裡做名稱過濾:哪些分組要收，是 repo 的 GROUPS 說了算。
+  // 政策放在一個地方，plugin 只負責把讀得到的東西送出去。
+  const all = await figma.variables.getLocalVariablesAsync();
 
   const payload = {};
-  const skipped = [];
+  const unsupported = [];
   const unresolved = [];
 
-  for (const variable of variables) {
-    // 白名單跟 repo 端一致:只取 Color/ 開頭的。
-    // 這個檔案裡還有 ColorSystem/ 這種舊命名，不能混進來。
-    if (!/^color\//i.test(variable.name)) {
-      skipped.push(variable.name);
+  for (const variable of all) {
+    if (variable.resolvedType !== 'COLOR' && variable.resolvedType !== 'FLOAT') {
+      unsupported.push(variable.name + '（' + variable.resolvedType + '）');
       continue;
     }
 
@@ -121,13 +124,13 @@ async function readColorVariables() {
     if (!collection) continue;
 
     // 只取預設 mode。目前沒有 light/dark 多主題，要支援再擴充。
-    const hex = await resolveColor(variable, collection.defaultModeId, 0);
-    if (!hex) {
+    const value = await resolveValue(variable, collection.defaultModeId, 0);
+    if (value === null) {
       unresolved.push(variable.name);
       continue;
     }
 
-    const entry = { value: hex };
+    const entry = { value: value };
     if (variable.description) entry.description = variable.description;
     payload[variable.name] = entry;
   }
@@ -141,11 +144,10 @@ async function readColorVariables() {
   return {
     payload: sorted,
     count: Object.keys(sorted).length,
-    skipped: skipped.sort(),
+    skipped: unsupported.sort(),
     unresolved: unresolved.sort(),
-    // 診斷用:讀到 0 個時，這三個數字決定該給哪一種說明
-    totalLocal: allLocal.length,
-    totalColor: variables.length,
-    sampleNames: variables.slice(0, 5).map((v) => v.name).sort(),
+    // 診斷用:讀到 0 個時，這幾個數字決定該給哪一種說明
+    totalLocal: all.length,
+    sampleNames: all.slice(0, 5).map((v) => v.name).sort(),
   };
 }

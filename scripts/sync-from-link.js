@@ -27,8 +27,9 @@ import { readFile } from 'node:fs/promises';
 import {
   isAllowedToken,
   whySkipped,
+  groupOf,
   toTokenPath,
-  normalizeHex,
+  toToken,
   readTokens,
   writeTokens,
   findCollisions,
@@ -65,72 +66,84 @@ async function main() {
     process.exit(1);
   }
 
-  // 白名單過濾兩層:非 Color/ 的（字型樣式、別的 UI kit 灰階），
-  // 以及色名命名那一套（Blue/Salmon/Gray/…，與語意命名同色不同名）
-  const colorNames = entries
-    .map(([name]) => name)
-    .filter((name) => isAllowedToken(name));
+  const accepted = entries.map(([name]) => name).filter(isAllowedToken);
+  const skipped = entries.map(([name]) => name).filter((n) => !isAllowedToken(n));
 
-  const skipped = entries
-    .map(([name]) => name)
-    .filter((name) => !isAllowedToken(name));
+  assertNoCollisions(findCollisions(accepted));
 
-  assertNoCollisions(findCollisions(colorNames));
-
-  const before = await readTokens('color');
-  const after = replace ? new Map() : new Map(before);
-  const sourceKeys = new Set(); // 這次來源實際涵蓋到的 token
-  const invalid = [];
-
-  for (const name of colorNames) {
-    const entry = payload[name];
-    const isObject = entry !== null && typeof entry === 'object';
-    const rawValue = isObject ? entry.value : entry;
-    const sourceDescription = isObject ? entry.description : undefined;
-
-    const hex = normalizeHex(rawValue);
-    if (!hex) {
-      invalid.push(`${name} → ${JSON.stringify(entry)}`);
-      continue;
-    }
-
-    const key = toTokenPath(name).join('.');
-    const token = { $type: 'color', $value: hex };
-
-    // description 的優先順序:來源帶了就用來源的（那是 Figma 上的現況），
-    // 沒帶才沿用既有的。
-    //
-    // 這兩種情況都會發生:
-    //   figma-plugin 讀得到 description  → 以 Figma 為準
-    //   MCP / Dev Mode 讀不到 description → 保留人工整理過的內容，不能被清掉
-    const description = sourceDescription || before.get(key)?.$description;
-    if (description) token.$description = description;
-
-    after.set(key, token);
-    sourceKeys.add(key);
+  // 依分組拆開處理。tokens/ 是一個分組一個檔，
+  // 而且每個分組的值怎麼解讀是不一樣的。
+  const byGroup = new Map();
+  for (const name of accepted) {
+    const group = groupOf(name);
+    if (!byGroup.has(group)) byGroup.set(group, []);
+    byGroup.get(group).push(name);
   }
 
+  const mode = replace ? 'replace' : 'merge';
+  const invalid = [];
+  const results = [];
+
+  for (const [group, names] of [...byGroup.entries()].sort()) {
+    const before = await readTokens(group);
+    const after = replace ? new Map() : new Map(before);
+    const sourceKeys = new Set();
+
+    for (const name of names) {
+      const entry = payload[name];
+      const isObject = entry !== null && typeof entry === 'object';
+      const rawValue = isObject ? entry.value : entry;
+      const sourceDescription = isObject ? entry.description : undefined;
+
+      const key = toTokenPath(name).join('.');
+
+      // description 的優先順序:來源帶了就用來源的（那是 Figma 上的現況），
+      // 沒帶才沿用既有的。
+      //
+      // 這兩種情況都會發生:
+      //   figma-plugin 讀得到 description  → 以 Figma 為準
+      //   MCP / Dev Mode 讀不到 description → 保留人工整理過的內容，不能被清掉
+      const description = sourceDescription || before.get(key)?.$description;
+
+      const token = toToken(name, rawValue, description);
+      if (!token) {
+        invalid.push(`${name} → ${JSON.stringify(rawValue)}`);
+        continue;
+      }
+
+      after.set(key, token);
+      sourceKeys.add(key);
+    }
+
+    results.push({ group, before, after, sourceKeys });
+  }
+
+  // 值轉不出來就中止 —— 靜默跳過會讓 token 從下游悄悄消失
   if (invalid.length) {
-    console.error(`\n✘ ${invalid.length} 個值不是合法 hex:`);
+    console.error(`\n✘ ${invalid.length} 個值無法轉換:`);
     invalid.forEach((i) => console.error(`  - ${i}`));
     process.exit(1);
   }
 
-  await writeTokens('color', after);
-
-  const mode = replace ? 'replace' : 'merge';
-  const diff = computeDiff(before, after, sourceKeys);
-  reportDiff(diff, mode);
+  const diffs = [];
+  for (const { group, before, after, sourceKeys } of results) {
+    await writeTokens(group, after);
+    const diff = computeDiff(before, after, sourceKeys);
+    console.log(`\n── ${group} ──`);
+    reportDiff(diff, mode);
+    diffs.push({ group, diff });
+  }
 
   await writeStepSummary(
     summaryMarkdown({
-      title: '從 Figma 同步色彩 token',
+      title: '從 Figma 同步 token',
       source: process.env.SOURCE_URL || null,
       mode,
-      diff,
+      diffs,
       skipped: skipped.map((n) => `${n}（${whySkipped(n)}）`),
       notes: [
-        `讀入 ${entries.length} 個項目，其中 ${colorNames.length} 個進入 \`tokens/color.json\`。`,
+        `讀入 ${entries.length} 個項目，其中 ${accepted.length} 個進入 tokens/` +
+          `（${diffs.map((d) => d.group).join(' / ')}）。`,
       ],
     })
   );
@@ -142,7 +155,7 @@ async function main() {
   }
 
   if (replace) {
-    console.log('\n（--replace:tokens/color.json 已整份重建）');
+    console.log('\n（--replace:tokens/ 已整份重建）');
   }
 }
 

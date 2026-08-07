@@ -6,7 +6,13 @@
 
 import StyleDictionary from 'style-dictionary';
 import config from './style-dictionary.config.js';
-import { readTokens, normalizeHex, writeStepSummary } from './lib/tokens.js';
+import {
+  GROUP_NAMES,
+  GROUPS,
+  readTokens,
+  normalizeHex,
+  writeStepSummary,
+} from './lib/tokens.js';
 
 // ---- SwiftUI 用的自訂 format ----
 // 產出一個 DesignTokens enum，裡面是扁平的 static 常數:
@@ -87,16 +93,30 @@ const fmt = (n) => Number(n.toFixed(4));
 // ---- build 前先驗證 tokens/ ----
 // tokens/ 是可以手改的 SSOT，所以錯字要壞在這裡，
 // 不能讓 NaN 之類的東西流進 platform/ 再流到 app。
-const colors = await readTokens('color');
+const tokensByGroup = new Map();
+for (const group of GROUP_NAMES) {
+  const map = await readTokens(group);
+  if (map.size) tokensByGroup.set(group, map);
+}
+
 const bad = [];
-for (const [key, token] of colors) {
-  const type = token.$type ?? token.type;
-  const value = token.$value ?? token.value;
-  if (type !== 'color') continue;
-  if (normalizeHex(value) === null) bad.push(`${key} → ${JSON.stringify(value)}`);
+for (const [group, map] of tokensByGroup) {
+  for (const [key, token] of map) {
+    const type = token.$type ?? token.type;
+    const value = token.$value ?? token.value;
+
+    if (type === 'color') {
+      if (normalizeHex(value) === null) bad.push(`${key} → ${JSON.stringify(value)}`);
+    } else if (type === 'dimension') {
+      if (!Number.isFinite(parseFloat(String(value))))
+        bad.push(`${key} → ${JSON.stringify(value)}`);
+    } else {
+      bad.push(`${key} → 未知型別 ${JSON.stringify(type)}`);
+    }
+  }
 }
 if (bad.length) {
-  console.error(`✘ ${bad.length} 個 color token 的值不是合法 hex:`);
+  console.error(`✘ ${bad.length} 個 token 的值不合法:`);
   bad.forEach((b) => console.error(`  - ${b}`));
   process.exit(1);
 }
@@ -107,29 +127,22 @@ await sd.buildAllPlatforms();
 
 // ---- 把結果寫進 Actions 的 Summary 頁面 ----
 // 不寫的話那一頁是空的，得點進 step 展開 log 才知道發生什麼事。
-const families = new Map();
-for (const key of colors.keys()) {
-  const family = key.split('.')[1] ?? '?';
-  families.set(family, (families.get(family) ?? 0) + 1);
-}
+const totalTokens = [...tokensByGroup.values()].reduce((n, m) => n + m.size, 0);
 
 await writeStepSummary([
   '## 🎨 產出各平台檔案',
   '',
-  `\`tokens/\` 的 **${colors.size} 個 color token** 已轉成下列檔案:`,
+  `\`tokens/\` 的 **${totalTokens} 個 token** 已轉成下列檔案:`,
   '',
   '| 平台 | 檔案 |',
   '| --- | --- |',
   '| iOS | `platform/ios/DesignTokens.swift` |',
   '| Web | `platform/web/tokens.css` · `tokens.js` · `tokens.d.ts` |',
-  '| Android | `platform/android/colors.xml` |',
+  '| Android | `platform/android/colors.xml` · `dimens.xml` |',
   '',
-  '<details>',
-  '<summary>各家族的 token 數</summary>',
-  '',
-  '| 家族 | 數量 |',
-  '| --- | --- |',
-  ...[...families.entries()].sort().map(([f, n]) => `| \`${f}\` | ${n} |`),
-  '',
-  '</details>',
+  '| 分組 | 型別 | 數量 |',
+  '| --- | --- | --- |',
+  ...[...tokensByGroup.entries()]
+    .sort()
+    .map(([g, m]) => `| \`${g}\` | ${GROUPS[g].dtcgType} | ${m.size} |`),
 ]);

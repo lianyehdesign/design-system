@@ -85,6 +85,11 @@ plugin 讀的是**這個檔案所有的本地變數**,所以它拿到的是完�
 
   面板最上方一定會顯示**目前檔案名稱** —— 排查時先看那一行。
 - **只取預設 mode。** 目前沒有 light/dark 多主題,要支援得改 `code.js` 的 `resolveColor`。
+- **送出顏色（COLOR）與數值（FLOAT）兩種型別。** 其他型別（STRING / BOOLEAN）會列在面板上、不送出。
+
+  **plugin 不做名稱過濾** —— 哪些分組要收由 repo 的 `GROUPS` 決定。政策放在一個地方，plugin 只負責把讀得到的東西送出去，沒被收下的會列在 Actions 的 Summary 裡並附上原因。
+
+- **只取預設 mode。** 目前沒有 light/dark 多主題,要支援得改 `code.js` 的 `resolveColor`。
 - **變數名稱必須是 `Color/<家族>/<階層>`。** 例如 `Color/Primary/070`。
 
   只叫 `Test` 或 `Brand/Blue` 的變數會被略過 —— plugin 會把略過的名稱**列出來**，不會只給數字。

@@ -16,8 +16,10 @@
 
 import {
   isAllowedToken,
+  whySkipped,
+  groupOf,
   toTokenPath,
-  normalizeHex,
+  toToken,
   readTokens,
   writeTokens,
   findCollisions,
@@ -113,56 +115,79 @@ async function main() {
   const { meta } = await res.json();
   const { variables, variableCollections } = meta;
 
-  const colorVars = Object.values(variables)
-    .filter((v) => v.resolvedType === 'COLOR' && isAllowedToken(v.name))
+  // 分組的登記表決定收哪些型別。COLOR → color，FLOAT → dimension。
+  const wanted = Object.values(variables)
+    .filter((v) => isAllowedToken(v.name))
     .sort((a, b) => a.name.localeCompare(b.name));
 
-  assertNoCollisions(findCollisions(colorVars.map((v) => v.name)));
+  const skipped = Object.values(variables)
+    .filter((v) => !isAllowedToken(v.name))
+    .map((v) => v.name)
+    .sort();
 
-  const before = await readTokens('color');
-  const after = new Map();
+  assertNoCollisions(findCollisions(wanted.map((v) => v.name)));
+
+  const byGroup = new Map();
+  for (const variable of wanted) {
+    const group = groupOf(variable.name);
+    if (!byGroup.has(group)) byGroup.set(group, []);
+    byGroup.get(group).push(variable);
+  }
+
   const aliases = [];
   const invalid = [];
+  const diffs = [];
 
-  for (const variable of colorVars) {
-    const collection = variableCollections[variable.variableCollectionId];
-    // 只取預設 mode（目前沒有 light/dark 多主題，要支援再擴充）
-    const rawValue = variable.valuesByMode?.[collection?.defaultModeId];
+  for (const [group, vars] of [...byGroup.entries()].sort()) {
+    const before = await readTokens(group);
+    const after = new Map();
 
-    // 別名變數（指向另一個變數）目前不展開
-    if (rawValue?.type === 'VARIABLE_ALIAS') {
-      aliases.push(variable.name);
-      continue;
+    for (const variable of vars) {
+      const collection = variableCollections[variable.variableCollectionId];
+      // 只取預設 mode（目前沒有 light/dark 多主題，要支援再擴充）
+      const rawValue = variable.valuesByMode?.[collection?.defaultModeId];
+
+      // 別名變數（指向另一個變數）目前不展開
+      if (rawValue?.type === 'VARIABLE_ALIAS') {
+        aliases.push(variable.name);
+        continue;
+      }
+
+      // COLOR 回傳 {r,g,b,a}，FLOAT 直接回傳數字
+      const raw =
+        variable.resolvedType === 'COLOR' ? rgbaToHex(rawValue) : rawValue;
+
+      const token = toToken(variable.name, raw, variable.description);
+      if (!token) {
+        invalid.push(`${variable.name} → ${JSON.stringify(rawValue)}`);
+        continue;
+      }
+
+      after.set(toTokenPath(variable.name).join('.'), token);
     }
 
-    const hex = rawValue ? normalizeHex(rgbaToHex(rawValue)) : null;
-    if (!hex) {
-      invalid.push(`${variable.name} → ${JSON.stringify(rawValue)}`);
-      continue;
-    }
+    if (invalid.length) continue;
 
-    const token = { $type: 'color', $value: hex };
-    if (variable.description) token.$description = variable.description;
-    after.set(toTokenPath(variable.name).join('.'), token);
+    await writeTokens(group, after);
+    const diff = computeDiff(before, after);
+    console.log(`\n── ${group} ──`);
+    reportDiff(diff, 'replace');
+    diffs.push({ group, diff });
   }
 
   if (invalid.length) {
-    console.error(`\n✘ ${invalid.length} 個變數的值無法轉成 hex:`);
+    console.error(`\n✘ ${invalid.length} 個變數的值無法轉換:`);
     invalid.forEach((i) => console.error(`  - ${i}`));
     process.exit(1);
   }
 
-  await writeTokens('color', after);
-
-  const diff = computeDiff(before, after);
-  reportDiff(diff, 'replace');
-
   await writeStepSummary(
     summaryMarkdown({
-      title: '從 Figma Variables API 同步色彩 token',
+      title: '從 Figma Variables API 同步 token',
       source: `Figma file \`${FILE_KEY}\``,
       mode: 'replace',
-      diff,
+      diffs,
+      skipped: skipped.map((n) => `${n}（${whySkipped(n)}）`),
       notes: aliases.length
         ? [`> ⚠️ ${aliases.length} 個別名變數未展開，這次沒有寫入。`]
         : null,
