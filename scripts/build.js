@@ -48,6 +48,25 @@ StyleDictionary.registerFormat({
         if (Number.isNaN(num)) continue;
         lines.push(comment);
         lines.push(`  public static let ${token.name}: CGFloat = ${num}`);
+      } else if (type === 'typography') {
+        // iOS 用系統字體，所以 fontFamily 不進 Swift。
+        // 字體名稱仍留在 tokens/ 裡供 Web / Android 使用。
+        const size = parseFloat(String(value.fontSize));
+        const weight = swiftWeight(value.fontWeight);
+        // Font 不帶行高，行距要另外套 .lineSpacing()。
+        // 100%（倍數 1）代表 lineSpacing 為 0。
+        const lineSpacing = Number((size * (value.lineHeight - 1)).toFixed(2));
+
+        lines.push(comment);
+        lines.push(
+          `  public static let ${token.name} = Font.system(size: ${size}, weight: ${weight})`
+        );
+        lines.push(
+          `  /// 搭配 .lineSpacing() 使用。行高 ${value.lineHeight}× 於 ${size}pt 字級`
+        );
+        lines.push(
+          `  public static let ${token.name}LineSpacing: CGFloat = ${lineSpacing}`
+        );
       }
     }
 
@@ -60,6 +79,90 @@ StyleDictionary.registerFormat({
       'public enum DesignTokens {',
       lines.join('\n'),
       '}',
+      '',
+    ].join('\n');
+  },
+});
+
+// ---- 把字體從某些 platform 排除 ----
+// files[].filter 只在輸出階段生效，transform 還是會跑到所有 token。
+// css transformGroup 的 font shorthand transform 遇到字體會噴警告，
+// 那個警告是誤導的（我們本來就沒要它處理字體），但會淹掉真正的警告。
+StyleDictionary.registerPreprocessor({
+  name: 'drop-typography',
+  preprocessor: (dictionary) => {
+    const { typography, ...rest } = dictionary;
+    return rest;
+  },
+});
+
+// ---- Web:字體攤平成多個 custom property ----
+// 一個 token 六個屬性，CSS 沒有複合值的概念，只能一個屬性一個變數。
+StyleDictionary.registerFormat({
+  name: 'typography/css',
+  format: ({ dictionary }) => {
+    const lines = [];
+    for (const token of dictionary.allTokens) {
+      if ((token.$type ?? token.type) !== 'typography') continue;
+      const v = token.$value ?? token.value;
+      const base = `--${token.path.join('-')}`;
+      const d = token.$description ?? token.description;
+      if (d) lines.push(`  /* ${d} */`);
+      lines.push(`  ${base}-font-family: "${v.fontFamily}";`);
+      lines.push(`  ${base}-font-size: ${v.fontSize};`);
+      lines.push(`  ${base}-font-weight: ${v.fontWeight};`);
+      lines.push(`  ${base}-line-height: ${v.lineHeight};`);
+      lines.push(`  ${base}-letter-spacing: ${v.letterSpacing};`);
+      lines.push('');
+    }
+    return [
+      '/**',
+      ' * Do not edit directly, this file was auto-generated.',
+      ' */',
+      '',
+      ':root {',
+      lines.join('\n').trimEnd(),
+      '}',
+      '',
+    ].join('\n');
+  },
+});
+
+// ---- Android:字體是 TextAppearance style ----
+// 不是 dimen —— 一個 token 對應一組 style，而不是一個值。
+StyleDictionary.registerFormat({
+  name: 'typography/android',
+  format: ({ dictionary }) => {
+    const lines = [];
+    for (const token of dictionary.allTokens) {
+      if ((token.$type ?? token.type) !== 'typography') continue;
+      const v = token.$value ?? token.value;
+      const size = parseFloat(String(v.fontSize));
+      const name = token.path
+        .slice(1)
+        .map((p) => p.split(/[^a-zA-Z0-9]+/).filter(Boolean).map(
+          (w) => w.charAt(0).toUpperCase() + w.slice(1)
+        ).join(''))
+        .join('.');
+      const d = token.$description ?? token.description;
+      if (d) lines.push(`  <!-- ${d} -->`);
+      lines.push(`  <style name="TextAppearance.${name}">`);
+      lines.push(`    <item name="android:textSize">${size}sp</item>`);
+      lines.push(
+        `    <item name="android:lineHeight">${Number((size * v.lineHeight).toFixed(2))}sp</item>`
+      );
+      lines.push(`    <item name="android:textFontWeight">${v.fontWeight}</item>`);
+      lines.push('  </style>');
+    }
+    return [
+      '<?xml version="1.0" encoding="UTF-8"?>',
+      '',
+      '<!--',
+      '  Do not edit directly, this file was auto-generated.',
+      '-->',
+      '<resources>',
+      lines.join('\n'),
+      '</resources>',
       '',
     ].join('\n');
   },
@@ -78,6 +181,22 @@ StyleDictionary.registerTransform({
     return Number.isNaN(num) ? token.$value ?? token.value : `${num}dp`;
   },
 });
+
+/** CSS 數值字重 → SwiftUI 的 Font.Weight */
+function swiftWeight(n) {
+  const table = {
+    100: '.ultraLight',
+    200: '.thin',
+    300: '.light',
+    400: '.regular',
+    500: '.medium',
+    600: '.semibold',
+    700: '.bold',
+    800: '.heavy',
+    900: '.black',
+  };
+  return table[n] ?? '.regular';
+}
 
 function hexToRgba(hex) {
   const h = String(hex).replace('#', '');
@@ -112,6 +231,15 @@ for (const [group, map] of tokensByGroup) {
     } else if (type === 'dimension') {
       if (!Number.isFinite(parseFloat(String(value))))
         bad.push(`${key} → ${JSON.stringify(value)}`);
+    } else if (type === 'typography') {
+      const v = value ?? {};
+      const okShape =
+        typeof v.fontFamily === 'string' &&
+        Number.isFinite(parseFloat(String(v.fontSize))) &&
+        Number.isFinite(Number(v.fontWeight)) &&
+        Number.isFinite(Number(v.lineHeight)) &&
+        Number(v.lineHeight) > 0;
+      if (!okShape) bad.push(`${key} → ${JSON.stringify(value)}`);
     } else {
       bad.push(`${key} → 未知型別 ${JSON.stringify(type)}`);
     }

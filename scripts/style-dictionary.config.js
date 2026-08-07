@@ -28,6 +28,7 @@ export default {
 
     // ---- Web：CSS 變數 ----
     css: {
+      preprocessors: ['drop-typography'],
       transformGroup: 'css',
       buildPath: 'platform/web/',
       options: { usesDtcg: true },
@@ -36,18 +37,47 @@ export default {
           destination: 'tokens.css',
           format: 'css/variables',
           options: { selector: ':root' },
+          // 字體是複合值，css/variables 會把整個物件塞進一個變數。
+          // 攤平成多個 property 由 typography/css 處理。
+          filter: (token) => (token.$type ?? token.type) !== 'typography',
+        },
+      ],
+    },
+
+    // ---- Web：字體 ----
+    // 獨立一個 platform，不用 css transformGroup —— 它有一個 font shorthand
+    // transform 會把複合物件壓成 "500 26px/1 'PingFang TC'" 這種字串，
+    // 攤平成個別 property 就取不到值了。
+    cssTypography: {
+      transforms: ['attribute/cti', 'name/kebab'],
+      buildPath: 'platform/web/',
+      options: { usesDtcg: true },
+      files: [
+        {
+          destination: 'typography.css',
+          format: 'typography/css',
+          filter: (token) => (token.$type ?? token.type) === 'typography',
         },
       ],
     },
 
     // ---- Web：JS / TS ----
     ts: {
+      preprocessors: ['drop-typography'],
       transformGroup: 'js',
       buildPath: 'platform/web/',
       options: { usesDtcg: true },
       files: [
-        { destination: 'tokens.js', format: 'javascript/es6' },
-        { destination: 'tokens.d.ts', format: 'typescript/es6-declarations' },
+        {
+          destination: 'tokens.js',
+          format: 'javascript/es6',
+          filter: (token) => (token.$type ?? token.type) !== 'typography',
+        },
+        {
+          destination: 'tokens.d.ts',
+          format: 'typescript/es6-declarations',
+          filter: (token) => (token.$type ?? token.type) !== 'typography',
+        },
       ],
     },
 
@@ -73,6 +103,13 @@ export default {
           destination: 'dimens.xml',
           format: 'android/resources',
           filter: (token) => (token.$type ?? token.type) === 'dimension',
+        },
+        // 字體在 Android 是 TextAppearance style，不是 resource 值
+        {
+          destination: 'type.xml',
+          format: 'typography/android',
+          // 沒有 filter 的話，即使一個字體 token 都沒有也會產生空檔案
+          filter: (token) => (token.$type ?? token.type) === 'typography',
         },
       ],
     },
