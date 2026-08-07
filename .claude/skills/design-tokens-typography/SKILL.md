@@ -130,7 +130,9 @@ typography: { dtcgType: 'typography', figmaType: 'TEXT_STYLE' },
 
 ### 各平台的產出形式
 
-**iOS** —— 用**系統字體**（已確認），所以 `fontFamily` 不進 Swift。字體名稱仍留在 `tokens/` 供 Web / Android 使用。
+**三個平台都用系統字體（已確認）**，所以 `fontFamily` 不影響任何產出。它仍留在 `tokens/` 裡 —— 記錄設計端的現況，日後要載入品牌字體時才不用重查。
+
+**iOS** —— `fontFamily` 不進 Swift。
 
 `Font` 不帶行高，所以成對輸出：
 
@@ -140,14 +142,17 @@ public static let typographySMedium = Font.system(size: 14, weight: .medium)
 public static let typographySMediumLineSpacing: CGFloat = 0
 ```
 
-**Web** —— 複合值攤平成多個 custom property：
+**Web** —— 跟 iOS 一樣用**系統字體堆疊**（已確認）。複合值攤平成多個 custom property：
 
 ```css
---typography-s-medium-font-family: "PingFang TC";
+/* Figma: PingFang TC — 刻意改用系統字體堆疊 */
+--typography-s-medium-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", …, "PingFang TC", …;
 --typography-s-medium-font-size: 14px;
 --typography-s-medium-font-weight: 500;
 --typography-s-medium-line-height: 1;
 ```
+
+堆疊定義在 `scripts/build.js` 的 `WEB_FONT_STACK`。CJK fallback 排在西文之後 —— 拉丁字母用各平台系統字體，中文才落到 PingFang / Noto / 微軟正黑。
 
 **Android** —— `TextAppearance` style，不是 dimen：
 
@@ -159,7 +164,7 @@ public static let typographySMediumLineSpacing: CGFloat = 0
 </style>
 ```
 
-**目前沒有輸出 `android:fontFamily`** —— 需要先確認 Android 端有沒有對應的 font resource（`@font/...`）。沒有的話會 fallback 到系統字體。
+**刻意不輸出 `android:fontFamily`** —— 三個平台都用系統字體（已確認）。不寫這個 item 就會 fallback 到系統字體，正是要的結果。
 
 ## 把元件裡的字體對應到 token
 
@@ -179,12 +184,14 @@ public static let typographySMediumLineSpacing: CGFloat = 0
 | --- | --- |
 | `lineHeight: 100` 的單位 | **100%** |
 | iOS 用什麼字體 | **系統字體**（不載入 PingFang TC） |
+| Web 用什麼字體 | **系統字體堆疊**（跟 iOS 一致） |
+| Android 用什麼字體 | **系統字體**（`type.xml` 不輸出 `fontFamily`） |
 | `s-regular` / `s-medium` | **兩個獨立的 token**，不是一個 token 的兩個變體 |
 
 ## 還沒確認的
 
-- [ ] Android 有沒有 `@font/...` resource —— 目前 `type.xml` 不輸出 `fontFamily`，會 fallback 到系統字體
-- [ ] Web 的 `font-family` 要不要跟 iOS 一樣改用系統字體堆疊
+- [ ] **品牌字體在三平台的實際名稱** —— iOS / Web 已改用系統字體所以不受影響，但要載入品牌字體時這件事會回來
+- [ ] **多語言字體結構** —— 目前只有繁中一套，要支援日文 / 英文得重新設計 token 結構
 
 ## 一個實作上的坑
 
