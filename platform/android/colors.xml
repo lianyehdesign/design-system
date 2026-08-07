@@ -4,6 +4,12 @@
   Do not edit directly, this file was auto-generated.
 -->
 <resources>
+  <color name="color_blue_100">#ff10567b</color>
+  <color name="color_blue_200">#ff064162</color>
+  <color name="color_blue_300">#ff003354</color>
+  <color name="color_blue_000">#ffeff7fd</color>
+  <color name="color_blue_020">#ffd2dde4</color>
+  <color name="color_blue_050">#ff2e90b7</color>
   <color name="color_func_one_010">#ffe5f7f4</color>
   <color name="color_func_one_020">#ff98ddd2</color>
   <color name="color_func_one_030">#ff53c6b4</color>
@@ -22,6 +28,27 @@
   <color name="color_func_two_040">#ffe63349</color>
   <color name="color_func_two_050">#ffd7213e</color>
   <color name="color_func_two_060">#ffc41428</color>
+  <color name="color_gray_100">#ff515156</color>
+  <color name="color_gray_200">#ff45454a</color>
+  <color name="color_gray_300">#ff39393e</color>
+  <color name="color_gray_400">#ff2c2c32</color>
+  <color name="color_gray_500">#ff202026</color>
+  <color name="color_gray_000">#ffffffff</color>
+  <color name="color_gray_010">#fff7f7f8</color>
+  <color name="color_gray_020">#ffeeeeef</color>
+  <color name="color_gray_030">#ffe5e5e5</color>
+  <color name="color_gray_040">#ffd3d3d5</color>
+  <color name="color_gray_050">#ffbfbfc1</color>
+  <color name="color_gray_060">#ffa8a8ab</color>
+  <color name="color_gray_070">#ff929295</color>
+  <color name="color_gray_080">#ff7c7c80</color>
+  <color name="color_gray_090">#ff66666a</color>
+  <color name="color_green_100">#ff30bba5</color>
+  <color name="color_green_200">#ff2cac97</color>
+  <color name="color_green_300">#ff289c8a</color>
+  <color name="color_green_000">#ffe5f7f4</color>
+  <color name="color_green_020">#ff98ddd2</color>
+  <color name="color_green_050">#ff53c6b4</color>
   <color name="color_neutral_100">#ff515156</color>
   <color name="color_neutral_110">#ff45454a</color>
   <color name="color_neutral_120">#ff39393e</color>
@@ -43,10 +70,29 @@
   <color name="color_primary_040">#ff10567b</color>
   <color name="color_primary_050">#ff064162</color>
   <color name="color_primary_060">#ff003354</color>
+  <color name="color_red_100">#ffe63349</color>
+  <color name="color_red_200">#ffd7213e</color>
+  <color name="color_red_300">#ffc41428</color>
+  <color name="color_red_010">#ffffe9ec</color>
+  <color name="color_red_020">#ffff9eaa</color>
+  <color name="color_red_050">#fff86173</color>
+  <color name="color_salmon_100">#fff16c5d</color>
+  <color name="color_salmon_200">#ffe56051</color>
+  <color name="color_salmon_300">#ffda5648</color>
+  <color name="color_salmon_000">#fffff8f7</color>
+  <color name="color_salmon_020">#fff5b3ae</color>
+  <color name="color_salmon_050">#ffee847d</color>
   <color name="color_secondary_010">#fffff8f7</color>
   <color name="color_secondary_020">#fff5b3ae</color>
   <color name="color_secondary_030">#ffee847d</color>
   <color name="color_secondary_040">#fff16c5d</color>
   <color name="color_secondary_050">#ffe56051</color>
   <color name="color_secondary_060">#ffda5648</color>
+  <color name="color_test_000">#ff309d19</color>
+  <color name="color_yellow_100">#fffacb4d</color>
+  <color name="color_yellow_200">#fff7bd2b</color>
+  <color name="color_yellow_300">#ffefae09</color>
+  <color name="color_yellow_000">#fffef8ea</color>
+  <color name="color_yellow_010">#ffffedaf</color>
+  <color name="color_yellow_050">#ffffde71</color>
 </resources>
