@@ -6,11 +6,13 @@
 
 import StyleDictionary from 'style-dictionary';
 import config from './style-dictionary.config.js';
+import { writeFile } from 'node:fs/promises';
 import {
   GROUP_NAMES,
   GROUPS,
   readTokens,
   normalizeHex,
+  symbolNames,
   writeStepSummary,
 } from './lib/tokens.js';
 
@@ -124,6 +126,31 @@ if (bad.length) {
 const sd = new StyleDictionary(config);
 await sd.cleanAllPlatforms();
 await sd.buildAllPlatforms();
+
+// ---- 產出 Code syntax 對照表 ----
+// 這份表是「repo 這邊的名字」的權威記錄，給 figma-plugin 寫回 Figma 用。
+// 它進版控，所以 plugin 那份實作若跟這裡漂移，diff 看得出來。
+const codeSyntax = {};
+for (const [group, map] of tokensByGroup) {
+  for (const key of map.keys()) {
+    codeSyntax[key] = symbolNames(key, GROUPS[group].dtcgType);
+  }
+}
+await writeFile(
+  'platform/code-syntax.json',
+  JSON.stringify(
+    {
+      $comment:
+        'Figma 變數的 Code syntax 對照表。key 是正規化後的 token 路徑（Color/Primary/060 → color.primary.060）。由 figma-plugin 寫回 Figma，讓 Dev Mode 顯示 token 名稱而不是色值。',
+      tokens: codeSyntax,
+    },
+    null,
+    2
+  ) + '\n'
+);
+console.log(
+  `✔ platform/code-syntax.json（${Object.keys(codeSyntax).length} 筆）`
+);
 
 // ---- 把結果寫進 Actions 的 Summary 頁面 ----
 // 不寫的話那一頁是空的，得點進 step 展開 log 才知道發生什麼事。
