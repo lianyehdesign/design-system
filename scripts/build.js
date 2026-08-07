@@ -96,6 +96,31 @@ StyleDictionary.registerPreprocessor({
   },
 });
 
+/**
+ * Web 的系統字體堆疊。
+ *
+ * iOS 用系統字體是刻意的決策，Web 跟進 —— 否則同一個 token 在兩個平台
+ * 會長得不一樣，那比「沒有品牌字體」更糟。
+ *
+ * Figma 上記的 fontFamily（PingFang TC）**刻意不使用**，但仍留在
+ * tokens/ 裡:它記錄的是設計端的現況，而且 Android 端還沒決定要不要用。
+ * 產出時會寫成註解，資訊不會遺失。
+ *
+ * CJK 的 fallback 排在西文之後 —— 讓拉丁字母用各平台的系統字體，
+ * 中文才落到 PingFang / Noto / 微軟正黑。
+ */
+const WEB_FONT_STACK = [
+  '-apple-system',
+  'BlinkMacSystemFont',
+  '"Segoe UI"',
+  'Roboto',
+  '"Helvetica Neue"',
+  '"PingFang TC"',
+  '"Noto Sans TC"',
+  '"Microsoft JhengHei"',
+  'sans-serif',
+].join(', ');
+
 // ---- Web:字體攤平成多個 custom property ----
 // 一個 token 六個屬性，CSS 沒有複合值的概念，只能一個屬性一個變數。
 StyleDictionary.registerFormat({
@@ -108,7 +133,9 @@ StyleDictionary.registerFormat({
       const base = `--${token.path.join('-')}`;
       const d = token.$description ?? token.description;
       if (d) lines.push(`  /* ${d} */`);
-      lines.push(`  ${base}-font-family: "${v.fontFamily}";`);
+      // Figma 上是 ${v.fontFamily}，但 Web 跟 iOS 一樣用系統字體
+      lines.push(`  /* Figma: ${v.fontFamily} — 刻意改用系統字體堆疊 */`);
+      lines.push(`  ${base}-font-family: ${WEB_FONT_STACK};`);
       lines.push(`  ${base}-font-size: ${v.fontSize};`);
       lines.push(`  ${base}-font-weight: ${v.fontWeight};`);
       lines.push(`  ${base}-line-height: ${v.lineHeight};`);
@@ -130,6 +157,10 @@ StyleDictionary.registerFormat({
 
 // ---- Android:字體是 TextAppearance style ----
 // 不是 dimen —— 一個 token 對應一組 style，而不是一個值。
+//
+// 刻意不輸出 android:fontFamily —— 三個平台都用系統字體（已確認）。
+// 不寫這個 item 就會 fallback 到系統字體，正是我們要的。
+// Figma 記的 PingFang TC 仍留在 tokens/ 供日後參考。
 StyleDictionary.registerFormat({
   name: 'typography/android',
   format: ({ dictionary }) => {

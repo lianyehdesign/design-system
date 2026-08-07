@@ -286,7 +286,9 @@ Figma 上目前有 9 個 text style,命名是 `<尺寸>-<字重>`(`s-medium`、`
 | Web | `typography.css` | 每個 token 攤平成 5 個 custom property |
 | Android | `type.xml` | `TextAppearance` style |
 
-已確認的決策:**行高一律 100%**、**iOS 用系統字體**、**`s-regular` 與 `s-medium` 是兩個獨立 token**。
+已確認的決策:**行高一律 100%**、**三個平台都用系統字體**、**`s-regular` 與 `s-medium` 是兩個獨立 token**。
+
+Figma 上記的 `PingFang TC` **三個平台都刻意不使用**,但仍留在 `tokens/` 裡 —— 它記錄設計端的現況,日後要載入品牌字體時才不用重查。CSS 會把它寫成註解。
 
 ## 保護機制
 
@@ -314,10 +316,6 @@ Figma 上目前有 9 個 text style,命名是 `<尺寸>-<字重>`(`s-medium`、`
   **這個 repo 不做家族過濾** —— 只要符合 `Color/<家族>/<階層>` 就收。所以兩套都會進 `tokens/`,工程師會同時看到 `colorPrimary060` 和 `colorBlue300`(同一個顏色)。
 
   **要收斂成一套,得在 Figma 端把重複的刪掉。** 這是刻意的分工:命名治理屬於設計端,repo 不該再維護一份「有哪些家族」的清單 —— 那份清單一定會過期,而且會讓「Figma 加了東西但 repo 沒收到」變成一個需要改程式碼才能解決的問題。
-
-- **`Color/Primary/040` 的 description 是錯的,要在 Figma 修。** 它跟 `Color/Primary/050` 的說明一字不差(都寫 hover 交互色),但同色值的 `Color/Blue/100` 寫的是「primary button 的 **default** 背景色 / toast normal / coach mark / tooltip / Membership 當年度主要用色」。後者才對。
-
-  這個錯誤會原封不動流進 `platform/ios/DesignTokens.swift` 的 doc comment 與 CSS 註解 —— pipeline 不會、也不該自作主張修正來源,但值得儘快在 Figma 上改掉。
 
 - **兩個 token 沒有 description**(`Color/Func-Three/030`、`Color/Neutral/110`),Figma 上本來就是空的。
 
