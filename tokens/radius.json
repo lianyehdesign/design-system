@@ -1,0 +1,60 @@
+{
+  "radius": {
+    "circular": {
+      "$type": "dimension",
+      "$value": "999px"
+    },
+    "l": {
+      "$type": "dimension",
+      "$value": "8px"
+    },
+    "m": {
+      "$type": "dimension",
+      "$value": "6px"
+    },
+    "none": {
+      "$type": "dimension",
+      "$value": "0px"
+    },
+    "radius0": {
+      "$type": "dimension",
+      "$value": "0px"
+    },
+    "radius10": {
+      "$type": "dimension",
+      "$value": "10px"
+    },
+    "radius2": {
+      "$type": "dimension",
+      "$value": "2px"
+    },
+    "radius4": {
+      "$type": "dimension",
+      "$value": "4px"
+    },
+    "radius6": {
+      "$type": "dimension",
+      "$value": "6px"
+    },
+    "radius8": {
+      "$type": "dimension",
+      "$value": "8px"
+    },
+    "radius999": {
+      "$type": "dimension",
+      "$value": "999px"
+    },
+    "s": {
+      "$type": "dimension",
+      "$value": "4px"
+    },
+    "xl": {
+      "$type": "dimension",
+      "$value": "10px"
+    },
+    "xs": {
+      "$type": "dimension",
+      "$value": "2px"
+    }
+  }
+}
