@@ -337,4 +337,76 @@ public enum DesignTokens {
   public static let colorYellow010 = Color(.sRGB, red: 1, green: 0.9294, blue: 0.6863, opacity: 1)
   /// color/yellow/050
   public static let colorYellow050 = Color(.sRGB, red: 1, green: 0.8706, blue: 0.4431, opacity: 1)
+  /// radius/circular
+  public static let radiusCircular: CGFloat = 999
+  /// radius/l
+  public static let radiusL: CGFloat = 8
+  /// radius/m
+  public static let radiusM: CGFloat = 6
+  /// radius/none
+  public static let radiusNone: CGFloat = 0
+  /// radius/radius0
+  public static let radiusRadius0: CGFloat = 0
+  /// radius/radius10
+  public static let radiusRadius10: CGFloat = 10
+  /// radius/radius2
+  public static let radiusRadius2: CGFloat = 2
+  /// radius/radius4
+  public static let radiusRadius4: CGFloat = 4
+  /// radius/radius6
+  public static let radiusRadius6: CGFloat = 6
+  /// radius/radius8
+  public static let radiusRadius8: CGFloat = 8
+  /// radius/radius999
+  public static let radiusRadius999: CGFloat = 999
+  /// radius/s
+  public static let radiusS: CGFloat = 4
+  /// radius/xl
+  public static let radiusXl: CGFloat = 10
+  /// radius/xs
+  public static let radiusXs: CGFloat = 2
+  /// spacing/2xl
+  public static let spacing2xl: CGFloat = 24
+  /// spacing/3xl
+  public static let spacing3xl: CGFloat = 36
+  /// spacing/4xl
+  public static let spacing4xl: CGFloat = 48
+  /// spacing/5xl
+  public static let spacing5xl: CGFloat = 64
+  /// spacing/l
+  public static let spacingL: CGFloat = 14
+  /// spacing/least
+  public static let spacingLeast: CGFloat = 2
+  /// spacing/m
+  public static let spacingM: CGFloat = 10
+  /// spacing/none
+  public static let spacingNone: CGFloat = 0
+  /// spacing/s
+  public static let spacingS: CGFloat = 6
+  /// spacing/spacing0
+  public static let spacingSpacing0: CGFloat = 0
+  /// spacing/spacing10
+  public static let spacingSpacing10: CGFloat = 10
+  /// spacing/spacing14
+  public static let spacingSpacing14: CGFloat = 14
+  /// spacing/spacing2
+  public static let spacingSpacing2: CGFloat = 2
+  /// spacing/spacing20
+  public static let spacingSpacing20: CGFloat = 20
+  /// spacing/spacing24
+  public static let spacingSpacing24: CGFloat = 24
+  /// spacing/spacing36
+  public static let spacingSpacing36: CGFloat = 36
+  /// spacing/spacing4
+  public static let spacingSpacing4: CGFloat = 4
+  /// spacing/spacing48
+  public static let spacingSpacing48: CGFloat = 48
+  /// spacing/spacing6
+  public static let spacingSpacing6: CGFloat = 6
+  /// spacing/spacing64
+  public static let spacingSpacing64: CGFloat = 64
+  /// spacing/xl
+  public static let spacingXl: CGFloat = 20
+  /// spacing/xs
+  public static let spacingXs: CGFloat = 4
 }
