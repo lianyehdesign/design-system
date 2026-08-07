@@ -10,10 +10,37 @@ import { join } from 'node:path';
 
 export const TOKEN_DIR = 'tokens';
 
-// ---- 目前只處理 Color ----
-// 分組看「變數名稱的第一段」，不是 collection。
-// Pinkoi 的 Foundation collection 叫 Generic，分類資訊在名稱裡:Color/Primary/060。
-export const ALLOWED_GROUPS = ['color'];
+/**
+ * ---- Token 分組登記表 ----
+ *
+ * 分組是「變數名稱的第一段」，不是 collection ——
+ * Pinkoi 的 Foundation collection 叫 Generic，分類資訊在名稱裡:Color/Primary/060。
+ *
+ * 這不是「允許誰進來」的白名單，是「這種東西怎麼轉換」的對照表。
+ * 兩者的差別很重要:
+ *
+ *   家族（Primary / Blue / Test）  只是名字 → 不該在 repo 裡記，已經不記了
+ *   分組（Color / Spacing / …）    決定型別 → 非記不可
+ *
+ * 因為分組決定了值怎麼解讀、各平台輸出成什麼:
+ *
+ *   color      hex     → Color(.sRGB, …)   #003354   #ff003354
+ *   dimension  數字    → CGFloat            10px      10dp
+ *
+ * 遇到沒登記過的分組，pipeline 不知道值是 hex 還是數字、單位是什麼、
+ * iOS 上該是什麼型別。那不是能照單全收的東西 —— 新增一種 token 類型
+ * 本來就該有人做決定。
+ *
+ * 深度刻意不限制:Color/Primary/060 是三層、Spacing/m 是兩層，
+ * 未來也可能出現 Color/Brand/Primary/060。層數是設計端的事。
+ */
+export const GROUPS = {
+  color: { dtcgType: 'color', figmaType: 'COLOR' },
+  spacing: { dtcgType: 'dimension', figmaType: 'FLOAT' },
+  radius: { dtcgType: 'dimension', figmaType: 'FLOAT' },
+};
+
+export const GROUP_NAMES = Object.keys(GROUPS);
 
 const norm = (s) => String(s).trim().toLowerCase().replace(/\s+/g, '-');
 
@@ -22,37 +49,46 @@ export function groupOf(figmaName) {
   return norm(String(figmaName).split('/')[0] ?? '');
 }
 
-/** "Color/Primary/060" → "primary" */
-export function familyOf(figmaName) {
-  return norm(String(figmaName).split('/')[1] ?? '');
+/** 取這個變數所屬分組的設定；沒登記過回傳 null */
+export function groupConfig(figmaName) {
+  return GROUPS[groupOf(figmaName)] ?? null;
 }
 
-/**
- * 只認形狀:Color/<家族>/<階層>。
- *
- * 刻意「不」維護一份家族白名單 —— 那等於在 repo 裡再記一次
- * 「Figma 上有哪些家族」，而那份記錄一定會過期。
- * 新增家族是設計端的決定，這裡照單全收，命名治理留在 Figma。
- *
- * 代價:Figma 上有什麼，這裡就會有什麼。同色不同名的變數若同時存在，
- * 兩個都會進 tokens/。要避免的話得在 Figma 端把重複的刪掉。
- */
 export function isAllowedToken(figmaName) {
+  return groupConfig(figmaName) !== null;
+}
+
+export function whySkipped(figmaName) {
   return (
-    ALLOWED_GROUPS.includes(groupOf(figmaName)) &&
-    toTokenPath(figmaName).length >= 3
+    `分組「${groupOf(figmaName)}」沒有登記轉換方式` +
+    `（目前支援:${GROUP_NAMES.join(' / ')}）。` +
+    `要新增請在 scripts/lib/tokens.js 的 GROUPS 加一筆`
   );
 }
 
-/** 說明為什麼被擋。只剩兩種原因。 */
-export function whySkipped(figmaName) {
-  const group = groupOf(figmaName);
-  if (!ALLOWED_GROUPS.includes(group)) {
-    return `不是 Color/ 開頭（讀到的分組是「${group}」）`;
+/**
+ * 把一個原始值轉成 DTCG token。
+ *
+ * 值的形狀由分組決定:color 收 hex 字串，dimension 收數字或 "10px"。
+ * 轉不出來回傳 null，由呼叫端決定要不要中止 —— 靜默跳過會讓 token 悄悄消失。
+ */
+export function toToken(figmaName, rawValue, description) {
+  const cfg = groupConfig(figmaName);
+  if (!cfg) return null;
+
+  let $value;
+  if (cfg.dtcgType === 'color') {
+    $value = normalizeHex(rawValue);
+  } else {
+    const num =
+      typeof rawValue === 'number' ? rawValue : parseFloat(String(rawValue));
+    $value = Number.isFinite(num) ? `${num}px` : null;
   }
-  return `層級不足，需要 Color/<家族>/<階層> 三層（讀到 ${toTokenPath(
-    figmaName
-  ).length} 層）`;
+  if ($value === null) return null;
+
+  const token = { $type: cfg.dtcgType, $value };
+  if (description) token.$description = description;
+  return token;
 }
 
 /** "Color/Primary/060" → ['color', 'primary', '060'] */
@@ -221,11 +257,16 @@ export async function writeStepSummary(markdown) {
   await appendFile(file, markdown.join('\n') + '\n');
 }
 
-/** 產生 sync 結果的 Summary markdown */
-export function summaryMarkdown({ title, source, mode, diff, skipped, notes }) {
-  const { added, changed, missing } = diff;
-  const total = added.length + changed.length + missing.length;
+/**
+ * 產生 sync 結果的 Summary markdown。
+ *
+ * diffs 是一個分組一筆:[{ group: 'color', diff }, { group: 'spacing', diff }]
+ * 分組列出而不是全部混在一起 —— 「顏色動了」跟「間距動了」的影響範圍差很多。
+ */
+export function summaryMarkdown({ title, source, mode, diffs, skipped, notes }) {
   const md = [];
+  const sum = (f) => diffs.reduce((n, d) => n + d.diff[f].length, 0);
+  const total = sum('added') + sum('changed') + sum('missing');
 
   md.push(`## ${total === 0 ? '✅' : '📝'} ${title}`, '');
 
@@ -234,11 +275,10 @@ export function summaryMarkdown({ title, source, mode, diff, skipped, notes }) {
   md.push(
     `| 模式 | ${mode === 'replace' ? '整份重建（來源沒有的會刪除）' : '合併（只新增／更新，不刪除）'} |`
   );
-  md.push(`| 新增 | ${added.length} |`);
-  md.push(`| 色值變動 | ${changed.length} |`);
-  md.push(
-    `| ${mode === 'replace' ? '刪除' : '未涵蓋（保留）'} | ${missing.length} |`
-  );
+  md.push(`| 分組 | ${diffs.map((d) => d.group).join(' / ') || '（無）'} |`);
+  md.push(`| 新增 | ${sum('added')} |`);
+  md.push(`| 值變動 | ${sum('changed')} |`);
+  md.push(`| ${mode === 'replace' ? '刪除' : '未涵蓋（保留）'} | ${sum('missing')} |`);
   if (skipped) md.push(`| 略過 | ${skipped.length} |`);
   md.push('');
 
@@ -256,44 +296,51 @@ export function summaryMarkdown({ title, source, mode, diff, skipped, notes }) {
     md.push('');
   };
 
-  if (added.length) {
-    md.push(`### ➕ 新增 ${added.length} 個`, '');
-    table(
-      added.map((a) => `| \`${a.key}\` | \`${a.value}\` |`),
-      '| Token | 色值 |'
-    );
-  }
-  if (changed.length) {
-    md.push(`### 🔄 色值變動 ${changed.length} 個`, '');
-    table(
-      changed.map((c) => `| \`${c.key}\` | \`${c.from}\` → \`${c.to}\` |`),
-      '| Token | 變動 |'
-    );
-  }
-  if (missing.length) {
-    md.push(
-      mode === 'replace'
-        ? `### ➖ 刪除 ${missing.length} 個`
-        : `### ⚠️ ${missing.length} 個未涵蓋（已保留）`,
-      ''
-    );
-    if (mode !== 'replace') {
-      md.push(
-        '這些 token 不在這次的來源裡。合併模式不會刪除它們 —— ',
-        '請確認是**漏讀**還是設計師**真的刪掉了**。後者的話要勾「整份重建」重跑。',
-        ''
+  for (const { group, diff } of diffs) {
+    const { added, changed, missing } = diff;
+    if (!added.length && !changed.length && !missing.length) continue;
+
+    md.push(`### \`${group}\``, '');
+
+    if (added.length) {
+      md.push(`**➕ 新增 ${added.length} 個**`, '');
+      table(
+        added.map((a) => `| \`${a.key}\` | \`${a.value}\` |`),
+        '| Token | 值 |'
       );
     }
-    table(
-      missing.map((m) => `| \`${m.key}\` | \`${m.value}\` |`),
-      '| Token | 色值 |'
-    );
+    if (changed.length) {
+      md.push(`**🔄 值變動 ${changed.length} 個**`, '');
+      table(
+        changed.map((c) => `| \`${c.key}\` | \`${c.from}\` → \`${c.to}\` |`),
+        '| Token | 變動 |'
+      );
+    }
+    if (missing.length) {
+      md.push(
+        mode === 'replace'
+          ? `**➖ 刪除 ${missing.length} 個**`
+          : `**⚠️ ${missing.length} 個未涵蓋（已保留）**`,
+        ''
+      );
+      if (mode !== 'replace') {
+        md.push(
+          '這些 token 不在這次的來源裡。合併模式不會刪除它們 —— ',
+          '請確認是**漏讀**還是設計師**真的刪掉了**。後者的話要勾「整份重建」重跑。',
+          ''
+        );
+      }
+      table(
+        missing.map((m) => `| \`${m.key}\` | \`${m.value}\` |`),
+        '| Token | 值 |'
+      );
+    }
   }
 
   if (skipped?.length) {
     md.push('<details>', `<summary>略過的 ${skipped.length} 個項目</summary>`, '');
     md.push('```');
-    skipped.forEach((s) => md.push(s));
+    skipped.forEach((x) => md.push(x));
     md.push('```', '</details>', '');
   }
 

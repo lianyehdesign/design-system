@@ -69,7 +69,11 @@ export default {
           format: 'android/resources',
           filter: (token) => (token.$type ?? token.type) === 'color',
         },
-        // Spacing / Radius 進來後再加 dimens.xml
+        {
+          destination: 'dimens.xml',
+          format: 'android/resources',
+          filter: (token) => (token.$type ?? token.type) === 'dimension',
+        },
       ],
     },
   },
