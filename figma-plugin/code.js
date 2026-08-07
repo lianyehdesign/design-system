@@ -14,7 +14,7 @@ const STORAGE_KEY = 'settings';
  * 沒登記的分組（例如 ColorSystem/）不該寫 Code syntax ——
  * 那會讓 Dev Mode 指向一個 platform/ 裡不存在的符號，工程師照著寫會編不過。
  */
-const SUPPORTED_GROUPS = ['color', 'spacing', 'radius'];
+const SUPPORTED_GROUPS = ['color', 'spacing', 'radius', 'typography'];
 
 /**
  * 各平台的符號名稱。
@@ -180,6 +180,8 @@ async function pushCodeSyntax() {
       skipped.push(variable.name + '（分組「' + group + '」不在支援清單）');
       continue;
     }
+    // 這個迴圈只跑 variable，不會遇到 typography ——
+    // Code syntax 是 variable 專屬欄位，text style 沒有這個欄位可以寫。
 
     const dtcgType = variable.resolvedType === 'COLOR' ? 'color' : 'dimension';
     const want = symbolNames(path, dtcgType);
@@ -205,6 +207,81 @@ async function pushCodeSyntax() {
     unchanged: unchanged.sort(),
     skipped: skipped.sort(),
   };
+}
+
+/**
+ * 讀 text style。字體不是 variable，所以走完全不同的 API ——
+ * getLocalVariablesAsync() 看不到它們。
+ *
+ * Figma 上的樣式名稱沒有 Typography/ 前綴（就叫 s-medium），
+ * 這裡補上，讓它跟其他分組一致。
+ */
+async function readTextStyles() {
+  const styles = await figma.getLocalTextStylesAsync();
+
+  const payload = {};
+  const unresolved = [];
+
+  for (const style of styles) {
+    // lineHeight 有三種單位，必須看 unit 而不是猜數字。
+    // AUTO 代表跟著字體本身的行高走，沒有可移植的數值 —— 只能跳過。
+    var lineHeight;
+    if (style.lineHeight.unit === 'PERCENT') {
+      lineHeight = style.lineHeight.value / 100;
+    } else if (style.lineHeight.unit === 'PIXELS') {
+      lineHeight = style.lineHeight.value / style.fontSize;
+    } else {
+      unresolved.push(style.name + '（lineHeight 是 AUTO，沒有可移植的值）');
+      continue;
+    }
+
+    var letterSpacing = 0;
+    if (style.letterSpacing.unit === 'PIXELS') {
+      letterSpacing = style.letterSpacing.value;
+    } else if (style.letterSpacing.unit === 'PERCENT') {
+      letterSpacing = (style.letterSpacing.value / 100) * style.fontSize;
+    }
+
+    const entry = {
+      value: {
+        fontFamily: style.fontName.family,
+        fontSize: style.fontSize,
+        fontWeight: weightFromStyle(style.fontName.style),
+        lineHeight: lineHeight,
+        letterSpacing: letterSpacing,
+      },
+    };
+    if (style.description) entry.description = style.description;
+
+    payload['Typography/' + style.name] = entry;
+  }
+
+  return { payload: payload, unresolved: unresolved };
+}
+
+/**
+ * Figma 的 fontName.style 是字串（"Regular" / "Medium" / "Semibold"），
+ * 沒有數值字重。對照到 CSS / Android 用的數字。
+ */
+function weightFromStyle(styleName) {
+  const table = {
+    thin: 100,
+    extralight: 200,
+    ultralight: 200,
+    light: 300,
+    regular: 400,
+    normal: 400,
+    medium: 500,
+    semibold: 600,
+    demibold: 600,
+    bold: 700,
+    extrabold: 800,
+    ultrabold: 800,
+    black: 900,
+    heavy: 900,
+  };
+  const key = String(styleName).toLowerCase().replace(/[^a-z]/g, '');
+  return table[key] !== undefined ? table[key] : 400;
 }
 
 async function readVariables() {
@@ -242,6 +319,11 @@ async function readVariables() {
     payload[variable.name] = entry;
   }
 
+  // 字體走另一條 API，讀完併進同一份 payload
+  const text = await readTextStyles();
+  Object.assign(payload, text.payload);
+  text.unresolved.forEach((u) => unresolved.push(u));
+
   // 名稱排序，讓每次送出的 payload 順序穩定
   const sorted = {};
   Object.keys(payload)
@@ -251,6 +333,7 @@ async function readVariables() {
   return {
     payload: sorted,
     count: Object.keys(sorted).length,
+    textStyleCount: Object.keys(text.payload).length,
     skipped: unsupported.sort(),
     unresolved: unresolved.sort(),
     // 診斷用:讀到 0 個時，這幾個數字決定該給哪一種說明

@@ -67,17 +67,19 @@ Web:    --typography-s-medium-*
 
 ## ⚠️ lineHeight 的單位
 
-Figma 序列化成 `lineHeight: 100`，但 Figma 的 lineHeight 有三種單位：`AUTO` / `PIXELS` / `PERCENT`。
+**目前全部是 100%（已確認）。**
 
-**`100` 幾乎確定是 100%（PERCENT），不是 100px** —— 12px 的字配 100px 行高不合理。但**動手前務必確認**，因為：
+Figma 序列化成 `lineHeight: 100`，但那串字裡沒有單位 —— Figma 的 lineHeight 有 `AUTO` / `PIXELS` / `PERCENT` 三種。
 
-- CSS：`line-height: 1` （無單位倍數）
-- SwiftUI：`Font` 沒有 lineHeight，要用 `.lineSpacing(行高 - 字級)`，**100% 代表 lineSpacing 為 0**
-- Android：`lineHeight` 要換算成 sp
+plugin 讀取時以 `figma.getLocalTextStylesAsync()` 回傳的 `{ unit, value }` 為準，**不要相信 `Font(...)` 字串裡的數字**:
 
-猜錯的話所有文字的行距都會壞掉，而且不會有任何錯誤訊息。
+```js
+PERCENT → value / 100              // 100% → 1
+PIXELS  → value / fontSize         // 換算成倍數
+AUTO    → 跳過（沒有可移植的值）
+```
 
-用 plugin 讀取時，`figma.getLocalTextStylesAsync()` 回傳的 `lineHeight` 是 `{ unit: 'PERCENT' | 'PIXELS' | 'AUTO', value: number }`，**以那個為準**，不要相信 `Font(...)` 字串裡的數字。
+存進 `tokens/` 一律是**無單位倍數**（1 = 100%），那是唯一三個平台都能無損換算的形式。存成 px 的話，字級一改行高就錯了，而且不會有任何錯誤訊息。
 
 ## 工作流程
 
@@ -95,15 +97,15 @@ platform/
    └── android/type.xml            TextAppearance style
 ```
 
-### 加一個 token 分組
+### token 分組（已實作）
 
-`scripts/lib/tokens.js` 的 `GROUPS` 是**型別對照表**，不是白名單。字體要加一筆：
+`scripts/lib/tokens.js` 的 `GROUPS` 有這一筆:
 
 ```js
 typography: { dtcgType: 'typography', figmaType: 'TEXT_STYLE' },
 ```
 
-然後 `toToken()` 要能處理複合值 —— 現有的分支只認 hex 字串與數字。
+`figmaType` 特別標成 `TEXT_STYLE` —— 提醒它走的是另一條 API。
 
 ### DTCG 的 typography 型別
 
@@ -128,11 +130,13 @@ typography: { dtcgType: 'typography', figmaType: 'TEXT_STYLE' },
 
 ### 各平台的產出形式
 
-**iOS** —— `Font` 不帶行高，所以要成對輸出：
+**iOS** —— 用**系統字體**（已確認），所以 `fontFamily` 不進 Swift。字體名稱仍留在 `tokens/` 供 Web / Android 使用。
+
+`Font` 不帶行高，所以成對輸出：
 
 ```swift
-public static let typographySMedium = Font.custom("PingFang TC", size: 14).weight(.medium)
-/// 搭配 .lineSpacing() 使用；值為 字級 × (lineHeight - 1)
+public static let typographySMedium = Font.system(size: 14, weight: .medium)
+/// 搭配 .lineSpacing() 使用。行高 1× 於 14pt 字級
 public static let typographySMediumLineSpacing: CGFloat = 0
 ```
 
@@ -150,9 +154,12 @@ public static let typographySMediumLineSpacing: CGFloat = 0
 ```xml
 <style name="TextAppearance.SMedium">
   <item name="android:textSize">14sp</item>
-  <item name="android:fontFamily">@font/pingfang_tc</item>
+  <item name="android:lineHeight">14sp</item>
+  <item name="android:textFontWeight">500</item>
 </style>
 ```
+
+**目前沒有輸出 `android:fontFamily`** —— 需要先確認 Android 端有沒有對應的 font resource（`@font/...`）。沒有的話會 fallback 到系統字體。
 
 ## 把元件裡的字體對應到 token
 
@@ -166,12 +173,26 @@ public static let typographySMediumLineSpacing: CGFloat = 0
 
 **比對不到時不要靜默處理。** 那代表設計師沒套樣式，是需要回報的發現，跟顏色沒綁變數是同一類問題。
 
-## 動手前的檢查清單
+## 已確認的決策
 
-- [ ] 確認 `lineHeight` 的單位（PERCENT / PIXELS / AUTO）
-- [ ] 確認 `PingFang TC` 在 iOS / Android 的實際字體名稱 —— 三個平台的字體檔名常常不同
-- [ ] 確認 Android 有沒有對應的 font resource（`@font/...`），沒有的話 `fontFamily` 要怎麼處理
-- [ ] 問設計師：`s-regular` 和 `s-medium` 這種同尺寸不同字重，是否應該是同一個 token 的兩個變體
+| 問題 | 答案 |
+| --- | --- |
+| `lineHeight: 100` 的單位 | **100%** |
+| iOS 用什麼字體 | **系統字體**（不載入 PingFang TC） |
+| `s-regular` / `s-medium` | **兩個獨立的 token**，不是一個 token 的兩個變體 |
+
+## 還沒確認的
+
+- [ ] Android 有沒有 `@font/...` resource —— 目前 `type.xml` 不輸出 `fontFamily`，會 fallback 到系統字體
+- [ ] Web 的 `font-family` 要不要跟 iOS 一樣改用系統字體堆疊
+
+## 一個實作上的坑
+
+Style Dictionary 的 `css` transformGroup 有一個 **font shorthand transform**，會把複合物件壓成 `"500 26px/1 'PingFang TC'"` 這種字串。要攤平成個別 property 就取不到值了（全部變 `undefined`）。
+
+所以字體在 Web 端**用獨立的 platform**（`cssTypography`），只跑 `attribute/cti` 與 `name/kebab`，不用 `css` transformGroup。
+
+同理，`css` 與 `ts` 兩個 platform 掛了 `drop-typography` preprocessor —— `files[].filter` 只在輸出階段生效，transform 還是會跑到所有 token，那個 shorthand transform 會噴一個誤導的警告。
 
 ## 這份 skill 不涵蓋的
 

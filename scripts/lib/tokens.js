@@ -38,6 +38,9 @@ export const GROUPS = {
   color: { dtcgType: 'color', figmaType: 'COLOR' },
   spacing: { dtcgType: 'dimension', figmaType: 'FLOAT' },
   radius: { dtcgType: 'dimension', figmaType: 'FLOAT' },
+  // 字體是 text style 不是 variable，所以 figmaType 特別標成 TEXT_STYLE ——
+  // plugin 要走 getLocalTextStylesAsync()，跟其他分組不同一條路。
+  typography: { dtcgType: 'typography', figmaType: 'TEXT_STYLE' },
 };
 
 export const GROUP_NAMES = Object.keys(GROUPS);
@@ -79,6 +82,8 @@ export function toToken(figmaName, rawValue, description) {
   let $value;
   if (cfg.dtcgType === 'color') {
     $value = normalizeHex(rawValue);
+  } else if (cfg.dtcgType === 'typography') {
+    $value = toTypographyValue(rawValue);
   } else {
     const num =
       typeof rawValue === 'number' ? rawValue : parseFloat(String(rawValue));
@@ -105,6 +110,38 @@ export function normalizeHex(raw) {
       : h;
   if (!/^[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$/.test(expanded)) return null;
   return `#${expanded.toUpperCase()}`;
+}
+
+/**
+ * 字體是複合值:六個屬性，缺一不可。
+ *
+ * lineHeight 一律存成「無單位倍數」（1 = 100%）—— 那是唯一三個平台
+ * 都能無損換算的形式:
+ *   CSS      line-height: 1
+ *   SwiftUI  lineSpacing = 字級 × (倍數 - 1)
+ *   Android  lineHeight = 字級 × 倍數
+ *
+ * 存成 px 的話，字級一改行高就錯了，而且不會有任何錯誤訊息。
+ */
+function toTypographyValue(raw) {
+  if (raw === null || typeof raw !== 'object') return null;
+
+  const size = Number(raw.fontSize);
+  const weight = Number(raw.fontWeight);
+  const lineHeight = Number(raw.lineHeight);
+  if (!Number.isFinite(size) || !Number.isFinite(weight)) return null;
+  if (!Number.isFinite(lineHeight) || lineHeight <= 0) return null;
+  if (!raw.fontFamily) return null;
+
+  const letterSpacing = Number(raw.letterSpacing ?? 0);
+
+  return {
+    fontFamily: String(raw.fontFamily),
+    fontSize: `${size}px`,
+    fontWeight: weight,
+    lineHeight,
+    letterSpacing: `${Number.isFinite(letterSpacing) ? letterSpacing : 0}px`,
+  };
 }
 
 /**

@@ -263,9 +263,9 @@ tokens/  →  symbolNames()  →  Figma 變數的 Code syntax
 
 **前提:元件必須真的綁到變數。** 設計師手動填的色值沒有變數可以對應,再多工具也救不了 —— 那要在 Figma 上補綁。
 
-## 字體(尚未接上 pipeline)
+## 字體
 
-字體**不走現有的路** —— Figma 的 typography 是 text style 不是 variable:
+字體**在 Figma 端不走現有的路** —— typography 是 text style 不是 variable:
 
 | | Color / Spacing / Radius | Typography |
 | --- | --- | --- |
@@ -278,7 +278,15 @@ tokens/  →  symbolNames()  →  Figma 變數的 Code syntax
 
 Figma 上目前有 9 個 text style,命名是 `<尺寸>-<字重>`(`s-medium`、`4xl-semibold`),尺寸階層跟 `Spacing/` 共用。
 
-**尚未實作:** `GROUPS` 還沒有 `typography` 這一筆,plugin 也還沒讀 text style。skill 裡有完整的實作計畫與待確認事項。
+已接上 pipeline:plugin 會用 `getLocalTextStylesAsync()` 讀取,和變數併成同一份 payload 送出。產出:
+
+| 平台 | 檔案 | 形式 |
+| --- | --- | --- |
+| iOS | `DesignTokens.swift` | `Font.system(size:weight:)` + 成對的 `…LineSpacing` |
+| Web | `typography.css` | 每個 token 攤平成 5 個 custom property |
+| Android | `type.xml` | `TextAppearance` style |
+
+已確認的決策:**行高一律 100%**、**iOS 用系統字體**、**`s-regular` 與 `s-medium` 是兩個獨立 token**。
 
 ## 保護機制
 
