@@ -36,7 +36,10 @@ Font(family: "PingFang TC", style: Medium, size: 16,
      weight: 500, lineHeight: 100, letterSpacing: 0)
 ```
 
-一個 token 六個屬性。各平台的表達方式差很多，不像顏色那樣一對一。
+各平台的表達方式差很多，不像顏色那樣一對一。
+
+（注意上面那個 `lineHeight: 100` —— 那串字裡**沒有單位**。實際上 Figma 端是 `AUTO`，
+不要相信這個數字，見下一節。）
 
 ## 命名慣例
 
@@ -65,21 +68,36 @@ iOS:    DesignTokens.typographySMedium
 Web:    --typography-s-medium-*
 ```
 
-## ⚠️ lineHeight 的單位
+## ⚠️ token 不帶行高
 
-**目前全部是 100%（已確認）。**
+**這是刻意的決定，不是遺漏。**
 
-Figma 序列化成 `lineHeight: 100`，但那串字裡沒有單位 —— Figma 的 lineHeight 有 `AUTO` / `PIXELS` / `PERCENT` 三種。
+Figma 上 29 個 text style 的 `lineHeight` 全部是 `AUTO` —— 也就是「跟著字體本身的行高走」。而那正是三個平台的預設行為：
 
-plugin 讀取時以 `figma.getLocalTextStylesAsync()` 回傳的 `{ unit, value }` 為準，**不要相信 `Font(...)` 字串裡的數字**:
+| 平台 | AUTO 對應到 |
+| --- | --- |
+| CSS | 不設 `line-height` |
+| SwiftUI | 不加 `.lineSpacing()` |
+| Android | 不設 `android:lineHeight` |
 
-```js
-PERCENT → value / 100              // 100% → 1
-PIXELS  → value / fontSize         // 換算成倍數
-AUTO    → 跳過（沒有可移植的值）
+所以帶著一個永遠等於「什麼都不做」的欄位，只是讓每一層都多一段沒有作用的程式碼。
+
+### 但不會靜默忽略
+
+plugin 讀到**不是 AUTO** 的行高時會回報：
+
+```
+s-medium（行高不是 AUTO，是 150 PERCENT
+         —— 目前的 token 不帶行高，這個設定會被忽略）
 ```
 
-存進 `tokens/` 一律是**無單位倍數**（1 = 100%），那是唯一三個平台都能無損換算的形式。存成 px 的話，字級一改行高就錯了，而且不會有任何錯誤訊息。
+設計師設固定行高是有意圖的，pipeline 不該當作沒看到。看到這個訊息就是「該把欄位加回來」的信號。
+
+### 加回來的時候要注意 SwiftUI
+
+`.lineSpacing(x)` 是在**字體自然行高之上再加 x**，不是設定行高。自然行高由字體 metrics 決定，**靜態算不出來** —— 所以不能輸出 pt 值，只能輸出倍數讓呼叫端拿實際 metrics 換算。
+
+（這裡原本寫錯過:用 `字級 × (倍數 - 1)` 算 lineSpacing，那假設自然行高等於字級，不成立。）
 
 ## 工作流程
 
@@ -92,7 +110,7 @@ Figma text styles
 tokens/typography.json      ← DTCG composite type
    ↓ npm run build
 platform/
-   ├── ios/DesignTokens.swift      Font + lineSpacing
+   ├── ios/DesignTokens.swift      Font.system
    ├── web/tokens.css              每個 token 一組 custom property
    └── android/type.xml            TextAppearance style
 ```
@@ -118,7 +136,6 @@ typography: { dtcgType: 'typography', figmaType: 'TEXT_STYLE' },
         "fontFamily": "PingFang TC",
         "fontSize": "14px",
         "fontWeight": 500,
-        "lineHeight": 1,
         "letterSpacing": "0px"
       }
     }
@@ -126,20 +143,14 @@ typography: { dtcgType: 'typography', figmaType: 'TEXT_STYLE' },
 }
 ```
 
-`lineHeight` 用**無單位倍數**（1 = 100%），因為那是唯一三個平台都能無損換算的形式。
-
 ### 各平台的產出形式
 
 **三個平台都用系統字體（已確認）**，所以 `fontFamily` 不影響任何產出。它仍留在 `tokens/` 裡 —— 記錄設計端的現況，日後要載入品牌字體時才不用重查。
 
 **iOS** —— `fontFamily` 不進 Swift。
 
-`Font` 不帶行高，所以成對輸出：
-
 ```swift
 public static let typographySMedium = Font.system(size: 14, weight: .medium)
-/// 搭配 .lineSpacing() 使用。行高 1× 於 14pt 字級
-public static let typographySMediumLineSpacing: CGFloat = 0
 ```
 
 **Web** —— 跟 iOS 一樣用**系統字體堆疊**（已確認）。複合值攤平成多個 custom property：
@@ -149,7 +160,7 @@ public static let typographySMediumLineSpacing: CGFloat = 0
 --typography-s-medium-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", …, "PingFang TC", …;
 --typography-s-medium-font-size: 14px;
 --typography-s-medium-font-weight: 500;
---typography-s-medium-line-height: 1;
+--typography-s-medium-letter-spacing: 0px;
 ```
 
 堆疊定義在 `scripts/build.js` 的 `WEB_FONT_STACK`。CJK fallback 排在西文之後 —— 拉丁字母用各平台系統字體，中文才落到 PingFang / Noto / 微軟正黑。
@@ -159,7 +170,6 @@ public static let typographySMediumLineSpacing: CGFloat = 0
 ```xml
 <style name="TextAppearance.SMedium">
   <item name="android:textSize">14sp</item>
-  <item name="android:lineHeight">14sp</item>
   <item name="android:textFontWeight">500</item>
 </style>
 ```
@@ -182,7 +192,7 @@ public static let typographySMediumLineSpacing: CGFloat = 0
 
 | 問題 | 答案 |
 | --- | --- |
-| `lineHeight: 100` 的單位 | **100%** |
+| 行高 | **不納入 token**（Figma 上全部是 AUTO，等同各平台預設） |
 | iOS 用什麼字體 | **系統字體**（不載入 PingFang TC） |
 | Web 用什麼字體 | **系統字體堆疊**（跟 iOS 一致） |
 | Android 用什麼字體 | **系統字體**（`type.xml` 不輸出 `fontFamily`） |
