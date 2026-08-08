@@ -1,0 +1,265 @@
+{
+  "typography": {
+    "2xl-medium": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "PingFang TC",
+        "fontSize": "24px",
+        "fontWeight": 500,
+        "letterSpacing": "0px"
+      }
+    },
+    "2xl-regular": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "PingFang TC",
+        "fontSize": "24px",
+        "fontWeight": 400,
+        "letterSpacing": "0px"
+      }
+    },
+    "2xl-semibold": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "PingFang HK",
+        "fontSize": "24px",
+        "fontWeight": 600,
+        "letterSpacing": "0px"
+      }
+    },
+    "3xl-medium": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "PingFang TC",
+        "fontSize": "26px",
+        "fontWeight": 500,
+        "letterSpacing": "0px"
+      }
+    },
+    "3xl-regular": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "PingFang TC",
+        "fontSize": "26px",
+        "fontWeight": 400,
+        "letterSpacing": "0px"
+      }
+    },
+    "3xl-semibold": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "PingFang TC",
+        "fontSize": "26px",
+        "fontWeight": 600,
+        "letterSpacing": "0px"
+      }
+    },
+    "4xl-medium": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "PingFang TC",
+        "fontSize": "30px",
+        "fontWeight": 500,
+        "letterSpacing": "0px"
+      }
+    },
+    "4xl-regular": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "PingFang TC",
+        "fontSize": "30px",
+        "fontWeight": 400,
+        "letterSpacing": "0px"
+      }
+    },
+    "4xl-semibold": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "PingFang TC",
+        "fontSize": "30px",
+        "fontWeight": 600,
+        "letterSpacing": "0px"
+      }
+    },
+    "5xl-medium": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "PingFang TC",
+        "fontSize": "60px",
+        "fontWeight": 500,
+        "letterSpacing": "0px"
+      }
+    },
+    "5xl-regular": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "PingFang TC",
+        "fontSize": "60px",
+        "fontWeight": 400,
+        "letterSpacing": "0px"
+      }
+    },
+    "l-medium": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "PingFang TC",
+        "fontSize": "18px",
+        "fontWeight": 500,
+        "letterSpacing": "0px"
+      }
+    },
+    "l-regular": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "PingFang TC",
+        "fontSize": "18px",
+        "fontWeight": 400,
+        "letterSpacing": "0px"
+      }
+    },
+    "l-semibold": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "PingFang TC",
+        "fontSize": "18px",
+        "fontWeight": 600,
+        "letterSpacing": "0px"
+      }
+    },
+    "least-medium": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "PingFang TC",
+        "fontSize": "12px",
+        "fontWeight": 500,
+        "letterSpacing": "0px"
+      }
+    },
+    "least-regular": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "PingFang TC",
+        "fontSize": "12px",
+        "fontWeight": 400,
+        "letterSpacing": "0px"
+      }
+    },
+    "least-semibold": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "PingFang TC",
+        "fontSize": "12px",
+        "fontWeight": 600,
+        "letterSpacing": "0px"
+      }
+    },
+    "m-medium": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "PingFang TC",
+        "fontSize": "16px",
+        "fontWeight": 500,
+        "letterSpacing": "0px"
+      }
+    },
+    "m-regular": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "PingFang TC",
+        "fontSize": "16px",
+        "fontWeight": 400,
+        "letterSpacing": "0px"
+      }
+    },
+    "m-semibold": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "PingFang TC",
+        "fontSize": "16px",
+        "fontWeight": 600,
+        "letterSpacing": "0px"
+      }
+    },
+    "s-medium": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "PingFang TC",
+        "fontSize": "14px",
+        "fontWeight": 500,
+        "letterSpacing": "0px"
+      }
+    },
+    "s-regular": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "PingFang TC",
+        "fontSize": "14px",
+        "fontWeight": 400,
+        "letterSpacing": "0px"
+      }
+    },
+    "s-semibold": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "PingFang TC",
+        "fontSize": "14px",
+        "fontWeight": 600,
+        "letterSpacing": "0px"
+      }
+    },
+    "xl-medium": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "PingFang TC",
+        "fontSize": "22px",
+        "fontWeight": 500,
+        "letterSpacing": "0px"
+      }
+    },
+    "xl-regular": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "PingFang TC",
+        "fontSize": "22px",
+        "fontWeight": 400,
+        "letterSpacing": "0px"
+      }
+    },
+    "xl-semibold": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "PingFang TC",
+        "fontSize": "22px",
+        "fontWeight": 600,
+        "letterSpacing": "0px"
+      }
+    },
+    "xs-medium": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "PingFang TC",
+        "fontSize": "13px",
+        "fontWeight": 500,
+        "letterSpacing": "0px"
+      }
+    },
+    "xs-regular": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "PingFang TC",
+        "fontSize": "13px",
+        "fontWeight": 400,
+        "letterSpacing": "0px"
+      }
+    },
+    "xs-semibold": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "PingFang TC",
+        "fontSize": "13px",
+        "fontWeight": 600,
+        "letterSpacing": "0px"
+      }
+    }
+  }
+}
