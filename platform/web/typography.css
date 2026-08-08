@@ -1,0 +1,179 @@
+/**
+ * Do not edit directly, this file was auto-generated.
+ */
+
+:root {
+  /* Figma: PingFang TC — 刻意改用系統字體堆疊 */
+  --typography-2xl-medium-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --typography-2xl-medium-font-size: 24px;
+  --typography-2xl-medium-font-weight: 500;
+  --typography-2xl-medium-letter-spacing: 0px;
+
+  /* Figma: PingFang TC — 刻意改用系統字體堆疊 */
+  --typography-2xl-regular-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --typography-2xl-regular-font-size: 24px;
+  --typography-2xl-regular-font-weight: 400;
+  --typography-2xl-regular-letter-spacing: 0px;
+
+  /* Figma: PingFang HK — 刻意改用系統字體堆疊 */
+  --typography-2xl-semibold-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --typography-2xl-semibold-font-size: 24px;
+  --typography-2xl-semibold-font-weight: 600;
+  --typography-2xl-semibold-letter-spacing: 0px;
+
+  /* Figma: PingFang TC — 刻意改用系統字體堆疊 */
+  --typography-3xl-medium-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --typography-3xl-medium-font-size: 26px;
+  --typography-3xl-medium-font-weight: 500;
+  --typography-3xl-medium-letter-spacing: 0px;
+
+  /* Figma: PingFang TC — 刻意改用系統字體堆疊 */
+  --typography-3xl-regular-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --typography-3xl-regular-font-size: 26px;
+  --typography-3xl-regular-font-weight: 400;
+  --typography-3xl-regular-letter-spacing: 0px;
+
+  /* Figma: PingFang TC — 刻意改用系統字體堆疊 */
+  --typography-3xl-semibold-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --typography-3xl-semibold-font-size: 26px;
+  --typography-3xl-semibold-font-weight: 600;
+  --typography-3xl-semibold-letter-spacing: 0px;
+
+  /* Figma: PingFang TC — 刻意改用系統字體堆疊 */
+  --typography-4xl-medium-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --typography-4xl-medium-font-size: 30px;
+  --typography-4xl-medium-font-weight: 500;
+  --typography-4xl-medium-letter-spacing: 0px;
+
+  /* Figma: PingFang TC — 刻意改用系統字體堆疊 */
+  --typography-4xl-regular-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --typography-4xl-regular-font-size: 30px;
+  --typography-4xl-regular-font-weight: 400;
+  --typography-4xl-regular-letter-spacing: 0px;
+
+  /* Figma: PingFang TC — 刻意改用系統字體堆疊 */
+  --typography-4xl-semibold-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --typography-4xl-semibold-font-size: 30px;
+  --typography-4xl-semibold-font-weight: 600;
+  --typography-4xl-semibold-letter-spacing: 0px;
+
+  /* Figma: PingFang TC — 刻意改用系統字體堆疊 */
+  --typography-5xl-medium-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --typography-5xl-medium-font-size: 60px;
+  --typography-5xl-medium-font-weight: 500;
+  --typography-5xl-medium-letter-spacing: 0px;
+
+  /* Figma: PingFang TC — 刻意改用系統字體堆疊 */
+  --typography-5xl-regular-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --typography-5xl-regular-font-size: 60px;
+  --typography-5xl-regular-font-weight: 400;
+  --typography-5xl-regular-letter-spacing: 0px;
+
+  /* Figma: PingFang TC — 刻意改用系統字體堆疊 */
+  --typography-l-medium-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --typography-l-medium-font-size: 18px;
+  --typography-l-medium-font-weight: 500;
+  --typography-l-medium-letter-spacing: 0px;
+
+  /* Figma: PingFang TC — 刻意改用系統字體堆疊 */
+  --typography-l-regular-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --typography-l-regular-font-size: 18px;
+  --typography-l-regular-font-weight: 400;
+  --typography-l-regular-letter-spacing: 0px;
+
+  /* Figma: PingFang TC — 刻意改用系統字體堆疊 */
+  --typography-l-semibold-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --typography-l-semibold-font-size: 18px;
+  --typography-l-semibold-font-weight: 600;
+  --typography-l-semibold-letter-spacing: 0px;
+
+  /* Figma: PingFang TC — 刻意改用系統字體堆疊 */
+  --typography-least-medium-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --typography-least-medium-font-size: 12px;
+  --typography-least-medium-font-weight: 500;
+  --typography-least-medium-letter-spacing: 0px;
+
+  /* Figma: PingFang TC — 刻意改用系統字體堆疊 */
+  --typography-least-regular-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --typography-least-regular-font-size: 12px;
+  --typography-least-regular-font-weight: 400;
+  --typography-least-regular-letter-spacing: 0px;
+
+  /* Figma: PingFang TC — 刻意改用系統字體堆疊 */
+  --typography-least-semibold-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --typography-least-semibold-font-size: 12px;
+  --typography-least-semibold-font-weight: 600;
+  --typography-least-semibold-letter-spacing: 0px;
+
+  /* Figma: PingFang TC — 刻意改用系統字體堆疊 */
+  --typography-m-medium-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --typography-m-medium-font-size: 16px;
+  --typography-m-medium-font-weight: 500;
+  --typography-m-medium-letter-spacing: 0px;
+
+  /* Figma: PingFang TC — 刻意改用系統字體堆疊 */
+  --typography-m-regular-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --typography-m-regular-font-size: 16px;
+  --typography-m-regular-font-weight: 400;
+  --typography-m-regular-letter-spacing: 0px;
+
+  /* Figma: PingFang TC — 刻意改用系統字體堆疊 */
+  --typography-m-semibold-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --typography-m-semibold-font-size: 16px;
+  --typography-m-semibold-font-weight: 600;
+  --typography-m-semibold-letter-spacing: 0px;
+
+  /* Figma: PingFang TC — 刻意改用系統字體堆疊 */
+  --typography-s-medium-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --typography-s-medium-font-size: 14px;
+  --typography-s-medium-font-weight: 500;
+  --typography-s-medium-letter-spacing: 0px;
+
+  /* Figma: PingFang TC — 刻意改用系統字體堆疊 */
+  --typography-s-regular-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --typography-s-regular-font-size: 14px;
+  --typography-s-regular-font-weight: 400;
+  --typography-s-regular-letter-spacing: 0px;
+
+  /* Figma: PingFang TC — 刻意改用系統字體堆疊 */
+  --typography-s-semibold-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --typography-s-semibold-font-size: 14px;
+  --typography-s-semibold-font-weight: 600;
+  --typography-s-semibold-letter-spacing: 0px;
+
+  /* Figma: PingFang TC — 刻意改用系統字體堆疊 */
+  --typography-xl-medium-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --typography-xl-medium-font-size: 22px;
+  --typography-xl-medium-font-weight: 500;
+  --typography-xl-medium-letter-spacing: 0px;
+
+  /* Figma: PingFang TC — 刻意改用系統字體堆疊 */
+  --typography-xl-regular-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --typography-xl-regular-font-size: 22px;
+  --typography-xl-regular-font-weight: 400;
+  --typography-xl-regular-letter-spacing: 0px;
+
+  /* Figma: PingFang TC — 刻意改用系統字體堆疊 */
+  --typography-xl-semibold-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --typography-xl-semibold-font-size: 22px;
+  --typography-xl-semibold-font-weight: 600;
+  --typography-xl-semibold-letter-spacing: 0px;
+
+  /* Figma: PingFang TC — 刻意改用系統字體堆疊 */
+  --typography-xs-medium-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --typography-xs-medium-font-size: 13px;
+  --typography-xs-medium-font-weight: 500;
+  --typography-xs-medium-letter-spacing: 0px;
+
+  /* Figma: PingFang TC — 刻意改用系統字體堆疊 */
+  --typography-xs-regular-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --typography-xs-regular-font-size: 13px;
+  --typography-xs-regular-font-weight: 400;
+  --typography-xs-regular-letter-spacing: 0px;
+
+  /* Figma: PingFang TC — 刻意改用系統字體堆疊 */
+  --typography-xs-semibold-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --typography-xs-semibold-font-size: 13px;
+  --typography-xs-semibold-font-weight: 600;
+  --typography-xs-semibold-letter-spacing: 0px;
+}

@@ -409,4 +409,62 @@ public enum DesignTokens {
   public static let spacingXl: CGFloat = 20
   /// spacing/xs
   public static let spacingXs: CGFloat = 4
+  /// typography/2xl-medium
+  public static let typography2xlMedium = Font.system(size: 24, weight: .medium)
+  /// typography/2xl-regular
+  public static let typography2xlRegular = Font.system(size: 24, weight: .regular)
+  /// typography/2xl-semibold
+  public static let typography2xlSemibold = Font.system(size: 24, weight: .semibold)
+  /// typography/3xl-medium
+  public static let typography3xlMedium = Font.system(size: 26, weight: .medium)
+  /// typography/3xl-regular
+  public static let typography3xlRegular = Font.system(size: 26, weight: .regular)
+  /// typography/3xl-semibold
+  public static let typography3xlSemibold = Font.system(size: 26, weight: .semibold)
+  /// typography/4xl-medium
+  public static let typography4xlMedium = Font.system(size: 30, weight: .medium)
+  /// typography/4xl-regular
+  public static let typography4xlRegular = Font.system(size: 30, weight: .regular)
+  /// typography/4xl-semibold
+  public static let typography4xlSemibold = Font.system(size: 30, weight: .semibold)
+  /// typography/5xl-medium
+  public static let typography5xlMedium = Font.system(size: 60, weight: .medium)
+  /// typography/5xl-regular
+  public static let typography5xlRegular = Font.system(size: 60, weight: .regular)
+  /// typography/l-medium
+  public static let typographyLMedium = Font.system(size: 18, weight: .medium)
+  /// typography/l-regular
+  public static let typographyLRegular = Font.system(size: 18, weight: .regular)
+  /// typography/l-semibold
+  public static let typographyLSemibold = Font.system(size: 18, weight: .semibold)
+  /// typography/least-medium
+  public static let typographyLeastMedium = Font.system(size: 12, weight: .medium)
+  /// typography/least-regular
+  public static let typographyLeastRegular = Font.system(size: 12, weight: .regular)
+  /// typography/least-semibold
+  public static let typographyLeastSemibold = Font.system(size: 12, weight: .semibold)
+  /// typography/m-medium
+  public static let typographyMMedium = Font.system(size: 16, weight: .medium)
+  /// typography/m-regular
+  public static let typographyMRegular = Font.system(size: 16, weight: .regular)
+  /// typography/m-semibold
+  public static let typographyMSemibold = Font.system(size: 16, weight: .semibold)
+  /// typography/s-medium
+  public static let typographySMedium = Font.system(size: 14, weight: .medium)
+  /// typography/s-regular
+  public static let typographySRegular = Font.system(size: 14, weight: .regular)
+  /// typography/s-semibold
+  public static let typographySSemibold = Font.system(size: 14, weight: .semibold)
+  /// typography/xl-medium
+  public static let typographyXlMedium = Font.system(size: 22, weight: .medium)
+  /// typography/xl-regular
+  public static let typographyXlRegular = Font.system(size: 22, weight: .regular)
+  /// typography/xl-semibold
+  public static let typographyXlSemibold = Font.system(size: 22, weight: .semibold)
+  /// typography/xs-medium
+  public static let typographyXsMedium = Font.system(size: 13, weight: .medium)
+  /// typography/xs-regular
+  public static let typographyXsRegular = Font.system(size: 13, weight: .regular)
+  /// typography/xs-semibold
+  public static let typographyXsSemibold = Font.system(size: 13, weight: .semibold)
 }

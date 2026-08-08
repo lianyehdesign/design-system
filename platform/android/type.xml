@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Do not edit directly, this file was auto-generated.
+-->
+<resources>
+  <style name="TextAppearance.2xlMedium">
+    <item name="android:textSize">24sp</item>
+    <item name="android:textFontWeight">500</item>
+  </style>
+  <style name="TextAppearance.2xlRegular">
+    <item name="android:textSize">24sp</item>
+    <item name="android:textFontWeight">400</item>
+  </style>
+  <style name="TextAppearance.2xlSemibold">
+    <item name="android:textSize">24sp</item>
+    <item name="android:textFontWeight">600</item>
+  </style>
+  <style name="TextAppearance.3xlMedium">
+    <item name="android:textSize">26sp</item>
+    <item name="android:textFontWeight">500</item>
+  </style>
+  <style name="TextAppearance.3xlRegular">
+    <item name="android:textSize">26sp</item>
+    <item name="android:textFontWeight">400</item>
+  </style>
+  <style name="TextAppearance.3xlSemibold">
+    <item name="android:textSize">26sp</item>
+    <item name="android:textFontWeight">600</item>
+  </style>
+  <style name="TextAppearance.4xlMedium">
+    <item name="android:textSize">30sp</item>
+    <item name="android:textFontWeight">500</item>
+  </style>
+  <style name="TextAppearance.4xlRegular">
+    <item name="android:textSize">30sp</item>
+    <item name="android:textFontWeight">400</item>
+  </style>
+  <style name="TextAppearance.4xlSemibold">
+    <item name="android:textSize">30sp</item>
+    <item name="android:textFontWeight">600</item>
+  </style>
+  <style name="TextAppearance.5xlMedium">
+    <item name="android:textSize">60sp</item>
+    <item name="android:textFontWeight">500</item>
+  </style>
+  <style name="TextAppearance.5xlRegular">
+    <item name="android:textSize">60sp</item>
+    <item name="android:textFontWeight">400</item>
+  </style>
+  <style name="TextAppearance.LMedium">
+    <item name="android:textSize">18sp</item>
+    <item name="android:textFontWeight">500</item>
+  </style>
+  <style name="TextAppearance.LRegular">
+    <item name="android:textSize">18sp</item>
+    <item name="android:textFontWeight">400</item>
+  </style>
+  <style name="TextAppearance.LSemibold">
+    <item name="android:textSize">18sp</item>
+    <item name="android:textFontWeight">600</item>
+  </style>
+  <style name="TextAppearance.LeastMedium">
+    <item name="android:textSize">12sp</item>
+    <item name="android:textFontWeight">500</item>
+  </style>
+  <style name="TextAppearance.LeastRegular">
+    <item name="android:textSize">12sp</item>
+    <item name="android:textFontWeight">400</item>
+  </style>
+  <style name="TextAppearance.LeastSemibold">
+    <item name="android:textSize">12sp</item>
+    <item name="android:textFontWeight">600</item>
+  </style>
+  <style name="TextAppearance.MMedium">
+    <item name="android:textSize">16sp</item>
+    <item name="android:textFontWeight">500</item>
+  </style>
+  <style name="TextAppearance.MRegular">
+    <item name="android:textSize">16sp</item>
+    <item name="android:textFontWeight">400</item>
+  </style>
+  <style name="TextAppearance.MSemibold">
+    <item name="android:textSize">16sp</item>
+    <item name="android:textFontWeight">600</item>
+  </style>
+  <style name="TextAppearance.SMedium">
+    <item name="android:textSize">14sp</item>
+    <item name="android:textFontWeight">500</item>
+  </style>
+  <style name="TextAppearance.SRegular">
+    <item name="android:textSize">14sp</item>
+    <item name="android:textFontWeight">400</item>
+  </style>
+  <style name="TextAppearance.SSemibold">
+    <item name="android:textSize">14sp</item>
+    <item name="android:textFontWeight">600</item>
+  </style>
+  <style name="TextAppearance.XlMedium">
+    <item name="android:textSize">22sp</item>
+    <item name="android:textFontWeight">500</item>
+  </style>
+  <style name="TextAppearance.XlRegular">
+    <item name="android:textSize">22sp</item>
+    <item name="android:textFontWeight">400</item>
+  </style>
+  <style name="TextAppearance.XlSemibold">
+    <item name="android:textSize">22sp</item>
+    <item name="android:textFontWeight">600</item>
+  </style>
+  <style name="TextAppearance.XsMedium">
+    <item name="android:textSize">13sp</item>
+    <item name="android:textFontWeight">500</item>
+  </style>
+  <style name="TextAppearance.XsRegular">
+    <item name="android:textSize">13sp</item>
+    <item name="android:textFontWeight">400</item>
+  </style>
+  <style name="TextAppearance.XsSemibold">
+    <item name="android:textSize">13sp</item>
+    <item name="android:textFontWeight">600</item>
+  </style>
+</resources>

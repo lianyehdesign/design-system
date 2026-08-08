@@ -635,6 +635,151 @@
       "iOS": "DesignTokens.radiusXs",
       "WEB": "var(--radius-xs)",
       "ANDROID": "R.dimen.radius_xs"
+    },
+    "typography.2xl-medium": {
+      "iOS": "DesignTokens.typography2xlMedium",
+      "WEB": "var(--typography-2xl-medium)",
+      "ANDROID": "R.dimen.typography_2xl_medium"
+    },
+    "typography.2xl-regular": {
+      "iOS": "DesignTokens.typography2xlRegular",
+      "WEB": "var(--typography-2xl-regular)",
+      "ANDROID": "R.dimen.typography_2xl_regular"
+    },
+    "typography.2xl-semibold": {
+      "iOS": "DesignTokens.typography2xlSemibold",
+      "WEB": "var(--typography-2xl-semibold)",
+      "ANDROID": "R.dimen.typography_2xl_semibold"
+    },
+    "typography.3xl-medium": {
+      "iOS": "DesignTokens.typography3xlMedium",
+      "WEB": "var(--typography-3xl-medium)",
+      "ANDROID": "R.dimen.typography_3xl_medium"
+    },
+    "typography.3xl-regular": {
+      "iOS": "DesignTokens.typography3xlRegular",
+      "WEB": "var(--typography-3xl-regular)",
+      "ANDROID": "R.dimen.typography_3xl_regular"
+    },
+    "typography.3xl-semibold": {
+      "iOS": "DesignTokens.typography3xlSemibold",
+      "WEB": "var(--typography-3xl-semibold)",
+      "ANDROID": "R.dimen.typography_3xl_semibold"
+    },
+    "typography.4xl-medium": {
+      "iOS": "DesignTokens.typography4xlMedium",
+      "WEB": "var(--typography-4xl-medium)",
+      "ANDROID": "R.dimen.typography_4xl_medium"
+    },
+    "typography.4xl-regular": {
+      "iOS": "DesignTokens.typography4xlRegular",
+      "WEB": "var(--typography-4xl-regular)",
+      "ANDROID": "R.dimen.typography_4xl_regular"
+    },
+    "typography.4xl-semibold": {
+      "iOS": "DesignTokens.typography4xlSemibold",
+      "WEB": "var(--typography-4xl-semibold)",
+      "ANDROID": "R.dimen.typography_4xl_semibold"
+    },
+    "typography.5xl-medium": {
+      "iOS": "DesignTokens.typography5xlMedium",
+      "WEB": "var(--typography-5xl-medium)",
+      "ANDROID": "R.dimen.typography_5xl_medium"
+    },
+    "typography.5xl-regular": {
+      "iOS": "DesignTokens.typography5xlRegular",
+      "WEB": "var(--typography-5xl-regular)",
+      "ANDROID": "R.dimen.typography_5xl_regular"
+    },
+    "typography.l-medium": {
+      "iOS": "DesignTokens.typographyLMedium",
+      "WEB": "var(--typography-l-medium)",
+      "ANDROID": "R.dimen.typography_l_medium"
+    },
+    "typography.l-regular": {
+      "iOS": "DesignTokens.typographyLRegular",
+      "WEB": "var(--typography-l-regular)",
+      "ANDROID": "R.dimen.typography_l_regular"
+    },
+    "typography.l-semibold": {
+      "iOS": "DesignTokens.typographyLSemibold",
+      "WEB": "var(--typography-l-semibold)",
+      "ANDROID": "R.dimen.typography_l_semibold"
+    },
+    "typography.least-medium": {
+      "iOS": "DesignTokens.typographyLeastMedium",
+      "WEB": "var(--typography-least-medium)",
+      "ANDROID": "R.dimen.typography_least_medium"
+    },
+    "typography.least-regular": {
+      "iOS": "DesignTokens.typographyLeastRegular",
+      "WEB": "var(--typography-least-regular)",
+      "ANDROID": "R.dimen.typography_least_regular"
+    },
+    "typography.least-semibold": {
+      "iOS": "DesignTokens.typographyLeastSemibold",
+      "WEB": "var(--typography-least-semibold)",
+      "ANDROID": "R.dimen.typography_least_semibold"
+    },
+    "typography.m-medium": {
+      "iOS": "DesignTokens.typographyMMedium",
+      "WEB": "var(--typography-m-medium)",
+      "ANDROID": "R.dimen.typography_m_medium"
+    },
+    "typography.m-regular": {
+      "iOS": "DesignTokens.typographyMRegular",
+      "WEB": "var(--typography-m-regular)",
+      "ANDROID": "R.dimen.typography_m_regular"
+    },
+    "typography.m-semibold": {
+      "iOS": "DesignTokens.typographyMSemibold",
+      "WEB": "var(--typography-m-semibold)",
+      "ANDROID": "R.dimen.typography_m_semibold"
+    },
+    "typography.s-medium": {
+      "iOS": "DesignTokens.typographySMedium",
+      "WEB": "var(--typography-s-medium)",
+      "ANDROID": "R.dimen.typography_s_medium"
+    },
+    "typography.s-regular": {
+      "iOS": "DesignTokens.typographySRegular",
+      "WEB": "var(--typography-s-regular)",
+      "ANDROID": "R.dimen.typography_s_regular"
+    },
+    "typography.s-semibold": {
+      "iOS": "DesignTokens.typographySSemibold",
+      "WEB": "var(--typography-s-semibold)",
+      "ANDROID": "R.dimen.typography_s_semibold"
+    },
+    "typography.xl-medium": {
+      "iOS": "DesignTokens.typographyXlMedium",
+      "WEB": "var(--typography-xl-medium)",
+      "ANDROID": "R.dimen.typography_xl_medium"
+    },
+    "typography.xl-regular": {
+      "iOS": "DesignTokens.typographyXlRegular",
+      "WEB": "var(--typography-xl-regular)",
+      "ANDROID": "R.dimen.typography_xl_regular"
+    },
+    "typography.xl-semibold": {
+      "iOS": "DesignTokens.typographyXlSemibold",
+      "WEB": "var(--typography-xl-semibold)",
+      "ANDROID": "R.dimen.typography_xl_semibold"
+    },
+    "typography.xs-medium": {
+      "iOS": "DesignTokens.typographyXsMedium",
+      "WEB": "var(--typography-xs-medium)",
+      "ANDROID": "R.dimen.typography_xs_medium"
+    },
+    "typography.xs-regular": {
+      "iOS": "DesignTokens.typographyXsRegular",
+      "WEB": "var(--typography-xs-regular)",
+      "ANDROID": "R.dimen.typography_xs_regular"
+    },
+    "typography.xs-semibold": {
+      "iOS": "DesignTokens.typographyXsSemibold",
+      "WEB": "var(--typography-xs-semibold)",
+      "ANDROID": "R.dimen.typography_xs_semibold"
     }
   }
 }
