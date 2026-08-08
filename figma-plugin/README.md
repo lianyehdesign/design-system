@@ -71,6 +71,24 @@ plugin 讀的是**這個檔案所有的本地變數**,所以它拿到的是完�
 - 還沒設定 token 時先試一下讀得對不對
 - plugin 觸發失敗時的 fallback(貼進 workflow 的 `variables` 欄位)
 
+## ⚠️ plugin 跑本機的程式碼，workflow 跑 main
+
+Figma 記的是**資料夾路徑**，所以 plugin 執行的永遠是你**當下 checkout 的那個版本**。
+但它觸發的 workflow 跑的是 **`main`**。
+
+在 feature 分支上改過 plugin 之後直接按同步，兩邊就會對不上。實際發生過的樣子:
+
+```
+Typography/s-medium → {"fontFamily":"PingFang TC","fontSize":14,"fontWeight":500,"letterSpacing":0}
+✘ 29 個值無法轉換
+```
+
+plugin 已經不送 `lineHeight`，但 `main` 上的程式還要求它 —— 每個字體 token 都被判定為無法轉換。
+
+**改過 plugin 或 `scripts/lib/tokens.js` 的話，先把 PR 合併進 main 再按同步。**
+
+或者切回 main 跑（`git checkout main`）—— plugin 會跟著變回 main 的版本，不用重新匯入。
+
 ## 限制
 
 - **只讀當前檔案的本地變數。** 在引用 library 的檔案裡跑會讀不到東西 —— 那些是 remote 變數。
